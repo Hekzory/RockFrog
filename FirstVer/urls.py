@@ -23,4 +23,5 @@ urlpatterns = [
     path('auth/', include('authpages.urls')),
     path('profile/', include('UserProfile.urls')),
     path('chat/', include('chat.urls')),
+    path('notifications/', include('notifications.urls')),
 ]
