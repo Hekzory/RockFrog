@@ -23,8 +23,6 @@ class Notificationlist(models.Model):
 	notifications = models.ManyToManyField(Notification)
 	def __str__(self):
 	    return self.user.username
-	def GetNotifications(self):
-		return self.notifications
 
 @receiver(post_save, sender=User)
 def create_user_NotificationList(sender, instance, created, **kwargs):

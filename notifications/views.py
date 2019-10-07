@@ -4,6 +4,7 @@ from .models import Notification, Notificationlist
 from django.http import HttpResponse
 from django.views.generic import View
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.http import HttpResponseRedirect
 
 
 class NotificationsList(View):
@@ -11,7 +12,6 @@ class NotificationsList(View):
         if request.user.is_authenticated:
             page = self.request.GET.get('page')
             unchecked_nots = Notificationlist.objects.all().filter(user = request.user)[0].notifications.all()[::-1]
-            #unchecked_nots = Notification.objects.all()[::-1]
             paginator = Paginator(unchecked_nots, 20)
 
             try:
@@ -28,3 +28,5 @@ class NotificationsList(View):
                 'notifications': nots,
             }
             return HttpResponse(template.render(context, request))
+        else:
+            return HttpResponseRedirect("/auth/login")
