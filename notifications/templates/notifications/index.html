@@ -30,7 +30,7 @@
             </li>
             <li class="nav-item active">
               <a class="nav-link" href="/notifications/">Уведомления</a>
-            </li>            
+            </li>
           </ul>
         </div>
         <div id="my-nav" class="collapse navbar-collapse justify-content-end">
@@ -70,8 +70,8 @@
 
           {% if notifications %}
           {% for notification in notifications %}
-          <a href="{{ notification.not_link }}" style = "" id = "not_{{ notification.id }}_link"></a>
-          <div class="card mb-4 card-hover" onclick = "not_redirect('{{ notification.id }}')">
+          <a href="{{ notification.not_link }}"  id = "not_{{ notification.id }}_link"></a>
+          <div class="card mb-4 card-hover">
             <div class="card-body">
               <h2 class="card-title">{{ notification.not_name }} {% if notification.not_checked %}<b style = "font-size: 20px; color: red;">new</b>{% endif %}</h2>
               <hr>
@@ -87,25 +87,32 @@
                 <a class="p-6">Получено {{notification.not_date|date:"d M Y в H:i"}} </a>
                 </div>
                 <div class="container" style="text-align: right;">
+
                 {% if request.user.is_authenticated %}
+                {% if notification.not_checked  %}
+
+                    <form method = "POST" action="{% url 'notifications:check' %}" class="d-inline">
+                      {% csrf_token %}
+                      <input type="hidden" name="not_id" value="{{ notification.id }}">
+                      <button type="submit" id="not_{{ notification.id }}_check" class="btn btn-primary p-6">
+                                          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 22 22"><g transform="matrix(.02146 0 0 .02146 1 1)" fill="#fff"><path d="m466.07 161.53c-205.6 0-382.8 121.2-464.2 296.1-2.5 5.3-2.5 11.5 0 16.9 81.4 174.9 258.6 296.1 464.2 296.1 205.6 0 382.8-121.2 464.2-296.1 2.5-5.3 2.5-11.5 0-16.9-81.4-174.9-258.6-296.1-464.2-296.1m0 514.7c-116.1 0-210.1-94.1-210.1-210.1 0-116.1 94.1-210.1 210.1-210.1 116.1 0 210.1 94.1 210.1 210.1 0 116-94.1 210.1-210.1 210.1"/><circle cx="466.08" cy="466.02" r="134.5"/></g></svg>
+                      </button>
+
+                  </form>
+
+                {% endif %}
                   {% if request.user.username == 'admin' %}
-                    <a href="/admin/news/post/{{ post.id }}/change/" class="btn btn-primary p-6">
+
+                    <a href="/admin/notifications/notification/{{ notification.id }}/change/" class="btn btn-primary d-inline">
                       <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
                       width="20" height="20"
                       viewBox="0 0 226 226"
                       style=" fill:#000000;"><g fill="none" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="none" font-weight="none" font-size="none" text-anchor="none" style="mix-blend-mode: normal"><path d="M0,226v-226h226v226z" fill="none"></path><g fill="#ffffff"><g id="surface1"><path d="M174.66106,2.17308c-5.16106,-0.03395 -10.22025,1.79958 -14.125,5.70433l-8.69231,8.96394l57.3149,57.58654l8.69231,-8.96394c7.84345,-7.84345 7.91136,-20.57632 0,-28.52163l-28.79327,-28.79327c-3.97265,-3.97265 -9.23558,-5.94201 -14.39663,-5.97596zM142.0649,24.71875l-13.58173,13.03846l59.75962,59.75962l13.85337,-12.76683zM119.79087,47.26442l-93.98558,93.17067c-2.17308,1.12049 -3.73497,3.08985 -4.34615,5.43269l-20.10096,68.18029c-0.91677,2.98798 -0.10187,6.28155 2.10517,8.48859c2.20703,2.20703 5.5006,3.02193 8.48858,2.10516l68.18029,-20.10096c3.15775,-0.47536 5.77224,-2.68239 6.79087,-5.70433l92.6274,-91.8125l-12.76683,-12.76683l-95.07212,95.34375l-38.30048,11.13702l-8.14904,-8.14904l11.68029,-39.93029l94.25721,-93.98558zM140.4351,68.18029l-95.34375,95.61538l13.85337,2.98798l1.90144,12.76683l95.61538,-95.34375z"></path></g></g></g></svg>
                       </a>
+
                   {% endif %}
                 {% endif %}
-                {% if notification.not_checked  %}
-	                  <form method = "POST" action="{% url 'notifications:check' %}" class="btn btn-primary p-6">
-	                  	{% csrf_token %}
-	                  	<input type="submit" id="not_{{ notification.id }}_check">
-						<div onclick = "not_check('{{ notification.id }}')">
-	   				   		<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 22 22"><g transform="matrix(.02146 0 0 .02146 1 1)" fill="#fff"><path d="m466.07 161.53c-205.6 0-382.8 121.2-464.2 296.1-2.5 5.3-2.5 11.5 0 16.9 81.4 174.9 258.6 296.1 464.2 296.1 205.6 0 382.8-121.2 464.2-296.1 2.5-5.3 2.5-11.5 0-16.9-81.4-174.9-258.6-296.1-464.2-296.1m0 514.7c-116.1 0-210.1-94.1-210.1-210.1 0-116.1 94.1-210.1 210.1-210.1 116.1 0 210.1 94.1 210.1 210.1 0 116-94.1 210.1-210.1 210.1"/><circle cx="466.08" cy="466.02" r="134.5"/></g></svg>
-	   				   	</div>	   				    
-	                </form>
-                {% endif %}
+
               </div>
               </div>
             </div>
@@ -138,14 +145,14 @@
       </div>
     </div>
 
-    <style type="text/css">
+    <!--<style type="text/css">
     	.card-hover:hover {
     		border-color: #aaa;
     		cursor: pointer;
     		transition-property: border-color;
    			transition-duration: 0.2s;
     	}
-    </style>
+    </style>-->
 
 
     <!-- Optional JavaScript -->
@@ -154,7 +161,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 
-    <script type="text/javascript">
+    <!--<script type="text/javascript">
     	function not_redirect(id) {
     		document.getElementById('not_' + id + '_link').click()
     	}
@@ -163,6 +170,6 @@
     		alert(1)
     		document.getElementById('not_' + id + '_check').click()
     	}
-    </script>
+    </script>-->
   </body>
 </html>

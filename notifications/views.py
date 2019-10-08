@@ -31,12 +31,9 @@ class NotificationsList(View):
         else:
             return HttpResponseRedirect("/auth/login")
 
-    def post(request, not_id):
-        try:
-            notification = Notificationlist.objects.all().filter(user = request.user)[0].notifications.objects.get(id = not_id)
-            notification.not_checked = False
-            notification.save()
-        except:
-            pass
+    def post(self, request):
+        temp_id = int(request.POST.get('not_id', None))
+        notification = Notificationlist.objects.all().filter(user = request.user)[0].notifications.all().filter(id = temp_id)[0]
+        notification.not_checked = False
+        notification.save()
         return HttpResponseRedirect("/notifications/")
-
