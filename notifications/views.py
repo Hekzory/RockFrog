@@ -1,18 +1,18 @@
 from django.shortcuts import render, get_object_or_404
 from django.template import loader
 from .models import Notification, Notificationlist
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.views.generic import View
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.http import HttpResponseRedirect
+from django.urls import reverse
 
 
 class NotificationsList(View):
     def get(self, request):
         if request.user.is_authenticated:
             page = self.request.GET.get('page')
-            unchecked_nots = Notificationlist.objects.all().filter(user = request.user)[0].notifications.all()[::-1]
-            paginator = Paginator(unchecked_nots, 20)
+            all_nots = Notificationlist.objects.all().filter(user = request.user)[0].notifications.all()[::-1]
+            paginator = Paginator(all_nots, 4)
 
             try:
                 nots = paginator.page(page)
@@ -30,3 +30,13 @@ class NotificationsList(View):
             return HttpResponse(template.render(context, request))
         else:
             return HttpResponseRedirect("/auth/login")
+
+    def post(request, not_id):
+        try:
+            notification = Notificationlist.objects.all().filter(user = request.user)[0].notifications.objects.get(id = not_id)
+            notification.not_checked = False
+            notification.save()
+        except:
+            pass
+        return HttpResponseRedirect("/notifications/")
+
