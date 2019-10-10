@@ -31,23 +31,12 @@ def create_user_NotificationList(sender, instance, created, **kwargs):
 
 @receiver(post_save, sender=User)
 def save_user_NotificationList(sender, instance, **kwargs):
-    instance.notificationlist.save()    
+    instance.notificationlist.save()
 
 @receiver(post_save, sender=Chat)
 def create_Notification(sender, instance, created, **kwargs):
-	if created:
-		notification = Notification.objects.create(not_text = 'Test 4', not_name = 'Test 4', not_link = '/')	
-
-		notificationlist = Notificationlist.objects.get(user = User.objects.get(id = 1))
-		print(notificationlist)
-
-		# for user_to_send in User.objects.all():
-			# if user_to_send != Chat.objects.all()[::-1][0].user:
-				# print(user_to_send)
-				# notification = Notification()
-				# notification.not_text = 'test2'
-				# notification.not_name = 'test2'
-				# notification.not_link = '/'
-				# print(notification)
-				# notification.save()
-				
+    if created:
+        notification = Notification.objects.create(not_text = 'Test 7', not_name = 'Test 7', not_link = '/')
+        notification.save()
+        notificationlist = Notificationlist.objects.get(user = User.objects.get(id = instance.user.id)).notifications
+        notificationlist.add(notification)
