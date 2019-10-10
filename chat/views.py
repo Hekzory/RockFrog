@@ -4,6 +4,7 @@ from django.shortcuts import render
 
 # Create your views here.
 from chat.models import Chat
+from notifications.models import Notificationlist, Notification
 
 
 def home(request):
@@ -25,6 +26,7 @@ def post(request):
             chat_message = Chat(user=request.user, message=msg)
             if msg != '':
                 chat_message.save()
+                
             return JsonResponse({'msg': msg, 'user': chat_message.user.username})
         else:
             return HttpResponse('Request must be not None.')
