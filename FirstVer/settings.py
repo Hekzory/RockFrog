@@ -28,7 +28,8 @@ DEBUG = True
 ALLOWED_HOSTS = [
 	'.rootkeys.pw',
 	'localhost',
-	'193.124.181.134'
+	'193.124.181.134',
+    '127.0.0.1'
 ]
 
 
@@ -40,6 +41,7 @@ INSTALLED_APPS = [
 	'mainapp',
 	'news',
 	'authpages',
+    'notifications',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
