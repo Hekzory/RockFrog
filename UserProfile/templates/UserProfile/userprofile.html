@@ -33,7 +33,7 @@
         <div id="my-nav" class="collapse navbar-collapse justify-content-end">
           <ul class="navbar-nav">
             <li class="nav-item">
-              <a class="nav-link" href="/profile/{{ request.user.username }}">Профиль {{ request.user.username }}</a>
+              <a class="nav-link" href="/profile">Ваш профиль ({{request.user.username}})</a>
             </li>
               {% if request.user.username == 'admin' %}
                 <li class="nav-item">
@@ -50,7 +50,7 @@
     <div class="container">
       <div class="row">
         <div class="col-lg-8">
-          <h1 class="my-1">Профиль {{ user.username }}</h1>
+          <h1 class="my-1">Ваш профиль</h1>
           <hr>
           <div class="card mb-4">
             <div class="card-body">
@@ -59,22 +59,42 @@
 
                 <table class="table table-striped">
                   <tbody>
+
                     <tr>
                       <th scope="row">Никнейм:</th>
                       <td>{{ user.username }}</td>
                     </tr>
+
                     <tr>
                       <th scope="row">Почта:</th>
                       <td>{{ user.email }}</td>
                     </tr>
+
                     <tr>
                       <th scope="row">О пользователе:</th>
                       <td>{{ user.profile.about }}</td>
                     </tr>
+
                     <tr>
                       <th scope="row">День рождения:</th>
                       <td>{{ user.profile.birth_date }}</td>
                     </tr>
+
+                    <tr>
+                      <th scope="row">Город:</th>
+                      <td>{{ user.profile.city }}</td>
+                    </tr>
+
+                    <tr>
+                      <th scope="row">Телефон:</th>
+                      <td>{{ user.profile.phone }}</td>
+                    </tr>
+
+                    <tr>
+                      <th scope="row">Интересы:</th>
+                      <td>{{ user.profile.interests }}</td>
+                    </tr>
+
                   </tbody>
                 </table>
 
