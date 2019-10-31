@@ -44,11 +44,11 @@ class ProfileView(View):
 
     def post(self, request):
         if not request.user.is_authenticated:
-            print('asdasasdafasfasfasfafasgfjhg')
             return HttpResponseRedirect("/")
         else:
             bound_form = ProfileForm(request.POST)
-            if bound_form.is_valid():
+            check = bound_form.is_valid()
+            if check:
                 bound_form.change_profile(request.user)
                 template = loader.get_template('UserProfile/yourprofile.html')
                 form = ProfileForm()
@@ -56,6 +56,5 @@ class ProfileView(View):
                 return HttpResponse(template.render(context, request))
             else:
                 template = loader.get_template('UserProfile/yourprofile.html')
-                form = ProfileForm()
-                context = {'form' : form}
+                context = {'form' : bound_form}
                 return HttpResponse(template.render(context, request))

@@ -4,7 +4,7 @@ from django.core.exceptions import ValidationError
 
 class ProfileForm(forms.Form):
     about = forms.CharField(max_length=500)
-    birth_date = forms.DateField(widget=forms.DateInput())
+    birth_date = forms.DateField(widget=forms.SelectDateWidget(years=list(range(1900, 2019))))
     email = forms.CharField(max_length=50)
     city = forms.CharField(max_length=30)
     phone = forms.CharField(max_length=30)
@@ -34,10 +34,11 @@ class ProfileForm(forms.Form):
 
     def change_profile(self, user):
         profile = user.profile
-        profile.about = get_about()
-        profile.birth_date = get_birth_date()
-        profile.email = get_email()
-        profile.city = get_city()
-        profile.phone = get_phone()
-        profile.interests = get_interests()
+        self.clean()
+        profile.about = self.get_about()
+        profile.birth_date = self.get_birth_date()
+        profile.email = self.get_email()
+        profile.city = self.get_city()
+        profile.phone = self.get_phone()
+        profile.interests = self.get_interests()
         profile.save()
