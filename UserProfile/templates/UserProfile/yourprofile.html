@@ -36,7 +36,7 @@
         <div id="my-nav" class="collapse navbar-collapse justify-content-end">
           <ul class="navbar-nav">
             <li class="nav-item">
-              <a class="nav-link" href="/profile/{{ request.user.username }}">Профиль {{ request.user.username }}</a>
+              <a class="nav-link" href="/profile">Ваш профиль ({{request.user.username}})</a>
             </li>
               {% if request.user.username == 'admin' %}
                 <li class="nav-item">
@@ -62,25 +62,110 @@
 
                 <table class="table table-striped">
                   <tbody>
+
                     <tr>
                       <th scope="row">Никнейм:</th>
                       <td>{{ user.username }}</td>
                     </tr>
+
                     <tr>
                       <th scope="row">Почта:</th>
                       <td>{{ user.email }}</td>
                     </tr>
+
                     <tr>
                       <th scope="row">О пользователе:</th>
                       <td>{{ user.profile.about }}</td>
                     </tr>
+
                     <tr>
                       <th scope="row">День рождения:</th>
                       <td>{{ user.profile.birth_date }}</td>
                     </tr>
+
+                    <tr>
+                      <th scope="row">Город:</th>
+                      <td>{{ user.profile.city }}</td>
+                    </tr>
+
+                    <tr>
+                      <th scope="row">Телефон:</th>
+                      <td>{{ user.profile.phone }}</td>
+                    </tr>
+
+                    <tr>
+                      <th scope="row">Интересы:</th>
+                      <td>{{ user.profile.interests }}</td>
+                    </tr>
+
                   </tbody>
                 </table>
 
+                <form class="form-signin" action="{% url 'index' %}" method="post">
+                  {% csrf_token %}
+                  <div class="form-label-group">
+                    <label for="inputAbout">О себе</label>
+                    {{ form.about }}
+                    {% if form.about.errors %}
+                      <div class="alert alert-danger my-3">
+                        {{ form.about.errors }}
+                      </div>
+                    {% endif %}
+                  </div>
+
+                  <div class="form-label-group">
+                    <label for="inputBirthDate">Дата рождения</label>
+                    {{ form.birth_date }}
+                    {% if form.birth_date.errors %}
+                      <div class="alert alert-danger my-3">
+                        {{ form.birth_date.errors }}
+                      </div>
+                    {% endif %}
+                  </div>
+
+                  <div class="form-label-group">
+                    <label for="inputEmail">Почта</label>
+                    {{ form.email }}
+                    {% if form.email.errors %}
+                      <div class="alert alert-danger my-3">
+                        {{ form.email.errors }}
+                      </div>
+                    {% endif %}
+                  </div>
+
+                  <div class="form-label-group">
+                    <label for="inputCity">Город</label>
+                    {{ form.city }}
+                    {% if form.city.errors %}
+                      <div class="alert alert-danger my-3">
+                        {{ form.city.errors }}
+                      </div>
+                    {% endif %}
+                  </div>
+
+                  <div class="form-label-group">
+                    <label for="inputPhone">Телефон</label>
+                    {{ form.phone }}
+                    {% if form.phone.errors %}
+                      <div class="alert alert-danger my-3">
+                        {{ form.phone.errors }}
+                      </div>
+                    {% endif %}
+                  </div>
+
+                  <div class="form-label-group">
+                    <label for="inputInterests">Интересы</label>
+                    {{ form.interests }}
+                    {% if form.interests.errors %}
+                      <div class="alert alert-danger my-3">
+                        {{ form.interests.errors }}
+                      </div>
+                    {% endif %}
+                  </div>
+
+                  <hr>
+                  <button class="btn btn-lg btn-primary btn-block text-uppercase" type="submit">Сохранить</button>
+                </form>
 
               </p>
             </div>

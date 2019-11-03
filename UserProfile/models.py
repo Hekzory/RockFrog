@@ -7,6 +7,11 @@ class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     about = models.TextField(max_length=500, blank=True)
     birth_date = models.DateField(null=True, blank=True)
+    email = models.TextField(max_length=50, blank=True)
+    city = models.TextField(max_length=30, blank=True)
+    phone = models.TextField(max_length=30, blank=True)
+    interests = models.TextField(max_length=500, blank=True)
+
     def __str__(self):
         return self.user.username
 
