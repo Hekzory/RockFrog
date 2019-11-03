@@ -19,7 +19,7 @@
             </div>
         </div>
         <br>
-        <form id="chat-form" class="affix-bottom" method="post" action="{% url 'chat:post' %}"  data-offset-bottom="10">
+        <div id="chat-form" class="affix-bottom" data-offset-bottom="10">
             {% csrf_token %}
             <div id="chat-bottom" class="input-group">
                 <input type="text" id="chat-msg" name="chat-msg" class="form-control"/>
@@ -27,7 +27,7 @@
                 <input class="btn btn-default" id="send" type="submit" value="Send"/>
             </span>
             </div>
-        </form>
+        </div>
     </div>
     <br>
 {% endblock content %}

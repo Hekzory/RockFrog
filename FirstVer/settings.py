@@ -36,6 +36,7 @@ ALLOWED_HOSTS = [
 # Application definition
 
 INSTALLED_APPS = [
+	'channels',
 	'chat',
 	'UserProfile',
 	'mainapp',
@@ -79,6 +80,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'FirstVer.wsgi.application'
+ASGI_APPLICATION = "FirstVer.routing.application"
 
 
 # Database
