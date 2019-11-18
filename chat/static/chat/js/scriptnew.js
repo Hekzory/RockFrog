@@ -6,15 +6,19 @@ var chatSocket = new WebSocket(
 chatSocket.onmessage = function(e) {
     var data = JSON.parse(e.data);
     var message = data['message'];
-    document.querySelector('#msg-list').value += (message + '\n');
-    $('#msg-list').append('<li class="text-left list-group-item">'+message+' </li>');
-    console.log("GOT", message);
+    var username = data['username'];
+    document.querySelector('#msg-list').value += (username+': '+message + '\n');
+    $('#msg-list').append('<li class="text-left list-group-item">'+username+': '+message+' </li>');
+    var chatlist = document.getElementById('msg-list-div');
+    chatlist.scrollTop = chatlist.scrollHeight;
 };
 
 chatSocket.onclose = function(e) {
-    console.error('Chat socket closed unexpectedly');
+    console.error('Произошла ошибка. Пожалуйста, перезагрузите страницу для продолжения работы. Если ошибка повторяется - сообщите об этом администраторам');
 };
 
+var chatlist = document.getElementById('msg-list-div');
+chatlist.scrollTop = chatlist.scrollHeight;
 document.querySelector('#chat-msg').focus();
 document.querySelector('#chat-msg').onkeyup = function(e) {
     if (e.keyCode === 13) {  // enter, return
