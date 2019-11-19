@@ -6,6 +6,9 @@ from django.utils import timezone
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
+
 
 class Notification(models.Model):
     not_text = models.TextField()
@@ -40,3 +43,7 @@ def create_Notification(sender, instance, created, **kwargs):
         notification.save()
         notificationlist = Notificationlist.objects.get(user = User.objects.get(id = instance.user.id)).notifications
         notificationlist.add(notification)
+
+        channel_layer = get_channel_layer()
+        print("Trying to send message for "+"notifications_"+User.objects.get(id = instance.user.id).username)
+        async_to_sync(channel_layer.group_send)("notifications_"+User.objects.get(id = instance.user.id).username, {"type": "notification", "message": "Notification message"})
