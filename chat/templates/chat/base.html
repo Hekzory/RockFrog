@@ -1,96 +1,85 @@
+{% extends "base_general.html" %}
 {% load staticfiles %}
-{% load i18n %}
 
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Чат</title>
-    {% load staticfiles %}
-
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/css/bootstrap-datepicker3.min.css">
-    {% block extra_css %}{% endblock %}
-    {% block extra_js %}{% endblock %}
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-
-</head>
-<body>
-  <nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top" >
-    <div class="container">
-      <a class="navbar-brand">UndefinedCMS</a>
-      <button class="navbar-toggler" data-target="#my-nav" data-toggle="collapse">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div id="my-nav" class="collapse navbar-collapse justify-content-start">
-        <ul class="navbar-nav">
-          <li class="nav-item">
-            <a class="nav-link" href="/">Главная</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/news/">Новости</a>
-          </li>
-          <li class="nav-item active">
-            <a class="nav-link" href="/chat/">Чат</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/notifications/">Уведомления</a>
-          </li>         
-        </ul>
-      </div>
-      <div id="my-nav" class="collapse navbar-collapse justify-content-end">
-        <ul class="navbar-nav">
-          <li class="nav-item">
-            {% if request.user.is_authenticated %}
-            <a class="nav-link" href="/profile/{{ request.user.username }}">Профиль {{ request.user.username }}</a>
-            {% else %}
-            <a class="nav-link" href="/auth/login">Авторизация</a>
-            {% endif %}
-          </li>
-          {% if not request.user.is_authenticated %}
-          <li class="nav-item">
-            <a class="nav-link" href="/auth/register">Регистрация</a>
-          </li>
-          {% endif %}
+{% block header %}
+<nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top" >
+  <div class="container">
+    <a class="navbar-brand">UndefinedCMS</a>
+    <button class="navbar-toggler" data-target="#my-nav" data-toggle="collapse">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div id="my-nav" class="collapse navbar-collapse justify-content-start">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link" href="/">Главная</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/news/">Новости</a>
+        </li>
+        <li class="nav-item active">
+          <a class="nav-link" href="/chat/">Чат</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/notifications/">Уведомления</a>
+        </li>
+      </ul>
+    </div>
+    <div id="my-nav" class="collapse navbar-collapse justify-content-end">
+      <ul class="navbar-nav">
+        <li class="nav-item">
           {% if request.user.is_authenticated %}
-            {% if request.user.username == 'admin' %}
-              <li class="nav-item">
-                <a class="nav-link" href="/admin">Админ-панель</a>
-              </li>
-            {% endif %}
+          <a class="nav-link" href="/profile">Ваш профиль</a>
+          {% else %}
+          <a class="nav-link" href="/auth/login">Авторизация</a>
           {% endif %}
-          {% if request.user.is_authenticated %}
+        </li>
+        {% if not request.user.is_authenticated %}
+        <li class="nav-item">
+          <a class="nav-link" href="/auth/register">Регистрация</a>
+        </li>
+        {% endif %}
+        {% if request.user.is_authenticated %}
+          {% if request.user.username == 'admin' %}
             <li class="nav-item">
-              <a class="nav-link" href="/auth/logout">Выйти</a>
+              <a class="nav-link" href="/admin">Админ-панель</a>
             </li>
           {% endif %}
-        </ul>
-      </div>
+        {% endif %}
+        {% if request.user.is_authenticated %}
+          <li class="nav-item">
+            <a class="nav-link" href="/auth/logout">Выйти</a>
+          </li>
+        {% endif %}
+      </ul>
     </div>
-  </nav>
+  </div>
+</nav>
+{% endblock %}
 
+{% block title %} Чат {% endblock %}
+{% block title_h1 %} Чат {% endblock %}
 
 
 {% block content %}
-    <header class="body-header">
-        <div class="body-header__title">
-            <h1 class="text-center">Простой чат</h1>
+<div class="container">
+    <div id="chat-body" class="panel panel-default">
+        <div id="msg-list-div" class="panel-body" style="overflow-y: scroll; max-height: 300px !important;">
+            <ul id="msg-list" class="list-group">
+                {% for obj in chat %}
+                    <li class="text-left list-group-item">{{ obj.user.username }}: {{ obj.message }}</li>
+                {% empty %}
+                    <li class="text-left list-group-item">Сообщения отсутствуют!</li>
+                {% endfor %}
+            </ul>
         </div>
-    </header>
+    </div>
+</div>
+<br>
     <div class="container">
         <div class="row">
             <p class="lead text-center">Войдите перед использованием!</p>
         </div>
     </div>
+<script src="{% static 'chat/js/scriptnew.js' %}"></script>
 
 {% endblock %}
-
-
-
-<script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-<script src="{% static 'chat/js/script.js' %}"></script>
-
-</body>
-</html>

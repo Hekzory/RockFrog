@@ -16,22 +16,7 @@ def home(request):
     if request.user.is_authenticated:
         return render(request, 'chat/chat.html', ctx)
     else:
-        return render(request, 'chat/base.html', None)
-
-
-def post(request):
-    if request.method == "POST":
-        msg = request.POST.get('msgbox', None)
-        if msg is not None:
-            chat_message = Chat(user=request.user, message=msg)
-            if msg != '':
-                chat_message.save()
-                
-            return JsonResponse({'msg': msg, 'user': chat_message.user.username})
-        else:
-            return HttpResponse('Request must be not None.')
-    else:
-        return HttpResponse('Request must be POST.')
+        return render(request, 'chat/base.html', ctx)
 
 
 def messages(request):
