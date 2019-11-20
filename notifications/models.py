@@ -39,11 +39,13 @@ def save_user_NotificationList(sender, instance, **kwargs):
 @receiver(post_save, sender=Chat)
 def create_Notification(sender, instance, created, **kwargs):
     if created:
-        notification = Notification.objects.create(not_text = 'Test 7', not_name = 'Test 7', not_link = '/')
+        notification_text = str(instance.message)
+        notification_name = str(instance.user.username)+': новое сообщение'
+        notification = Notification.objects.create(not_text = notification_text, not_name = notification_name, not_link = '/')
         notification.save()
         notificationlist = Notificationlist.objects.get(user = User.objects.get(id = instance.user.id)).notifications
         notificationlist.add(notification)
 
         channel_layer = get_channel_layer()
         print("Trying to send message for "+"notifications_"+User.objects.get(id = instance.user.id).username)
-        async_to_sync(channel_layer.group_send)("notifications_"+User.objects.get(id = instance.user.id).username, {"type": "notification", "message": "Notification message"})
+        async_to_sync(channel_layer.group_send)("notifications_"+User.objects.get(id = instance.user.id).username, {"type": "notification", "message": notification_text, "header": notification_name})

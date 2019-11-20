@@ -1,8 +1,8 @@
 {% extends 'chat/base.html' %}
+{% load staticfiles %}
 
 {% block content %}
     <div class="container">
-        <h1 class="my-3">Чат</h1>
         <div id="chat-body" class="panel panel-default">
             <div id="msg-list-div" class="panel-body" style="overflow-y: scroll; max-height: 300px !important;">
                 <ul id="msg-list" class="list-group">
@@ -30,4 +30,5 @@
         </div>
     </div>
     <br>
+    <script src="{% static 'chat/js/scriptnew.js' %}"></script>
 {% endblock content %}
