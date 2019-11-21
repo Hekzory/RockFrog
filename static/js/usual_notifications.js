@@ -6,7 +6,7 @@ var notificationSocket = new WebSocket(
 notificationSocket.onmessage = function(e) {
     var data = JSON.parse(e.data);
     var message = data['message'];
-    alert("New notification got - "+message);
+    alert("New notification got - "+String(message));
 };
 
 notificationSocket.onclose = function(e) {

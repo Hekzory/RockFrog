@@ -5,7 +5,7 @@ from django.db import models
 from django.utils import timezone
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-
+from django.utils.html import strip_tags
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 
@@ -39,10 +39,11 @@ def save_user_NotificationList(sender, instance, **kwargs):
 @receiver(post_save, sender=Chat)
 def create_Notification(sender, instance, created, **kwargs):
     if created:
-        notification_text = str(instance.message)
-        notification_name = str(instance.user.username)+': новое сообщение'
+        notification_text = strip_tags(str(instance.message))
+        notification_name = strip_tags(str(instance.user.username)+': новое сообщение')
         notification = Notification.objects.create(not_text = notification_text, not_name = notification_name, not_link = '/')
         notification.save()
+        print(notification.not_name, notification.not_text)
         notificationlist = Notificationlist.objects.get(user = User.objects.get(id = instance.user.id)).notifications
         notificationlist.add(notification)
 
