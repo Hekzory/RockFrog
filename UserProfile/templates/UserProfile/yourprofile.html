@@ -100,7 +100,7 @@
                   </tbody>
                 </table>
 
-                <form class="form-signin" action="{% url 'index' %}" method="post">
+                <form class="form-signin" action="{% url 'UserProfile:index' %}" method="post">
                   {% csrf_token %}
                   <div class="form-label-group">
                     <label for="inputAbout">О себе</label>
