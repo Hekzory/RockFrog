@@ -3,6 +3,7 @@ from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
 import json
 from .models import Chat
+from django.utils.html import strip_tags
 
 class ChatConsumer(WebsocketConsumer):
     def connect(self):
@@ -28,7 +29,7 @@ class ChatConsumer(WebsocketConsumer):
     def receive(self, text_data):
         text_data_json = json.loads(text_data)
 
-        message = text_data_json['message']
+        message = strip_tags(text_data_json['message'])
 
         if message is not None:
             if message != '':
