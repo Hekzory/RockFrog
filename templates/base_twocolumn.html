@@ -21,10 +21,9 @@
 		  {% block content2 %}{% endblock %}
         </div>
       </div>
-
-
-
     </div>
+
+    <div id="notifications"></div>
 
 
     <!-- Optional JavaScript -->
@@ -35,3 +34,27 @@
     <script src="/static/js/usual_notifications.js"></script>
   </body>
 </html>
+
+<style>
+  .notification {
+    width: 300px;
+    padding: 10px 20px;
+    height: 100px;
+    
+    border: 1px solid #999;
+    border-radius: 10px;
+    background-color: #F6F6F6;
+
+    opacity: 0;
+
+    transition-property: transform;
+    transition-duration: 0.2s;
+  }
+
+  #notifications {
+    position: absolute;
+    left: 15px;
+    bottom: 15px;
+    text-align: center;
+  }
+</style>

@@ -9,16 +9,23 @@ notificationSocket.onmessage = function(e) {
     var notification_block = document.createElement("div"),
     	notifications_block = document.getElementById("notifications"),
     	notification_title = document.createElement("h6"),
-    	notification_title_text = document.createTextNode("Новое сообщение"),
+    	notification_title_text = document.createTextNode("Новое сообщение в чате"),
     	notification_hr = document.createElement("hr"),
-    	notification_content = document.createElement("div"),
-    	notification_content_text = document.createTextNode("В чате написали: " + message);
+    	notification_content = document.createElement("p");
+
+    if(message.length > 50) {    	
+    	notification_content_text = document.createTextNode(message.slice(0, 51) + "...");
+    }
+    else {
+    	notification_content_text = document.createTextNode(message);
+    }
 
     notification_block.setAttribute('class', 'notification');
 
     notification_title.appendChild(notification_title_text);
     notification_block.appendChild(notification_title);
 
+    notification_hr.style.margin = "2px 0px";
     notification_block.appendChild(notification_hr);
 
     notification_content.appendChild(notification_content_text);
@@ -26,30 +33,21 @@ notificationSocket.onmessage = function(e) {
 
     notifications_block.appendChild(notification_block);
 
-	let start = Date.now();
+    draw_notification(0);
 
-	let timer = setInterval(function() {
-	  	let timePassed = Date.now() - start;
-
-	 	if (timePassed > 3500) {
-	    	clearInterval(timer);
-	   		return;
-	  	}
-
-	 	draw_notification(timePassed);
-	}, 1);
-
-	function draw_notification(timePassed) {
-		if (timePassed >= 3497) {
-			notifications_block.removeChild(notification_block);
+    function draw_notification(i) {
+    	if (i == 110) {
+			return;
 		}
-		if (timePassed >= 3250) {
-			notification_block.style.opacity = (3500 - timePassed) / 250;
+		else if (i > 60) {			
+			notification_block.style.opacity = (i - 60) / 50;
 		}
 		else {
-			notification_block.style.opacity = timePassed / 250;
-		}	  	
-	}
+			notification_block.style.marginTop =  (i - 50) * 2 + "px"; 
+		}	
+
+		setTimeout(draw_notification, 1, i + 1);
+    };
 
 	/*alert("New notification got - "+message);*/
 };
