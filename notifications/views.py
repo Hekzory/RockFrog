@@ -15,7 +15,7 @@ class NotificationsList(View):
             old_notifications = Notificationlist.objects.all().filter(user = request.user)[0].notifications.filter(not_checked = False)[::-1]
             all_notifications = new_notifications + old_notifications
 
-            paginator = Paginator(all_notifications, 4)
+            paginator = Paginator(all_notifications, 15)
 
             try:
                 notifications = paginator.page(page)

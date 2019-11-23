@@ -23,7 +23,7 @@
       </div>
     </div>
 
-    <div id="notifications"></div>
+    <div id="notifications"><a id="to_notifications" href = "/notifications"></a></div>
 
 
     <!-- Optional JavaScript -->
@@ -38,7 +38,7 @@
 <style>
   .notification {
     width: 300px;
-    padding: 10px 20px;
+    padding: 10px 20px 10px;
     height: 100px;
     
     border: 1px solid #999;
@@ -46,9 +46,15 @@
     background-color: #F6F6F6;
 
     opacity: 0;
+  }
+  
+  .notification_title {
+    cursor: pointer;
+    transition: 0.2s;
+  }
 
-    transition-property: transform;
-    transition-duration: 0.2s;
+  .notification_title:hover {
+    color: #007BFF;
   }
 
   #notifications {
@@ -56,5 +62,25 @@
     left: 15px;
     bottom: 15px;
     text-align: center;
+  }
+
+  .notification_close {
+    margin-top: -7px;
+    margin-bottom: -27px;
+    margin-left: 235px;
+    width: 34px;
+    right: 10px;
+    font-size: 23px;
+    padding: 0px 9px 5px;
+    border-radius: 100px;    
+
+    transition: 0.2s;
+    cursor: pointer;
+
+    background: url(data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.or…3c.2.2.4.3.7.3s.5-.1.7-.3c.4-.4.4-1%200-1.4l-3.3-3.3z%22%2F%3E%3C%2Fsvg%3E) 50% no-repeat;
+  }
+
+  .notification_close:hover {
+    background-color: #C9C9C9;
   }
 </style>

@@ -3,53 +3,142 @@ var notificationSocket = new WebSocket(
     '/ws/notifications/');
 
 notificationSocket.onmessage = function(e) {
-    var data = JSON.parse(e.data);
-    var message = data['message'];
+    var data = JSON.parse(e.data),
+    	message = data['message'],
+    	notifications_block = document.getElementById("notifications");
 
-    var notification_block = document.createElement("div"),
-    	notifications_block = document.getElementById("notifications"),
-    	notification_title = document.createElement("h6"),
-    	notification_title_text = document.createTextNode("Новое сообщение в чате"),
-    	notification_hr = document.createElement("hr"),
-    	notification_content = document.createElement("p");
+    if (notifications_block.childElementCount > 4) {
+    	var notification_block = document.getElementById("more_notifications_text");
 
-    if(message.length > 50) {    	
-    	notification_content_text = document.createTextNode(message.slice(0, 51) + "...");
+    	count = notification_block.innerHTML.split(' ').slice(1, 2);
+
+    	if (count == "одно") {
+    		notification_block.innerHTML = "<h6>Еще 2 уведомления</h6>"
+    	}
+    	else {
+    		count = +count + 1 
+    		if (count % 100 > 20) {
+    			if (count % 10 >= 5 || count % 10 == 0) {
+    				notification_block.innerHTML = "Еще " + count + " уведомлений";   
+    			} 		
+    			else if (count % 10 >= 2) {
+    				notification_block.innerHTML = "<h6>Еще " + count + " уведомления";
+    			} else if (count % 10 == 1) {
+    				notification_block.innerHTML = "<h6>Еще " + count + " уведомление";
+    			}	
+    		}
+			else if (count % 100 >= 5 || count % 10 == 0) {
+    			notification_block.innerHTML = "Еще " + count + " уведомлений";
+    		} else if (count % 10 >= 2) {
+    			notification_block.innerHTML = "Еще " + count + " уведомления";
+    		} else if (count % 10 == 1) {
+    			notification_block.innerHTML = "Еще " + count + " уведомление";
+    		}	
+    	}
+    }
+    else if (notifications_block.childElementCount == 4 & !document.getElementById("more_notifications_text")) {
+    	var notification_block = document.createElement("div"),
+    		notification_close = document.createElement("h6"),
+	    	notification_close_text = document.createTextNode("×"),
+    		notification_title = document.createElement("h6"),
+	    	notification_title_text = document.createTextNode("Еще одно уведомление");
+
+	    now = new Date()
+
+	    notification_block.setAttribute('class', 'notification');
+	    notification_block.setAttribute('id', now);
+	    notification_block.style.height = "40px";
+
+	    notification_close.setAttribute('class', 'notification_close');
+	    notification_close.setAttribute('onclick', "delete_notification(0, 45, '" + now + "')");
+	    notification_close.appendChild(notification_close_text);
+	    notification_block.appendChild(notification_close);
+
+	    notification_title.setAttribute('onclick', "to_notifications.click()");
+	    notification_title.setAttribute('id', 'more_notifications_text');
+	    notification_title.setAttribute('class', 'notification_title');
+	    notification_title.appendChild(notification_title_text);
+	    notification_block.appendChild(notification_title);
+
+	    notifications_block.appendChild(notification_block);
+
+	    draw_notification(0, 40);
     }
     else {
-    	notification_content_text = document.createTextNode(message);
-    }
+    	var notification_block = document.createElement("div"),
+	    	notification_title = document.createElement("h6"),
+	    	notification_title_text = document.createTextNode("Новое сообщение в чате"),
+	    	notification_close = document.createElement("h6"),
+	    	notification_close_text = document.createTextNode("×"),
+	    	notification_hr = document.createElement("hr"),
+	    	notification_content = document.createElement("p");
 
-    notification_block.setAttribute('class', 'notification');
+	    if(message.length > 50) {    	
+	    	notification_content_text = document.createTextNode(message.slice(0, 51) + "...");
+	    }
+	    else {
+	    	notification_content_text = document.createTextNode(message);
+	    }
 
-    notification_title.appendChild(notification_title_text);
-    notification_block.appendChild(notification_title);
+	    now = new Date()
 
-    notification_hr.style.margin = "2px 0px";
-    notification_block.appendChild(notification_hr);
+	    notification_block.setAttribute('class', 'notification');
+	    notification_block.setAttribute('id', now);	    
 
-    notification_content.appendChild(notification_content_text);
-    notification_block.appendChild(notification_content);
+	    notification_close.setAttribute('class', 'notification_close');
+	    notification_close.setAttribute('onclick', "delete_notification(0, 100, '" + now + "')");
+	    notification_close.appendChild(notification_close_text);
+	    notification_block.appendChild(notification_close);
 
-    notifications_block.appendChild(notification_block);
+	    notification_title.setAttribute('onclick', "to_notifications.click()");
+	    notification_title.setAttribute('class', 'notification_title');
+	    notification_title.appendChild(notification_title_text);
+	    notification_block.appendChild(notification_title);
 
-    draw_notification(0);
+	    notification_hr.style.margin = "2px 0px";
+	    notification_block.appendChild(notification_hr);
 
-    function draw_notification(i) {
-    	if (i == 110) {
+	    notification_content.appendChild(notification_content_text);
+	    notification_block.appendChild(notification_content);
+
+	    notifications_block.appendChild(notification_block);
+
+	    draw_notification(0, 100);
+	}
+
+	function draw_notification(i, height) {
+    	if (i >= height / 2 + 10 + 50) {
 			return;
 		}
-		else if (i > 60) {			
-			notification_block.style.opacity = (i - 60) / 50;
+		else if (i > height / 2 + 10) {			
+			notification_block.style.opacity = (i - height / 2 + 10) / 50;
 		}
 		else {
-			notification_block.style.marginTop =  (i - 50) * 2 + "px"; 
+			notification_block.style.marginTop =  i * 2 - height + "px"; 
 		}	
 
-		setTimeout(draw_notification, 1, i + 1);
+		setTimeout(draw_notification, 1, i + 1, height);
     };
 
 	/*alert("New notification got - "+message);*/
+};
+
+function delete_notification(i, height, id) {
+	deleted_notification = document.getElementById(id);
+
+	if (i >= height / 2 + 10 + 50) {	
+		notifications_block = document.getElementById("notifications");	
+		notifications_block.removeChild(deleted_notification);
+		return;
+	}
+	else if (i > 50) {		
+		deleted_notification.style.marginTop =  (60 - i) * 2 + "px"; 			
+	}
+	else {
+		deleted_notification.style.opacity = (50 - i) / 50;
+	}	
+
+	setTimeout(delete_notification, 1, i + 1, height, id);
 };
 
 notificationSocket.onclose = function(e) {
