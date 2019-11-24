@@ -23,6 +23,11 @@
       </div>
     </div>
 
+    <div class="notifications_wraper">
+      <div id="notifications"></div>
+      <div id="hidden_notifications_block"></div>
+    </div>
+
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
@@ -32,3 +37,52 @@
     <script src="/static/js/usual_notifications.js"></script>
   </body>
 </html>
+
+<style>
+  .notification {
+    width: 300px;
+    padding: 10px 20px 10px;
+    height: 100px;
+    
+    border: 1px solid #999;
+    border-radius: 10px;
+    background-color: #F6F6F6;
+
+    opacity: 0;
+  }
+  
+  .notification_title {
+    color: #333;
+    transition: 0.2s;
+  }
+
+  .notification_title:hover { 
+    text-decoration: none;
+    color: #007BFF;
+  }
+
+  .notifications_wraper {
+    position: fixed;
+    left: 15px;
+    bottom: 15px;
+    text-align: center;
+  }
+
+  .notification_close {
+    margin-top: -7px;
+    margin-bottom: -27px;
+    margin-left: 235px;
+    width: 34px;
+    right: 10px;
+    font-size: 23px;
+    padding: 0px 9px 5px;
+    border-radius: 100px;    
+
+    transition: 0.2s;
+    cursor: pointer;
+  }
+
+  .notification_close:hover {
+    background-color: #C9C9C9;
+  }
+</style>
