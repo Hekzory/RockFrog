@@ -63,7 +63,7 @@
 {% block content %}
 <div class="container">
     <div id="chat-body" class="panel panel-default">
-        <div id="msg-list-div" class="panel-body" style="overflow-y: scroll; max-height: 300px !important;">
+        <div id="msg-list-div" class="panel-body" style="overflow-y: scroll; max-height: 650px !important;">
             <ul id="msg-list" class="list-group">
                 {% for obj in chat %}
                     <li class="text-left list-group-item">{{ obj.user.username }}: {{ obj.message }}</li>

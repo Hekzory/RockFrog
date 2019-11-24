@@ -23,7 +23,10 @@
       </div>
     </div>
 
-    <div id="notifications"><a id="to_notifications" href = "/notifications"></a></div>
+    <div class="notifications_wraper">
+      <div id="notifications"></div>
+      <div id="hidden_notifications_block"></div>
+    </div>
 
 
     <!-- Optional JavaScript -->
@@ -49,16 +52,17 @@
   }
   
   .notification_title {
-    cursor: pointer;
+    color: #333;
     transition: 0.2s;
   }
 
-  .notification_title:hover {
+  .notification_title:hover { 
+    text-decoration: none;
     color: #007BFF;
   }
 
-  #notifications {
-    position: absolute;
+  .notifications_wraper {
+    position: fixed;
     left: 15px;
     bottom: 15px;
     text-align: center;
@@ -76,8 +80,6 @@
 
     transition: 0.2s;
     cursor: pointer;
-
-    background: url(data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.or…3c.2.2.4.3.7.3s.5-.1.7-.3c.4-.4.4-1%200-1.4l-3.3-3.3z%22%2F%3E%3C%2Fsvg%3E) 50% no-repeat;
   }
 
   .notification_close:hover {

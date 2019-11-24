@@ -4,11 +4,46 @@ var notificationSocket = new WebSocket(
 
 notificationSocket.onmessage = function(e) {
     var data = JSON.parse(e.data),
-    	message = data['message'],
-    	notifications_block = document.getElementById("notifications");
+    	message = data['message'];
 
-    if (notifications_block.childElementCount > 4) {
-    	var notification_block = document.getElementById("more_notifications_text");
+    send_notification('Новое сообщение в чате', message, '/chat');
+};
+
+function send_notification(title, text, href) {
+	var notifications_block = document.getElementById("notifications");    
+
+    if (notifications_block.childElementCount == 3 & !document.getElementById("more_notifications_text")) {
+    	var notification_block = document.createElement("div"),
+    		notification_close = document.createElement("h6"),
+	    	notification_close_text = document.createTextNode("×"),
+    		notification_title = document.createElement("a"),
+    		notification_title_2 = document.createElement("h6"),
+	    	notification_title_text = document.createTextNode("Еще одно уведомление"),
+	    	hidden_notifications_block = document.getElementById("hidden_notifications_block");
+
+	    notification_block.setAttribute('class', 'notification');
+	    notification_block.setAttribute('id', "hidden_notifications");
+	    notification_block.style.height = "40px";
+
+	    notification_close.setAttribute('class', 'notification_close');
+	    notification_close.setAttribute('onclick', "delete_notification(0, 45, 'hidden_notifications')");
+	    notification_close.append(notification_close_text);
+	    notification_block.append(notification_close);
+
+	    notification_title_2.setAttribute('id', 'more_notifications_text');
+	    notification_title.setAttribute('class', 'notification_title');
+	    notification_title.setAttribute('href', '/notifications');
+	    notification_title_2.append(notification_title_text);
+	    notification_title.append(notification_title_2);
+	    notification_block.append(notification_title);
+
+	    hidden_notifications_block.append(notification_block);
+
+	    draw_notification(0, 40, notification_block);
+    }
+    else if (notifications_block.childElementCount == 3) {
+    	var notification_block = document.getElementById("more_notifications_text"),
+	    	hidden_notifications_block = document.getElementById("hidden_notifications_block");
 
     	count = notification_block.innerHTML.split(' ').slice(1, 2);
 
@@ -36,48 +71,21 @@ notificationSocket.onmessage = function(e) {
     		}	
     	}
     }
-    else if (notifications_block.childElementCount == 4 & !document.getElementById("more_notifications_text")) {
-    	var notification_block = document.createElement("div"),
-    		notification_close = document.createElement("h6"),
-	    	notification_close_text = document.createTextNode("×"),
-    		notification_title = document.createElement("h6"),
-	    	notification_title_text = document.createTextNode("Еще одно уведомление");
-
-	    now = new Date()
-
-	    notification_block.setAttribute('class', 'notification');
-	    notification_block.setAttribute('id', now);
-	    notification_block.style.height = "40px";
-
-	    notification_close.setAttribute('class', 'notification_close');
-	    notification_close.setAttribute('onclick', "delete_notification(0, 45, '" + now + "')");
-	    notification_close.appendChild(notification_close_text);
-	    notification_block.appendChild(notification_close);
-
-	    notification_title.setAttribute('onclick', "to_notifications.click()");
-	    notification_title.setAttribute('id', 'more_notifications_text');
-	    notification_title.setAttribute('class', 'notification_title');
-	    notification_title.appendChild(notification_title_text);
-	    notification_block.appendChild(notification_title);
-
-	    notifications_block.appendChild(notification_block);
-
-	    draw_notification(0, 40);
-    }
     else {
     	var notification_block = document.createElement("div"),
-	    	notification_title = document.createElement("h6"),
-	    	notification_title_text = document.createTextNode("Новое сообщение в чате"),
+	    	notification_title = document.createElement("a"),
+	    	notification_title_2 = document.createElement("h6"),
+	    	notification_title_text = document.createTextNode(title),
 	    	notification_close = document.createElement("h6"),
 	    	notification_close_text = document.createTextNode("×"),
 	    	notification_hr = document.createElement("hr"),
 	    	notification_content = document.createElement("p");
 
-	    if(message.length > 50) {    	
-	    	notification_content_text = document.createTextNode(message.slice(0, 51) + "...");
+	    if(text.length > 50) {    	
+	    	notification_content_text = document.createTextNode(text.slice(0, 51) + "...");
 	    }
 	    else {
-	    	notification_content_text = document.createTextNode(message);
+	    	notification_content_text = document.createTextNode(text);
 	    }
 
 	    now = new Date()
@@ -87,48 +95,46 @@ notificationSocket.onmessage = function(e) {
 
 	    notification_close.setAttribute('class', 'notification_close');
 	    notification_close.setAttribute('onclick', "delete_notification(0, 100, '" + now + "')");
-	    notification_close.appendChild(notification_close_text);
-	    notification_block.appendChild(notification_close);
+	    notification_close.append(notification_close_text);
+	    notification_block.append(notification_close);
 
-	    notification_title.setAttribute('onclick', "to_notifications.click()");
 	    notification_title.setAttribute('class', 'notification_title');
-	    notification_title.appendChild(notification_title_text);
-	    notification_block.appendChild(notification_title);
+	    notification_title.setAttribute('href', '/chat');
+	    notification_title_2.append(notification_title_text);
+	    notification_title.append(notification_title_2);
+	    notification_block.append(notification_title);
 
 	    notification_hr.style.margin = "2px 0px";
-	    notification_block.appendChild(notification_hr);
+	    notification_block.append(notification_hr);
 
-	    notification_content.appendChild(notification_content_text);
-	    notification_block.appendChild(notification_content);
+	    notification_content.append(notification_content_text);
+	    notification_block.append(notification_content);
 
-	    notifications_block.appendChild(notification_block);
+	    notifications_block.append(notification_block);
 
-	    draw_notification(0, 100);
+	    draw_notification(0, 100, notification_block);
 	}
+};
 
-	function draw_notification(i, height) {
-    	if (i >= height / 2 + 10 + 50) {
-			return;
-		}
-		else if (i > height / 2 + 10) {			
-			notification_block.style.opacity = (i - height / 2 + 10) / 50;
-		}
-		else {
-			notification_block.style.marginTop =  i * 2 - height + "px"; 
-		}	
+function draw_notification(i, height, element) {
+	if (i >= height / 2 + 10 + 50) {
+		return;
+	}
+	else if (i > height / 2 + 10) {			
+		element.style.opacity = (i - height / 2 + 10) / 50;
+	}
+	else {
+		element.style.marginTop =  i * 2 - height + "px"; 
+	}	
 
-		setTimeout(draw_notification, 1, i + 1, height);
-    };
-
-	/*alert("New notification got - "+message);*/
+	setTimeout(draw_notification, 1, i + 1, height, element);
 };
 
 function delete_notification(i, height, id) {
 	deleted_notification = document.getElementById(id);
 
 	if (i >= height / 2 + 10 + 50) {	
-		notifications_block = document.getElementById("notifications");	
-		notifications_block.removeChild(deleted_notification);
+		deleted_notification.remove();
 		return;
 	}
 	else if (i > 50) {		
