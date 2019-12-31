@@ -36,6 +36,7 @@ ALLOWED_HOSTS = [
 # Application definition
 
 INSTALLED_APPS = [
+    'personal_messages',
 	'channels',
 	'chat',
 	'UserProfile',
