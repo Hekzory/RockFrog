@@ -61,11 +61,19 @@
 
 
 {% block content %}
-
-Пока что здесь ничего нет.
-
-Тестовая страница переписки:
-
-<a href="/conversations/user/1">Клик</a>
+<div class="list-group">
+{% for conversation in conversations %}
+  <a href="/conversations/user/{{conversation.0.id}}" class="list-group-item list-group-item-action flex-column align-items-start">
+    <div class="d-flex w-100 justify-content-between">
+      <h5 class="mb-1">Переписка с {{conversation.0.username}}</h5>
+      <small>{{conversation.1.get_last_message_date_time}}</small>
+    </div>
+    <p class="mb-1">{{conversation.1.get_last_message}}</p>
+  </a>
+{% endfor %}
+  {% if conversations|length == 0 %}
+  Переписки отсутствуют.
+  {% endif %}
+</div>
 
 {% endblock %}

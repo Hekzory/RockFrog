@@ -13,6 +13,27 @@ class Conversation(models.Model):
     user2 = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user2')
     messages = models.ManyToManyField(ConversationMessage)
 
+    def __str__(self):
+        return "Conversation between "+str(self.user1)+" and "+str(self.user2)
+
+    def get_last_message(self):
+        if len(self.messages.all()) != 0:
+            return self.messages.all().latest('date_time').text
+        else:
+            return "Сообщения отсутствуют"
+
+    def get_last_message_date_time(self):
+        if len(self.messages.all()) != 0:
+            return self.messages.all().latest('date_time').date_time
+        else:
+            return ""
+
+    def get_messages_sorted_by_date(self):
+        if len(self.messages.all()) != 0:
+            return self.messages.all().order_by('date_time')
+        else:
+            return []
+
 class ConversationList(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     conversations = models.ManyToManyField(Conversation)

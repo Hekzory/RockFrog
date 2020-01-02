@@ -56,12 +56,25 @@
 </nav>
 {% endblock %}
 
-{% block title %} Переписка с {{user}} {% endblock %}
-{% block title_h1 %} Переписка с {{user}} {% endblock %}
+{% block title %} Переписка с {{user_messaging_with}} {% endblock %}
+{% block title_h1 %} Переписка с {{user_messaging_with}} {% endblock %}
 
 
 {% block content %}
 
-Пока что здесь ничего.
+<div class="list-group list-group-flush">
+{% for message in messages %}
+  <a href="/conversations/user/{{conversation.0.id}}" class="list-group-item list-group-item-action flex-column align-items-start">
+    <div class="d-flex w-100 justify-content-between">
+      <h5 class="mb-1">{{message.user.username}}</h5>
+      <small>{{message.date_time}}</small>
+    </div>
+    <p class="mb-1">{{message.text}}</p>
+  </a>
+{% endfor %}
+  {% if messages|length == 0 %}
+  Сообщения отсутствуют.
+  {% endif %}
+</div>
 
 {% endblock %}
