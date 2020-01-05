@@ -1,80 +1,51 @@
 {% extends "base_general.html" %}
 {% load staticfiles %}
 
-{% block header %}
-<nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top" >
-  <div class="container">
-    <a class="navbar-brand">UndefinedCMS</a>
-    <button class="navbar-toggler" data-target="#my-nav" data-toggle="collapse">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div id="my-nav" class="collapse navbar-collapse justify-content-start">
-      <ul class="navbar-nav">
-        <li class="nav-item">
-          <a class="nav-link" href="/">Главная</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/news/">Новости</a>
-        </li>
-        <li class="nav-item active">
-          <a class="nav-link" href="/chat/">Чат</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/notifications/">Уведомления</a>
-        </li>
-      </ul>
-    </div>
-    <div id="my-nav" class="collapse navbar-collapse justify-content-end">
-      <ul class="navbar-nav">
-        <li class="nav-item">
-          {% if request.user.is_authenticated %}
-          <a class="nav-link" href="/profile">Ваш профиль</a>
-          {% else %}
-          <a class="nav-link" href="/auth/login">Авторизация</a>
-          {% endif %}
-        </li>
-        {% if not request.user.is_authenticated %}
-        <li class="nav-item">
-          <a class="nav-link" href="/auth/register">Регистрация</a>
-        </li>
-        {% endif %}
-        {% if request.user.is_authenticated %}
-          {% if request.user.username == 'admin' %}
-            <li class="nav-item">
-              <a class="nav-link" href="/admin">Админ-панель</a>
-            </li>
-          {% endif %}
-        {% endif %}
-        {% if request.user.is_authenticated %}
-          <li class="nav-item">
-            <a class="nav-link" href="/auth/logout">Выйти</a>
-          </li>
-        {% endif %}
-      </ul>
+{% block title %} Переписка с {{user_messaging_with}} {% endblock %}
+{% block title_header %}
+<div class="d-flex justify-content-between align-items-center">
+  <div class="d-inline-block">
+   <div class="p-2">
+      <a href="/conversations">
+        <button class="btn btn-primary">Назад</button>
+      </a>
     </div>
   </div>
-</nav>
+  <div class="p-2">
+    <h3>Переписка с {{user_messaging_with}}</h3>
+  </div>
+  <div class="p-2">
+    Был в сети <>
+  </div>
+</div>
 {% endblock %}
-
-{% block title %} Переписка с {{user_messaging_with}} {% endblock %}
-{% block title_h1 %} Переписка с {{user_messaging_with}} {% endblock %}
 
 
 {% block content %}
-
-<div class="list-group list-group-flush">
+<div class="container">
+  <div id="msg-list-div" class="overflow-auto" style="max-height: 60vh !important;">
+<div id="msg-list" class="list-group list-group-flush">
 {% for message in messages %}
-  <a href="/conversations/user/{{conversation.0.id}}" class="list-group-item list-group-item-action flex-column align-items-start">
+  <div class="list-group-item list-group-item-action flex-column align-items-start">
     <div class="d-flex w-100 justify-content-between">
       <h5 class="mb-1">{{message.user.username}}</h5>
       <small>{{message.date_time}}</small>
     </div>
     <p class="mb-1">{{message.text}}</p>
-  </a>
+  </div>
 {% endfor %}
-  {% if messages|length == 0 %}
+    {% if messages|length == 0 %}
   Сообщения отсутствуют.
   {% endif %}
 </div>
-
+  </div>
+</div>
+<div class="form-inline affix-bottom mt-1 h-20">
+  <div id="chat-bottom" class="form-group mx-3 mb-2">
+    {{ send_pm_form }}
+  </div>
+  <input id="user_messaging" value="{{user_messaging_with.id}}" hidden>
+  <button type="submit" class="btn btn-primary mb-2" id="send">Отправить</button>
+</div>
+<script src="{% static 'js/PM_websocket.js' %}"></script>
 {% endblock %}

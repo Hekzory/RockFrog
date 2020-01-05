@@ -7,7 +7,8 @@ class ConversationMessage(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     text = models.TextField()
     date_time = models.DateTimeField()
-
+    def __str__(self):
+        return self.text[:32]
 class Conversation(models.Model):
     user1 = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user1')
     user2 = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user2')
@@ -39,12 +40,28 @@ class ConversationList(models.Model):
     conversations = models.ManyToManyField(Conversation)
 
 @receiver(post_save, sender=User)
-def create_user_ConversationList(sender, instance, created, **kwargs):
+def create_user_ConversationList(sender, instance, created=None, **kwargs):
     if created:
         ConversationList.objects.create(user=instance)
+    else:
+        instance.conversationlist.save()
 
-@receiver(post_save, sender=User)
-def save_user_ConversationList(sender, instance, **kwargs):
-    instance.ConversationList.save()
+def get_conversation_id_and_create_if_not(user_starter, user_target):
+    current_conversation = None
+    for conversation in user_starter.conversationlist.conversations.all():
+        if conversation.user1.id == user_target.id or conversation.user2.id == user_target.id:
+            current_conversation = conversation
+    if current_conversation is None:
+        new_conversation = Conversation(user1=user_starter, user2=user_target)
+        new_conversation.save()
+        user_starter.conversationlist.conversations.add(new_conversation)
+        user_target.conversationlist.conversations.add(new_conversation)
+        current_conversation = new_conversation
+    return current_conversation.pk
+
+
+#@receiver(post_save, sender=User)
+#def save_user_ConversationList(sender, instance, **kwargs):
+#    instance.ConversationList.save()
 
 # Create your models here.

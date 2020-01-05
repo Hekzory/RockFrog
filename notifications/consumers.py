@@ -29,7 +29,11 @@ class NotificationConsumer(WebsocketConsumer):
 
     def notification(self, event):
         message = event['message']
+        header = event['header']
+        href = event['href']
         print("Got interesting message: "+message)
         self.send(text_data=json.dumps({
             'message': message,
+            'href': href,
+            'header': header
         }))

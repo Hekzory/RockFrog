@@ -37,16 +37,28 @@ def save_user_NotificationList(sender, instance, **kwargs):
     instance.notificationlist.save()
 
 @receiver(post_save, sender=Chat)
-def create_Notification(sender, instance, created, **kwargs):
+def create_Notification_onchat(sender, instance, created, **kwargs):
     if created:
         notification_text = strip_tags(str(instance.message))
-        notification_name = strip_tags(str(instance.user.username)+': новое сообщение')
-        notification = Notification.objects.create(not_text = notification_text, not_name = notification_name, not_link = '/')
+        notification_name = strip_tags(str(instance.user.username)+': новое сообщение в чате')
+        notification_href = '/chat'
+        notification = Notification.objects.create(not_text = notification_text, not_name = notification_name, not_link = notification_href)
         notification.save()
-        print(notification.not_name, notification.not_text)
         notificationlist = Notificationlist.objects.get(user = User.objects.get(id = instance.user.id)).notifications
         notificationlist.add(notification)
 
         channel_layer = get_channel_layer()
-        print("Trying to send message for "+"notifications_"+User.objects.get(id = instance.user.id).username)
-        async_to_sync(channel_layer.group_send)("notifications_"+User.objects.get(id = instance.user.id).username, {"type": "notification", "message": notification_text, "header": notification_name})
+        async_to_sync(channel_layer.group_send)("notifications_"+User.objects.get(id = instance.user.id).username, {"type": "notification", "message": notification_text, "header": notification_name, "href": notification_href})
+
+def create_notification_on_pm(from_user, to_user):
+    notification_text = "Вам пришло новое сообщение от "+from_user.username
+    notification_name = "Новое сообщение"
+    notification_href = '/conversations'
+    notification = Notification.objects.create(not_text = notification_text, not_name = notification_name, not_link = notification_href)
+    notification.save()
+    notificationlist = Notificationlist.objects.get(user=User.objects.get(id=to_user.id)).notifications
+    notificationlist.add(notification)
+    channel_layer = get_channel_layer()
+    async_to_sync(channel_layer.group_send)("notifications_" + User.objects.get(id=to_user.id).username,
+                                            {"type": "notification", "message": notification_text,
+                                             "header": notification_name, "href": notification_href})

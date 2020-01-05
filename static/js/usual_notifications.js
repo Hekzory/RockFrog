@@ -5,8 +5,10 @@ var notificationSocket = new WebSocket(
 notificationSocket.onmessage = function(e) {
     var data = JSON.parse(e.data),
     	message = data['message'];
+    var href = data['href'];
+    var header = data['header'];
 
-    send_notification('Новое сообщение в чате', message, '/chat');
+    send_notification(header, message, href);
 };
 
 function send_notification(title, text, href) {
@@ -99,7 +101,7 @@ function send_notification(title, text, href) {
 	    notification_block.append(notification_close);
 
 	    notification_title.setAttribute('class', 'notification_title');
-	    notification_title.setAttribute('href', '/chat');
+	    notification_title.setAttribute('href', href);
 	    notification_title_2.append(notification_title_text);
 	    notification_title.append(notification_title_2);
 	    notification_block.append(notification_title);
