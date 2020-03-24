@@ -1,17 +1,15 @@
-# chat/consumers.py
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
 import json
 from .models import Chat
 from django.utils.html import strip_tags
 
+
 class ChatConsumer(WebsocketConsumer):
     def connect(self):
         self.room_group_name = "chat"
-
         self.user = self.scope["user"]
         self.username = self.user.username
-        print(self.user.username+" connected")
 
         async_to_sync(self.channel_layer.group_add)(
             self.room_group_name,
@@ -28,22 +26,18 @@ class ChatConsumer(WebsocketConsumer):
 
     def receive(self, text_data):
         text_data_json = json.loads(text_data)
-
         message = strip_tags(text_data_json['message'])
-
-        if message is not None:
-            if message != '':
-                chat_message = Chat(user=self.user, message=message)
-                chat_message.save()
-
-        async_to_sync(self.channel_layer.group_send)(
-            self.room_group_name,
-            {
-                'type': 'chat_message',
-                'message': message,
-                'username': self.username
-            }
-        )
+        if message is not None and message != '':
+            chat_message = Chat(user=self.user, message=message)
+            chat_message.save()
+            async_to_sync(self.channel_layer.group_send)(
+                self.room_group_name,
+                {
+                    'type': 'chat_message',
+                    'message': message,
+                    'username': self.username
+                }
+            )
 
     def chat_message(self, event):
         message = event['message']

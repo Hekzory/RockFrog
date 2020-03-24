@@ -1,8 +1,6 @@
 from django.http import HttpResponse
 from django.http import JsonResponse
 from django.shortcuts import render
-
-# Create your views here.
 from chat.models import Chat
 from notifications.models import Notificationlist, Notification
 
