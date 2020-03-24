@@ -1,5 +1,5 @@
 {% extends "base_general.html" %}
-{% load staticfiles %}
+{% load static %}
 
 {% block title %} Переписка с {{user_messaging_with}} {% endblock %}
 {% block title_header %}
@@ -42,7 +42,7 @@
 </div>
 <div class="form-inline affix-bottom mt-1 h-20">
   <div id="chat-bottom" class="form-group mx-3 mb-2">
-    {{ send_pm_form }}
+    <input type="text" name="text" class="form-control" required="" id="id_text">
   </div>
   <input id="user_messaging" value="{{user_messaging_with.id}}" hidden>
   <button type="submit" class="btn btn-primary mb-2" id="send">Отправить</button>

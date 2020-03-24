@@ -2,17 +2,27 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.dispatch import receiver
 from django.db.models.signals import post_save
+import datetime
+
 
 class ConversationMessage(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     text = models.TextField()
     date_time = models.DateTimeField()
+
     def __str__(self):
         return self.text[:32]
+
+
 class Conversation(models.Model):
     user1 = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user1')
     user2 = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user2')
     messages = models.ManyToManyField(ConversationMessage)
+    last_interaction = models.TimeField(default=datetime.datetime.now)
+
+    def update_interaction(self):
+        self.last_interaction = datetime.datetime.now()
+        self.save()
 
     def __str__(self):
         return "Conversation between "+str(self.user1)+" and "+str(self.user2)
@@ -35,9 +45,11 @@ class Conversation(models.Model):
         else:
             return []
 
+
 class ConversationList(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     conversations = models.ManyToManyField(Conversation)
+
 
 @receiver(post_save, sender=User)
 def create_user_ConversationList(sender, instance, created=None, **kwargs):
@@ -46,7 +58,8 @@ def create_user_ConversationList(sender, instance, created=None, **kwargs):
     else:
         instance.conversationlist.save()
 
-def get_conversation_id_and_create_if_not(user_starter, user_target):
+
+def get_conversation_and_create_if_not(user_starter, user_target):
     current_conversation = None
     for conversation in user_starter.conversationlist.conversations.all():
         if conversation.user1.id == user_target.id or conversation.user2.id == user_target.id:
@@ -56,12 +69,9 @@ def get_conversation_id_and_create_if_not(user_starter, user_target):
         new_conversation.save()
         user_starter.conversationlist.conversations.add(new_conversation)
         user_target.conversationlist.conversations.add(new_conversation)
+        user_starter.conversationlist.save()
+        user_target.conversationlist.save()
         current_conversation = new_conversation
-    return current_conversation.pk
-
-
-#@receiver(post_save, sender=User)
-#def save_user_ConversationList(sender, instance, **kwargs):
-#    instance.ConversationList.save()
+    return current_conversation
 
 # Create your models here.
