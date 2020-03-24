@@ -6,20 +6,14 @@ from django.views.generic import View
 from .forms import *
 from django.contrib.auth import login
 
-# Create your views here.
-def index(request):
-    template = loader.get_template('authpages/login.html')
-    if request.user.is_authenticated:
-        return HttpResponseRedirect("/")
-    else:
-        context = {}
-        return HttpResponse(template.render(context, request))
-def logoutview(request):
+
+def logout_view(request):
     if request.user.is_authenticated:
         logout(request)
         return HttpResponseRedirect("/")
     else:
         return HttpResponseRedirect("/")
+
 
 class LoginView(View):
     def get(self, request):
@@ -30,6 +24,7 @@ class LoginView(View):
             form = LoginForm()
             context = {'form' : form}
             return HttpResponse(template.render(context, request))
+
     def post(self, request):
         if request.user.is_authenticated:
             return HttpResponseRedirect("/")
@@ -57,6 +52,7 @@ class RegisterView(View):
             form = RegistrationForm()
             context = {'form' : form}
             return HttpResponse(template.render(context, request))
+
     def post(self, request):
         if request.user.is_authenticated:
             return HttpResponseRedirect("/")

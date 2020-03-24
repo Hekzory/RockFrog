@@ -17,7 +17,7 @@ class LoginForm(forms.Form):
         temp_login = self.cleaned_data['login'].lower()
         temp_password = self.cleaned_data['password']
 
-        user = authenticate(username=self.cleaned_data['login'], password=self.cleaned_data['password'])
+        user = authenticate(username=temp_login, password=temp_password)
 
         if user is None:
             raise ValidationError("Комбинация логин+пароль не подходит.")
@@ -77,10 +77,8 @@ class RegistrationForm(forms.Form):
 
         if len(temp_login) < 3:
             raise ValidationError("Минимальная длина логина - 3.")
-
-        if len(temp_login) > 20:
+        elif len(temp_login) > 20:
             raise ValidationError("Максимальная длина логина - 20.")
-
 
         return temp_login
 
