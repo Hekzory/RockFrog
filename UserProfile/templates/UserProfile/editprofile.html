@@ -21,8 +21,10 @@
               <p class="card-text">
 
                 <form class="form-signin" action="{% url 'UserProfile:index' %}" method="post">
-                  {% csrf_token %}
-                  <div class="form-label-group">
+              {% csrf_token %}
+
+                <div class="form-row align-items-center">
+                  <div class="col-auto">
                     <label for="inputAbout">О себе</label>
                     {{ form.about }}
                     {% if form.about.errors %}
@@ -31,8 +33,10 @@
                       </div>
                     {% endif %}
                   </div>
+                </div>
 
-                  <div class="form-label-group">
+              <div class="form-row align-items-center">
+                  <div class="col-auto">
                     <label for="inputBirthDate">Дата рождения</label>
                     {{ form.birth_date }}
                     {% if form.birth_date.errors %}
@@ -41,8 +45,10 @@
                       </div>
                     {% endif %}
                   </div>
+              </div>
 
-                  <div class="form-label-group">
+              <div class="form-row align-items-center">
+                  <div class="col-auto">
                     <label for="inputEmail">Почта</label>
                     {{ form.email }}
                     {% if form.email.errors %}
@@ -51,8 +57,10 @@
                       </div>
                     {% endif %}
                   </div>
+                </div>
 
-                  <div class="form-label-group">
+               <div class="form-row align-items-center">
+                  <div class="col-auto">
                     <label for="inputCity">Город</label>
                     {{ form.city }}
                     {% if form.city.errors %}
@@ -61,8 +69,10 @@
                       </div>
                     {% endif %}
                   </div>
+                </div>
 
-                  <div class="form-label-group">
+              <div class="form-row align-items-center">
+                  <div class="col-auto">
                     <label for="inputPhone">Телефон</label>
                     {{ form.phone }}
                     {% if form.phone.errors %}
@@ -71,8 +81,10 @@
                       </div>
                     {% endif %}
                   </div>
+              </div>
 
-                  <div class="form-label-group">
+              <div class="form-row align-items-center">
+                  <div class="col-auto">
                     <label for="inputInterests">Интересы</label>
                     {{ form.interests }}
                     {% if form.interests.errors %}
@@ -81,6 +93,7 @@
                       </div>
                     {% endif %}
                   </div>
+              </div>
 
                   <hr>
                   <button class="btn btn-lg btn-primary btn-block text-uppercase" type="submit">Сохранить</button>
