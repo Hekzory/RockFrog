@@ -58,3 +58,14 @@ class ProfileView(View):
                 template = loader.get_template('UserProfile/yourprofile.html')
                 context = {'form' : bound_form}
                 return HttpResponse(template.render(context, request))
+
+
+class EditProfileView(View):
+    def get(self, request):
+        if not request.user.is_authenticated:
+            return HttpResponseRedirect('/')
+        else:
+            form = ProfileForm()
+            context = {'form' : form}
+            template = loader.get_template('UserProfile/editprofile.html')
+            return HttpResponse(template.render(context, request))

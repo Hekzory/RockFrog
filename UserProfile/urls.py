@@ -1,10 +1,11 @@
 from django.urls import path
 from . import views
-from .views import ProfileView
+from .views import *
 
 app_name = 'UserProfile'
 
 urlpatterns = [
     path('', ProfileView.as_view(), name='index'),
+    path('edit/', EditProfileView.as_view(), name='editprofile'),
     path('<str:username>/', views.userprofile, name='userprofile'),
 ]

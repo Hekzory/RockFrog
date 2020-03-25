@@ -61,78 +61,16 @@
 
                   </tbody>
                 </table>
-
-                <form class="form-signin" action="{% url 'UserProfile:index' %}" method="post">
-                  {% csrf_token %}
-                  <div class="form-label-group">
-                    <label for="inputAbout">О себе</label>
-                    {{ form.about }}
-                    {% if form.about.errors %}
-                      <div class="alert alert-danger my-3">
-                        {{ form.about.errors }}
-                      </div>
-                    {% endif %}
-                  </div>
-
-                  <div class="form-label-group">
-                    <label for="inputBirthDate">Дата рождения</label>
-                    {{ form.birth_date }}
-                    {% if form.birth_date.errors %}
-                      <div class="alert alert-danger my-3">
-                        {{ form.birth_date.errors }}
-                      </div>
-                    {% endif %}
-                  </div>
-
-                  <div class="form-label-group">
-                    <label for="inputEmail">Почта</label>
-                    {{ form.email }}
-                    {% if form.email.errors %}
-                      <div class="alert alert-danger my-3">
-                        {{ form.email.errors }}
-                      </div>
-                    {% endif %}
-                  </div>
-
-                  <div class="form-label-group">
-                    <label for="inputCity">Город</label>
-                    {{ form.city }}
-                    {% if form.city.errors %}
-                      <div class="alert alert-danger my-3">
-                        {{ form.city.errors }}
-                      </div>
-                    {% endif %}
-                  </div>
-
-                  <div class="form-label-group">
-                    <label for="inputPhone">Телефон</label>
-                    {{ form.phone }}
-                    {% if form.phone.errors %}
-                      <div class="alert alert-danger my-3">
-                        {{ form.phone.errors }}
-                      </div>
-                    {% endif %}
-                  </div>
-
-                  <div class="form-label-group">
-                    <label for="inputInterests">Интересы</label>
-                    {{ form.interests }}
-                    {% if form.interests.errors %}
-                      <div class="alert alert-danger my-3">
-                        {{ form.interests.errors }}
-                      </div>
-                    {% endif %}
-                  </div>
-
-                  <hr>
-                  <button class="btn btn-lg btn-primary btn-block text-uppercase" type="submit">Сохранить</button>
-                </form>
-
               </p>
             </div>
           </div>
         </div>
         <div class="col-lg-4">
+          <div class="py-5"></div>
+          <div class="list-group">
+            <a href="{% url 'UserProfile:index' %}" class="list-group-item list-group-item-action active">Просмотр</a>
+            <a href="{% url 'UserProfile:editprofile' %}" class="list-group-item list-group-item-action">Редактирование</a>
+          </div>
         </div>
       </div>
 
