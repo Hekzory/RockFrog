@@ -20,8 +20,22 @@
             <div class="card-body">
               <p class="card-text">
 
-                <form class="form-signin" action="{% url 'UserProfile:index' %}" method="post">
+                <form class="form-signin" action="{% url 'UserProfile:editprofile' %}" method="post" enctype='multipart/form-data'>
               {% csrf_token %}
+
+                <div class="form-row align-items-center">
+                    <div class="col-auto">
+                      <label for="inputAbout">Аватар</label>
+                      {{ form.avatar }}
+                      {% if form.avatar.errors %}
+                        <div class="alert alert-danger my-3">
+                          {{ form.avatar.errors }}
+                        </div>
+                      {% endif %}
+                    </div>
+                  </div>
+
+
 
                 <div class="form-row align-items-center">
                   <div class="col-auto">

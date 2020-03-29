@@ -2,6 +2,7 @@ from django import forms
 from .models import Profile
 from django.core.exceptions import ValidationError
 
+
 class ProfileForm(forms.Form):
     about = forms.CharField(max_length=500, widget=forms.TextInput(attrs={'class': 'form-control'}))
     birth_date = forms.DateField(widget=forms.SelectDateWidget(attrs={'class': 'form-control'}, years=list(range(1900, 2020))))
@@ -9,6 +10,8 @@ class ProfileForm(forms.Form):
     city = forms.CharField(max_length=30, widget=forms.TextInput(attrs={'class': 'form-control'}))
     phone = forms.CharField(max_length=30, widget=forms.TextInput(attrs={'class': 'form-control'}))
     interests = forms.CharField(max_length=500, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    avatar = forms.ImageField()
+
 
     def get_about(self):
         return self.cleaned_data['about']
@@ -28,9 +31,13 @@ class ProfileForm(forms.Form):
     def get_interests(self):
         return self.cleaned_data['interests']
 
+    def get_avatar(self):
+        return self.cleaned_data['avatar']
+
     #Написать clean-ы
 
-    def change_profile(self, user):
+    def change_profile(self, user, avatar):
+        print(avatar)
         profile = user.profile
         self.clean()
         profile.about = self.get_about()
@@ -39,4 +46,5 @@ class ProfileForm(forms.Form):
         profile.city = self.get_city()
         profile.phone = self.get_phone()
         profile.interests = self.get_interests()
+        profile.avatar = self.get_avatar()
         profile.save()
