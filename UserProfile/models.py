@@ -22,6 +22,11 @@ class Profile(models.Model):
         return self.user.username
 
 
+class PrivacySettings(models.Model):
+    allow_to_view_for_unreg = models.BooleanField(default=True)
+    profile = models.OneToOneField(Profile, on_delete=models.CASCADE)
+
+
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
@@ -31,3 +36,12 @@ def create_user_profile(sender, instance, created, **kwargs):
 @receiver(post_save, sender=User)
 def save_user_profile(sender, instance, **kwargs):
     instance.profile.save()
+
+
+@receiver(post_save, sender=Profile)
+def create_privacy_settings(sender, instance, created, **kwargs):
+    if created:
+        PrivacySettings.objects.create(profile=instance)
+
+
+
