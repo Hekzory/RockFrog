@@ -18,10 +18,20 @@ class Conversation(models.Model):
     user1 = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user1')
     user2 = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user2')
     messages = models.ManyToManyField(ConversationMessage)
-    last_interaction = models.TimeField(default=datetime.datetime.now)
+    last_interaction = models.DateTimeField(default=datetime.datetime.now)
+    last_view_user1 = models.DateTimeField(default=datetime.datetime.now)
+    last_view_user2 = models.DateTimeField(default=datetime.datetime.now)
 
     def update_interaction(self):
         self.last_interaction = datetime.datetime.now()
+        self.save()
+
+    def update_last_view_user1(self):
+        self.last_view_user1 = datetime.datetime.now()
+        self.save()
+
+    def update_last_view_user2(self):
+        self.last_view_user2 = datetime.datetime.now()
         self.save()
 
     def __str__(self):

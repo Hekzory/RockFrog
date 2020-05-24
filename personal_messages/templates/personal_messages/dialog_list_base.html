@@ -1,12 +1,3 @@
-{% extends "base_general.html" %}
-{% load static %}
-
-{% block title %} Сообщения {% endblock %}
-{% block title_h1 %} Сообщения {% endblock %}
-
-
-{% block content %}
-<div id="d-list" class="list-group">
 {% for conversation in conversations %}
   <a href="/conversations/user/{{conversation.0.id}}" class="list-group-item list-group-item-action flex-column align-items-start {% if conversation.2 > 0 %}bg-light{% endif %}">
     <div class="d-flex w-100 justify-content-between">
@@ -24,6 +15,3 @@
   {% if conversations|length == 0 %}
   Переписки отсутствуют.
   {% endif %}
-</div>
-<script src="{% static 'js/dialog_list_websocket.js' %}"></script>
-{% endblock %}

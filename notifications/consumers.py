@@ -6,17 +6,18 @@ import json
 class NotificationConsumer(WebsocketConsumer):
     def connect(self):
         self.user = self.scope["user"]
-        self.username = self.user.username
-        self.room_group_name = "notifications_"+self.username
+        if self.user.is_authenticated:
+            self.username = self.user.username
+            self.room_group_name = "notifications_"+self.username
 
-        print(self.user.username+" connected in notifications")
+            print(self.user.username+" connected in notifications")
 
-        async_to_sync(self.channel_layer.group_add)(
-            self.room_group_name,
-            self.channel_name
-        )
+            async_to_sync(self.channel_layer.group_add)(
+                self.room_group_name,
+                self.channel_name
+            )
 
-        self.accept()
+            self.accept()
 
     def disconnect(self, close_code):
         async_to_sync(self.channel_layer.group_discard)(

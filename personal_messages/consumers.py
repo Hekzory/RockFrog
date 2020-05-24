@@ -6,6 +6,8 @@ from django.utils.html import strip_tags
 from django.core.exceptions import ObjectDoesNotExist
 import datetime
 from notifications import models as notifications
+from channels.layers import get_channel_layer
+
 
 class PMConsumer(WebsocketConsumer):
     def connect(self):
@@ -40,7 +42,7 @@ class PMConsumer(WebsocketConsumer):
             user_messaging_with = User.objects.get(pk=user_messaging_with_id)
         except:
             pass
-        if message is not None and message != " ":
+        if message is not None and message.strip() != "":
             if user.is_authenticated and user_messaging_with is not None:
                 # Создаем сообщение и кладём в переписку
                 new_conversation_message = ConversationMessage(user=user, text=message, date_time=datetime.datetime.now())
@@ -49,8 +51,19 @@ class PMConsumer(WebsocketConsumer):
                 current_conversation.messages.add(new_conversation_message)
                 current_conversation.save()
                 current_conversation.update_interaction()
+                # Если пользователь отправил сообщение, считаем, что он просмотрел предыдущие.
+                # Выбираем нужного пользователя и обновляем время последнего прочтения
+                if current_conversation.user1.username == user.username:
+                    current_conversation.update_last_view_user1()
+                else:
+                    current_conversation.update_last_view_user2()
                 #  Создаём уведомление о сообщении
                 notifications.create_notification_on_pm(user, user_messaging_with)
+                # Обновляем список диалогов обоим пользователям, создавая событие в WebSocket'ах
+                channel_layer_temp = get_channel_layer()
+                async_to_sync(channel_layer_temp.group_send)("dialog_list_" + user.username, {"type": "update_dialogs"})
+                async_to_sync(channel_layer_temp.group_send)("dialog_list_" + user_messaging_with.username, {"type": "update_dialogs"})
+                # Отправляем событие создания сообщения
                 async_to_sync(self.channel_layer.group_send)(
                     self.room_group_name,
                     {
@@ -69,4 +82,37 @@ class PMConsumer(WebsocketConsumer):
             'message': message,
             'username': username,
             'datetime': datetime
+        }))
+
+
+
+class DialogListConsumer(WebsocketConsumer):
+    def connect(self):
+        self.user = self.scope["user"]
+        if self.user.is_authenticated:
+            self.username = self.user.username
+            self.room_group_name = "dialog_list_"+self.username
+
+            print(self.user.username+" connected in dialog list")
+
+            async_to_sync(self.channel_layer.group_add)(
+                self.room_group_name,
+                self.channel_name
+            )
+
+            self.accept()
+
+    def disconnect(self, close_code):
+        async_to_sync(self.channel_layer.group_discard)(
+            self.room_group_name,
+            self.channel_name
+        )
+
+    def receive(self, text_data):
+        pass
+
+    def update_dialogs(self, event):
+        conv_list = self.user.conversationlist.conversations.all().order_by('last_interaction')[::-1]
+        self.send(text_data=json.dumps({
+            'list': True,
         }))
