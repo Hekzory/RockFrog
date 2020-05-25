@@ -11,19 +11,20 @@ from channels.layers import get_channel_layer
 
 class PMConsumer(WebsocketConsumer):
     def connect(self):
-        user_talking_with_id = self.scope["url_route"]["kwargs"]["user_id"]
-        user_talking_with = User.objects.get(pk=user_talking_with_id)
         self.user = self.scope["user"]
-        self.conversation_id = get_conversation_and_create_if_not(self.user, user_talking_with).pk
-        self.username = self.user.username
-        self.room_group_name = "personal_messages_"+str(self.conversation_id)
+        if self.user.is_authenticated:
+            user_talking_with_id = self.scope["url_route"]["kwargs"]["user_id"]
+            user_talking_with = User.objects.get(pk=user_talking_with_id)
+            self.user = self.scope["user"]
+            self.conversation_id = get_conversation_and_create_if_not(self.user, user_talking_with).pk
+            self.username = self.user.username
+            self.room_group_name = "personal_messages_"+str(self.conversation_id)
 
-        async_to_sync(self.channel_layer.group_add)(
-            self.room_group_name,
-            self.channel_name
-        )
-
-        self.accept()
+            async_to_sync(self.channel_layer.group_add)(
+                self.room_group_name,
+                self.channel_name
+            )
+            self.accept()
 
     def disconnect(self, close_code):
         async_to_sync(self.channel_layer.group_discard)(

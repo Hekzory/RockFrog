@@ -7,16 +7,17 @@ from django.utils.html import strip_tags
 
 class ChatConsumer(WebsocketConsumer):
     def connect(self):
-        self.room_group_name = "chat"
         self.user = self.scope["user"]
-        self.username = self.user.username
+        if self.user.is_authenticated:
+            self.room_group_name = "chat"
+            self.username = self.user.username
 
-        async_to_sync(self.channel_layer.group_add)(
-            self.room_group_name,
-            self.channel_name
-        )
+            async_to_sync(self.channel_layer.group_add)(
+                self.room_group_name,
+                self.channel_name
+            )
 
-        self.accept()
+            self.accept()
 
     def disconnect(self, close_code):
         async_to_sync(self.channel_layer.group_discard)(
