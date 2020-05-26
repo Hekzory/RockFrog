@@ -17,20 +17,18 @@ def index(request):
 def userprofile(request, username):
     if User.objects.filter(username=username).first() is not None:
         user = User.objects.get(username=username)
+        context = {'user': user}
     else:
         return HttpResponseNotFound("User not found")
     if request.user.is_authenticated:
         template = loader.get_template('UserProfile/userprofile.html')
-        context = {'user' : user}
         return HttpResponse(template.render(context, request))
     else:
         if user.profile.privacysettings.allow_to_view_for_unreg:
             template = loader.get_template('UserProfile/userprofile.html')
-            context = {'user': user}
             return HttpResponse(template.render(context, request))
         else:
             template = loader.get_template('UserProfile/unregistered_forbidden.html')
-            context = {}
             return HttpResponse(template.render(context, request))
 
 
