@@ -34,10 +34,7 @@ class ProfileForm(forms.Form):
     def get_avatar(self):
         return self.cleaned_data['avatar']
 
-    #Написать clean-ы
-
     def change_profile(self, user, avatar):
-        print(avatar)
         profile = user.profile
         self.clean()
         profile.about = self.get_about()
@@ -48,3 +45,16 @@ class ProfileForm(forms.Form):
         profile.interests = self.get_interests()
         profile.avatar = self.get_avatar()
         profile.save()
+
+
+class PrivacySettingsForm(forms.Form):
+    allow_to_view_for_unreg = forms.BooleanField(required=False)
+
+    def get_allow_view_unreg(self):
+        return self.cleaned_data['allow_to_view_for_unreg']
+
+    def change_privacy_settings(self, user):
+        privacy_settings = user.profile.privacysettings
+        self.clean()
+        privacy_settings.allow_to_view_for_unreg = self.get_allow_view_unreg()
+        privacy_settings.save()

@@ -3,7 +3,7 @@ from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound
 from django.template import loader
 from django.contrib.auth.models import User
 from django.views.generic import View
-from .forms import ProfileForm
+from .forms import *
 # Create your views here.
 def index(request):
     if request.user.is_authenticated:
@@ -13,23 +13,25 @@ def index(request):
     else:
         return HttpResponseRedirect("/")
 
+
 def userprofile(request, username):
+    if User.objects.filter(username=username).first() is not None:
+        user = User.objects.get(username=username)
+    else:
+        return HttpResponseNotFound("User not found")
     if request.user.is_authenticated:
         template = loader.get_template('UserProfile/userprofile.html')
-        if User.objects.filter(username=username).count() != 0:
-            user = User.objects.filter(username=username)[0]
-        else:
-            return HttpResponseNotFound("User not found")
         context = {'user' : user}
         return HttpResponse(template.render(context, request))
     else:
-        template = loader.get_template('UserProfile/userprofile.html')
-        if User.objects.filter(username=username).count() != 0:
-            user = User.objects.filter(username=username)[0]
+        if user.profile.privacysettings.allow_to_view_for_unreg:
+            template = loader.get_template('UserProfile/userprofile.html')
+            context = {'user': user}
+            return HttpResponse(template.render(context, request))
         else:
-            return HttpResponseNotFound("User not found")
-        context = {'user': user}
-        return HttpResponse(template.render(context, request))
+            template = loader.get_template('UserProfile/unregistered_forbidden.html')
+            context = {}
+            return HttpResponse(template.render(context, request))
 
 
 class ProfileView(View):
@@ -49,7 +51,7 @@ class EditProfileView(View):
             return HttpResponseRedirect('/')
         else:
             initial_params = dict()
-            initial_params['about']= request.user.profile.about
+            initial_params['about'] = request.user.profile.about
             initial_params['birth_date'] = request.user.profile.birth_date
             initial_params['email'] = request.user.profile.email
             initial_params['city'] = request.user.profile.city
@@ -65,7 +67,6 @@ class EditProfileView(View):
             return HttpResponseRedirect("/")
         else:
             bound_form = ProfileForm(request.POST, request.FILES)
-            print(list(request.POST.items()))
             check = bound_form.is_valid()
             if check:
                 bound_form.change_profile(request.user, request.FILES)
@@ -77,3 +78,38 @@ class EditProfileView(View):
                 template = loader.get_template('UserProfile/editprofile.html')
                 context = {'form': bound_form}
                 return HttpResponse(template.render(context, request))
+
+
+class EditPrivacyView(View):
+    def get(self, request):
+        if not request.user.is_authenticated:
+            return HttpResponseRedirect('/')
+        else:
+            initial_params = dict()
+            initial_params['allow_to_view_for_unreg'] = request.user.profile.privacysettings.allow_to_view_for_unreg
+            template = loader.get_template('UserProfile/edit_privacy.html')
+            form = PrivacySettingsForm(initial=initial_params)
+            context = {'form': form}
+            return HttpResponse(template.render(context, request))
+
+    def post(self, request):
+        if not request.user.is_authenticated:
+            return HttpResponseRedirect('/')
+        else:
+            bound_form = PrivacySettingsForm(request.POST)
+            check = bound_form.is_valid()
+            if check:
+                bound_form.change_privacy_settings(request.user)
+                initial_params = dict()
+                initial_params['allow_to_view_for_unreg'] = request.user.profile.privacysettings.allow_to_view_for_unreg
+                template = loader.get_template('UserProfile/edit_privacy.html')
+                form = PrivacySettingsForm(initial=initial_params)
+                context = {'form': form}
+                return HttpResponse(template.render(context, request))
+            else:
+                template = loader.get_template('UserProfile/edit_privacy.html')
+                context = {'form': bound_form}
+                return HttpResponse(template.render(context, request))
+
+
+
