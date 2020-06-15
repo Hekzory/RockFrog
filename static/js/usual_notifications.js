@@ -152,3 +152,43 @@ function delete_notification(i, height, id) {
 notificationSocket.onclose = function(e) {
     console.error('Произошла ошибка. Пожалуйста, перезагрузите страницу для продолжения работы. Если ошибка повторяется - сообщите об этом администраторам');
 };
+
+function showwarning(text) {
+	if( $('#warning').css('display') == "none" ) {
+		$('#warning-text').text(text)
+		$('#warning').show(300)
+		$('#disabler').css({'z-index': '1021'})
+		$('#warning-text').delay(200).animate({'opacity': '1'}, 300)
+		$('#disabler').animate({'opacity': '0.7'}, 300)
+        if ($(document).height() > $(window).height()) {
+		    var scrollTop = ($('html').scrollTop()) ? $('html').scrollTop() : $('body').scrollTop()
+		    $('html').addClass('noscroll').css('top',-scrollTop)
+		}
+	}
+}
+
+function showwarning2(text, clickfunction) {
+	if( $('#warning').css('display') == "none" ) {
+		$('#warning-text').html(text)
+		$('#warning-apply').css('display', 'block')
+		$('#warning-apply').attr('onclick', clickfunction)
+		$('#disabler').css({'z-index': '1021'})
+		$('#warning').show(300)
+		$('#warning-text').delay(200).animate({'opacity': '1'}, 300)
+		$('#disabler').animate({'opacity': '0.7'}, 300)
+        if ($(document).height() > $(window).height()) {
+		    var scrollTop = ($('html').scrollTop()) ? $('html').scrollTop() : $('body').scrollTop()
+		    $('html').addClass('noscroll').css('top',-scrollTop)
+		}
+	}
+}
+
+function closewarning(text) {
+	$('#warning-text').animate({'opacity': '0'}, 300)
+	$('#warning').delay(200).hide(300)
+	$('#disabler').animate({'opacity': '0'}, 300)
+	$('#disabler').animate({'z-index': '0'}, 300)
+    var scrollTop = parseInt($('html').css('top'))
+		$('html').removeClass('noscroll')
+		$('html,body').scrollTop(-scrollTop)
+}

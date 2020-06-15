@@ -42,6 +42,7 @@ INSTALLED_APPS = [
 	'mainapp',
 	'news',
 	'authpages',
+    'communities',
     'notifications',
     'django.contrib.admin',
     'django.contrib.auth',

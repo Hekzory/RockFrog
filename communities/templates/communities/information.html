@@ -1,0 +1,76 @@
+{% extends "communities/community_template.html" %}
+
+{% block main %}
+
+<div class="content_block">
+	<div class="plate">
+	    <div class="inline-wrapper">
+	    <div class="button0" onclick="showgroups('description')">Описание</div>
+	    <div class="button0" onclick="showgroups('subscribers_list')">Участники {{ group.subscribers.count }}</div>
+	    <div class="button0" onclick="showgroups('editors_list')">Редакторы {{ group.editors.count }}</div>
+	    </div>
+	    <hr> 
+	    <div class="inline-wrapper">
+	      <div class="inline-wrapper">
+	        <i class="material-icons icon2 flip-vertical" style="margin-top: 5px; margin-right: 5px;">search</i>
+	        <input id="main_groups_search" class="input2" type="text" placeholder="поиск" onkeyup="searchlist('groups_list', this.value)">
+	      </div>
+	    </div>
+	    <br>  
+	    <div id='description' class="main_groups_list" style="margin-right: 10px; margin-left: 10px;">
+	    	{% if group.description %}
+	    	<div class="solid">
+				<div class="text2">{{ group.description }}</div> 	    		
+	    	</div>
+			<br>
+			{% endif %}
+			<div class="inline-wrapper">
+				<div class="text2">Администратор сообщества</div>
+				<div class="text2"><a class="link1" href="{% url 'UserProfile:userprofile' group.admin %}">{{ group.admin }}</a></div>                
+			</div>
+			<hr>
+			<div class="inline-wrapper">
+				<div class="text2">Тип сообщества</div>
+				<div class="text2">{% if group.public %}Открытое{% else %}Закрытое{% endif %}</div>
+			</div>
+			<hr>
+			<div class="inline-wrapper">
+				<div class="text2">Предложенные статьи</div>
+				<div class="text2">{% if group.allowarticles == 1 %}Публикуются сразу{% elif group.allowarticles == 2 %}Отправляются на проверку{% else %}Не публикуются{% endif %}</div>
+			</div>
+			<hr>
+			<div class="inline-wrapper">
+				<div class="text2">Ваша роль</div>
+				<div class="text2">{% if request.user in group.subscribers.all %}Участник{% elif request.user in group.editors.all %}Редактор{% elif request.user == group.admin %}Администратор{% else %}Посетитель{% endif %}</div>
+			</div>
+	    </div>
+	    <div id='subscribers_list' class="hidden main_groups_list" style="margin-right: 10px; margin-left: 10px;">
+			{% for user in group.subscribers.all %}
+			<div class="inline-wrapper" name="{{ user }}">
+				<div class="inline-wrapper">
+					<img class="small-img" src="{{ group.image.url }}" alt="">
+					<div class="text2"><a class="link1" href="{% url 'UserProfile:userprofile' user %}">{{ user }}</a></div>
+				</div>
+				<div></div>
+			</div>
+			{% empty %}
+			<div class="text2">В сообществе нет подписчиков</div>
+			{% endfor %}
+	    </div>
+	    <div id='editors_list' class="hidden main_groups_list" style="margin-right: 10px; margin-left: 10px;">
+			{% for user in group.editors.all %}
+			<div class="inline-wrapper" name="{{ user }}">
+				<div class="inline-wrapper">
+					<img class="small-img" src="{{ group.image.url }}" alt="">
+					<div class="text2"><a class="link1" href="{% url 'UserProfile:userprofile' user %}">{{ user }}</a></div>
+				</div>
+				<div></div>
+			</div>
+			{% empty %}
+			<div class="text2">В сообществе нет редакторов</div>
+			{% endfor %}
+	    </div>
+	</div>
+</div>
+
+{% endblock %}

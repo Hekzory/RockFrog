@@ -1,0 +1,120 @@
+{% extends "communities/community_template.html" %}
+
+{% block main %}
+
+<div class="content_block">
+	<div class="plate">
+		<div class="inline-wrapper">
+			<div class="text2">Файлы</div>
+			{% if request.user in group.editors.all or request.user == group.admin %}
+			<div class="button3 green" onclick="$('#collectioninput').click()"><i class="material-icons">add</i></div>
+			{% endif %}
+		</div>
+		<form id="collectionform" enctype='multipart/form-data' method='POST' action="{% url 'communities:addtocollection' groupid=group.id %}">
+			{% csrf_token %}
+			<input id="collectioninput" class="hidden-input" name="files" type="file" onchange="add_to_collection()">
+		</form>		
+		<div id="groupimages" style="flex-wrap: wrap; display: flex;"></div>
+		<div id="groupfiles" style="flex-wrap: wrap; display: flex;"></div>
+		<script>current_number = 0</script>
+		{% for file in group.files.all %}
+			<script>
+				if( '{{ file.file }}'.substr(-3) == 'png' || '{{ file.file }}'.substr(-3) == 'jpg' ) {
+
+		          	newimg = $('<img>')
+		          	newdecorator = $('<div>')
+		          	newicon = $('<i>')
+
+		          	$(newimg).attr({'class': 'medium-img', 'src': '{{ file.file.url }}'})
+		          	$(newdecorator).attr({'class': 'image-decorator'})
+		          	$(newicon).attr({'class': 'material-icons icon-image-decorator'})
+		          	$(newicon).text('remove_red_eye')
+		          	
+		          	current_number++
+		          	$(newdecorator).attr({'onclick': 'showfile("{{ file.file.url }}", "{{ file.name }}", ' + current_number + ', "groupimages")'})
+
+
+		          	newaddition = $('<div>')
+		          	newaddition.attr('fileid', '{{ file.id }}')
+		          	$(newaddition).css({'position': 'relative'})
+
+		          	$(newdecorator).append(newicon)
+		          	newaddition.append(newdecorator, newimg)
+
+		          	$('#groupimages').append(newaddition)
+
+		          } else {
+		          	newaddition = document.createElement('div')
+		          	newaddition.setAttribute('class', 'button3 grey')
+		          	newaddition.setAttribute('style', 'text-align: center; position: relative;')
+		          	newlink = document.createElement('a')
+		          	newlink.setAttribute('href', '{{ file.file.url }}')
+		          	newlink.setAttribute('download', '{{ file.name }}')
+		          	newlink.setAttribute('style', 'color: white;')
+		          	text = document.createTextNode(cutstring('{{ file.name }}'))
+		          	newlink.append(text)
+		          	newaddition.append(newlink)
+		          	document.getElementById('groupfiles').append(newaddition)
+		            // console.log(1)
+		        }
+		    </script>
+		    {% if request.user in group.editors.all or request.user == group.admin %}
+			    <script>
+			    	if( '{{ file.file }}'.substr(-3) == 'png' || '{{ file.file }}'.substr(-3) == 'jpg' ) {
+				    	newicondelete = $('<i>')
+			          	newbuttondelete = $('<div>')
+			          	$(newbuttondelete).attr({'class': 'button3 red-1', 'onclick': 'delete_from_collection("{{ file.id }}")'})
+			          	$(newbuttondelete).css({'position': 'absolute', 'z-index': '2','top': '65px', 'right': '5px'})
+			          	$(newicondelete).attr({'class': 'material-icons'})
+			          	$(newicondelete).text('delete')
+			          	$(newbuttondelete).append(newicondelete)
+			          	$(newaddition).append(newbuttondelete)
+			    	}
+			    	else
+			    	{	
+			    		$(newaddition).css({'padding-right': '50px'})
+			    		newicondelete = $('<i>')
+			          	newbuttondelete = $('<div>')
+			          	$(newbuttondelete).attr({'class': 'button3 red-1', 'onclick': 'delete_from_collection("{{ file.id }}")'})
+			          	$(newbuttondelete).css({'position': 'absolute', 'z-index': '2','top': '-5px', 'right': '-5px'})
+			          	$(newicondelete).attr({'class': 'material-icons'})
+			          	$(newicondelete).text('delete')
+			          	$(newbuttondelete).append(newicondelete)
+			          	$(newaddition).append(newbuttondelete)
+			    	}
+
+			    </script>
+		    {% endif %}
+	    {% empty %}
+	    <div class="text3">В этом сообществе нет файлов</div>
+	    {% endfor %}
+	</div>
+	<br>
+	<div class="plate">
+		<div class="inline-wrapper">
+			<div class="text2">Карточки</div>
+		</div>
+		<div class="" style="flex-wrap: wrap;">
+			{% for image in images %}
+			<img class="medium-img" src="{{ image }}" alt="">
+			{% empty %}
+			<div class="text3">В этом сообществе нет карточек</div>
+			{% endfor %}
+		</div>
+	</div>
+	<br>
+	<div class="solid">
+		<div class="text3">В данном разделе можно посмотреть файлы сообщества и карточки, которые [DELETED]
+		</div> 
+	</div>
+</div>
+
+{% endblock %}
+
+<!--
+{% block delete_from_fileviewer %}
+	{% if request.user in group.editors.all or request.user == group.admin %}
+		<div id="postfilebutton" class="button3 red" onclick="delete_from_collection()"><i class="material-icons">delete</i></div> 
+	{% endif %}  
+{% endblock %}
+-->

@@ -1,0 +1,203 @@
+{% extends "base_general.html" %}
+
+{% load static %}
+
+{% block links %}
+  <link rel="stylesheet" href="{% static 'communities/css/style.css' %}"/>
+  <script src="{% static 'communities/js/functions.js' %}"></script>
+{% endblock %}
+
+{% block header %}
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top" >
+  <div class="container">
+    <a class="navbar-brand">UndefinedCMS</a>
+    <button class="navbar-toggler" data-target="#my-nav" data-toggle="collapse">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div id="my-nav" class="collapse navbar-collapse justify-content-start">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link" href="/">Главная</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/news/">Новости</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/chat/">Чат</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/notifications/">Уведомления</a>
+        </li>    
+      </ul>
+    </div>
+    <div id="my-nav" class="collapse navbar-collapse justify-content-end">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          {% if request.user.is_authenticated %}
+          <a class="nav-link" href="/profile">Ваш профиль</a>
+          {% else %}
+          <a class="nav-link" href="/auth/login">Авторизация</a>
+          {% endif %}
+        </li>
+        {% if not request.user.is_authenticated %}
+        <li class="nav-item">
+          <a class="nav-link" href="/auth/register">Регистрация</a>
+        </li>
+        {% endif %}
+        {% if request.user.is_authenticated %}
+          {% if request.user.username == 'admin' %}
+            <li class="nav-item">
+              <a class="nav-link" href="/admin">Админ-панель</a>
+            </li>
+          {% endif %}
+        {% endif %}
+        {% if request.user.is_authenticated %}
+          <li class="nav-item">
+            <a class="nav-link" href="/auth/logout">Выйти</a>
+          </li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</nav>
+{% endblock %}
+
+{% block title %} {{ group.groupname }} {% endblock %}
+{% block title_h1 %}{% endblock %}
+
+{% block content %}
+  {% csrf_token %}
+  <div id="groupid" class="hidden" groupid="{{ group.id }}"></div>
+  <div id="cururl" class="hidden" cururl="/groups/{{ group.id }}/"></div>
+
+  <div class="inline-wrapper">
+    <h1>{{ group.groupname }}</h1>
+    <a class="button1" href="{% url 'communities:home' %}">Назад к списку</a>
+  </div>
+  <br>
+  <div class="inline-wrapper">
+    {% if group.image.url != '/media/False' %}
+      <div id="mainimage" style="margin-right: 20px;">
+        <div class="inline-wrapper">
+          <div style="position: relative;">
+            <div class="image-decorator" onclick="showfile('{{ group.image.url }}', 'main_image.jpg', 1, 'mainimage')" style="margin: 0; width: 100%; height: 100%;">
+              <i class="material-icons icon-image-decorator" style="font-size: 80px; margin-top: 50px; margin-left: calc(50% - 40px);">remove_red_eye</i>
+            </div>
+            <img class="group-img" src="{{ group.image.url }}"> 
+          </div>     
+        </div>
+      </div>
+    {% endif %}
+    <div class="plate" style="width: 100%;">
+      <div class="inline-wrapper">
+        <div class="text1">Сообщество</div> 
+          {% if request.user.is_authenticated %}
+            {% if request.user == group.admin %}
+              <a href="{% url 'communities:editgroup' group.slug %}" class="button3 green">Редактировать</a> 
+            {% endif %}
+          {% endif %}
+      </div> 
+      <hr>
+      <div class="inline-wrapper">
+        <div class="text2">Дата создания</div>   
+        <div class="text2">{{ group.pubdate }}</div>   
+      </div>
+      <hr>
+      <div class="inline-wrapper">
+        <div class="text2">Подписок</div>
+        <div class="inline-wrapper">
+          {% if request.user.is_authenticated and not request.user == group.admin and not request.user in group.editors.all and not request.user in group.banned.all %}
+            {% if request.user in group.subscribers.all %}
+              <div id="sub_button" class="button3 red" style="margin-right: 10px;" onclick="showwarning2('Покинуть сообщество?<br>{% if not  group.public %}Вернуться в это сообщество можно будет только по заявке.{% endif %}', 'unsubscribe()')">Отписаться</div>             
+            {% elif not group.public %}
+              {% if request.user in group.subrequests.all %}
+                <div id="sub_button" class="button3 red" onclick="cancelsubrequest()">Отозвать заявку</div> 
+              {% else %}
+                <div id="sub_button" class="button3 green" onclick="sendsubrequest()">Подать заявку</div> 
+              {% endif %}                           
+            {% else %} 
+              <div id="sub_button" class="button3 green" style="margin-right: 10px;" onclick="subscribe()">Подписаться</div>                 
+            {% endif %}              
+          {% endif %}    
+          {% if request.user.is_authenticated and request.user in group.editors.all %}  
+            <div id="sub_button" class="button3 red" style="margin-right: 10px;" onclick="showwarning2('Покинуть сообщество?<br>Вы будете лишены звания редактора.<br>{% if not  group.public %}Вернуться в это сообщество можно будет только по заявке.{% endif %}', 'unsubscribe()')">Отписаться</div>    
+          {% endif %}      
+          <div class="text2">{{ group.subscribers.count }}</div>    
+        </div>           
+      </div>
+      <hr>
+      <div class="inline-wrapper">
+        <div class="text2">Постов</div>  
+        <div class="text2">{{ articles_count }}</div>                   
+      </div>
+    </div>
+  </div>
+
+  <br>
+  
+  {% if request.user.is_authenticated %}  
+    {% if request.user == group.admin or request.user in group.editors.all %}  
+      {% if not group.public %}
+        <div class="plate">
+          {% if group.subrequests.all %}          
+            <div class="inline-wrapper">
+              <div class="text1">Заявки</div>
+              <div class="button1" onclick="show('hid1', this)">Открыть</div>  
+            </div>
+            <div id=hid1 class="hidden">
+              {% for req in group.subrequests.all %}
+                <div id="sub{{ req.id }}">
+                  <hr>
+                  <div class="inline-wrapper">
+                    <div class="text2">{{ req.username }}</div>
+                    <div class="inline-wrapper">
+                      <div class="button2" onclick="allowsub('{{ req.id }}')">Принять</div>  
+                      <div class="button2" onclick="rejectsub('{{ req.id }}')">Отклонить</div>  
+                    </div>
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+          {% else %}
+            <div class="text1">Заявки</div>
+            <hr>
+            <div class="text2">Заявок сейчас нет</div>
+          {% endif %}
+        </div>
+        <br>
+      {% endif %}   
+    {% endif %}
+  {% endif %} 
+
+  {% if request.user in group.subscribers.all or request.user in group.editors.all or request.user == group.admin or group.public and request.user not in group.banned.all %}  
+    <div class="inline-wrapper plate solid">
+      <a class="button0" href="{% url 'communities:community' group.slug %}">Главная</a>
+      <a class="button0" href="{% url 'communities:collection' group.slug %}">Коллекция</a>
+      <a class="button0" href="{% url 'communities:information' group.slug %}">Информация</a>
+    </div>
+    <br>
+
+    {% block main %}{% endblock %}
+
+  {% else %}
+    <div class="plate">
+      <div class="text2">{% if request.user in group.banned.all %}Вы заблокированы в данном сообществе{% else %}Вы не можете просматривать контент сообщества{% endif %}</div>
+    </div>
+  {% endif %}
+
+  <div id="fileviewer" style="display: none; text-align: center; width: calc(100% - 80px); position: fixed; top: 10%; height: 80%; left: 50%; margin-left: calc(-50% + 40px); z-index: 1021">
+    <a id="fileviewerlink" href="" download=""></a>
+    <div class="inline-wrapper" style="height: calc(100% - 47px);">
+      <i id="fileviewer_left" class="material-icons icon-fileviewer" onclick="swipefile('left')">keyboard_arrow_left</i>        
+      <img class="vert-img" id="fileviewerimage" style="margin: auto;" src="" alt="">
+      <i id="fileviewer_right" class="material-icons icon-fileviewer" onclick="swipefile('right')">keyboard_arrow_right</i>
+    </div>
+    <div class="plate" style="width: 300px; margin: auto; margin-top: 5px;">
+      <div class="inline-wrapper">
+        <div id="postfilebutton" class="button3 green" style="width: calc(50% - 5px); text-align: center;" onclick="document.getElementById('fileviewerlink').click()">Скачать</div>   
+        <div id="postfilebutton" class="button3 red" style="width: calc(50% - 5px); text-align: center;" onclick="showfile()">Закрыть</div> 
+      </div>
+    </div>
+  </div>
+{% endblock %}

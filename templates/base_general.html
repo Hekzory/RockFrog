@@ -6,7 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 
+    <script src="https://code.jquery.com/jquery-3.1.0.js"></script>
+    <script src='http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.5/jquery-ui.min.js'></script>
+
+    {% block links %}{% endblock %}
     <title>{% block title %}{% endblock %}</title>
   </head>
   <body>
@@ -17,7 +22,7 @@
         <div class="col-lg-12">
           <h1 class="my-4">{% block title_h1 %}{% endblock %}</h1>
           {% block title_header %}{% endblock %}
-          <hr>
+          {% block hr_active %}<hr> {% endblock %}
           <div class="container">
 			{% block content %}{% endblock %}
           </div>
@@ -28,6 +33,17 @@
     <div class="notifications_wraper">
       <div id="notifications"></div>
       <div id="hidden_notifications_block"></div>
+    </div>
+
+    <div id="warning" class="warning" style="display: none;">
+      <div id="warning-text" class="text1" style="opacity: 0;"></div>
+      <hr>
+      <div class="inline-wrapper" id="warning-buttons">
+        <div></div>
+        <div class="button0-1 green" id="warning-apply" style="display: none;" onclick="">Подтвердить</div>
+        <div class="button0-1 yellow" id="warning-close" onclick="closewarning()">Закрыть</div>
+        <div></div>
+      </div>
     </div>
 
 

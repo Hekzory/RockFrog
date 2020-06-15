@@ -1,0 +1,388 @@
+{% extends "base_general.html" %}
+
+{% load static %}
+
+{% block links %}
+  <link rel="stylesheet" href="{% static 'communities/css/style.css' %}"/>
+{% endblock %}
+
+{% block header %}
+<nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top" >
+  <div class="container">
+    <a class="navbar-brand">UndefinedCMS</a>
+    <button class="navbar-toggler" data-target="#my-nav" data-toggle="collapse">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div id="my-nav" class="collapse navbar-collapse justify-content-start">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link" href="/">Главная</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/news/">Новости</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/chat/">Чат</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/notifications/">Уведомления</a>
+        </li>    
+      </ul>
+    </div>
+    <div id="my-nav" class="collapse navbar-collapse justify-content-end">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          {% if request.user.is_authenticated %}
+          <a class="nav-link" href="/profile">Ваш профиль</a>
+          {% else %}
+          <a class="nav-link" href="/auth/login">Авторизация</a>
+          {% endif %}
+        </li>
+        {% if not request.user.is_authenticated %}
+        <li class="nav-item">
+          <a class="nav-link" href="/auth/register">Регистрация</a>
+        </li>
+        {% endif %}
+        {% if request.user.is_authenticated %}
+          {% if request.user.username == 'admin' %}
+            <li class="nav-item">
+              <a class="nav-link" href="/admin">Админ-панель</a>
+            </li>
+          {% endif %}
+        {% endif %}
+        {% if request.user.is_authenticated %}
+          <li class="nav-item">
+            <a class="nav-link" href="/auth/logout">Выйти</a>
+          </li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</nav>
+{% endblock %}
+
+{% block title %} {{ group.groupname }} {% endblock %}
+{% block title_h1 %}{% endblock %}
+
+{% block content %}
+  <div class="inline-wrapper">
+    <h1>{{ group.groupname }}</h1>
+    <a id="back" class="button1" href="{% url 'communities:community' group.slug %}">Назад</a>
+  </div>
+  <br>  
+
+  <div id="cururl" class="hidden" cururl="/groups/{{ group.id }}/"></div>
+  <input id="fileinput" class="hidden-input" form="imageform" type="file" name="groupimage" onchange="readURL(this)">
+  <input form="imageform" class="hidden-input" type="text" name="type" value="uploadimage">
+  <img id="testimg" class="hidden-input">
+
+  <div class="inline-wrapper">
+    {% if group.image.url != '/media/False' %}
+      <div style="margin-right: 20px;">
+        <img id="groupimage" class="group-img" src="{{ group.image.url }}" alt="" style="margin-bottom: 10px;">
+        <form id="imageform" action="{% url 'communities:moreedit' group.id %}" method="POST" class="inline-wrapper" enctype="multipart/form-data"> 
+          {% csrf_token %}     
+          <input type="hidden" name="next" value="{{ request.path }}">
+          <div></div>
+          <div id="uploadimage" class="button0 visible green" onclick="document.getElementById('fileinput').click()">Загрузить файл</div>   
+          <div id="cancelupload" class="button0 hidden red" onclick="cancelupload('{{ group.image.url }}')">Отмена</div>   
+          <div id="saveimage" class="button0 hidden green" onclick="document.getElementById('imageform').submit()">Сохранить</div>  
+          <div></div>
+        </form>
+      </div>
+    {% endif %}
+    <div class="plate" style="width: 100%;">
+      <div class="text1">Редактировать</div>    
+      <hr>
+      <div class="inline-wrapper">  
+        <div class="text2">Удалить сообщество</div>            
+        <div class="inline-wrapper">
+          <div id="delete" class="button2 visible" onclick="showwarning2('Удалить сообщество? Отменить это действие невозможно.', 'deletegroup()')">Удалить</div>         
+        </div>       
+      </div>
+      <hr>
+      <div class="inline-wrapper">  
+        <div class="text2">Открыть / закрыть сообщество</div> 
+        {% if group.public %}                   
+          <div id="publicstatus" class="button2" onclick="closegroup('{{ group.id }}')">Закрыть</div>      
+        {% else %}        
+          <div id="publicstatus" class="button2" onclick="opengroup('{{ group.id }}')">Открыть</div>     
+        {% endif %}   
+      </div>
+      {% if group.image.url == '/media/False' %}
+        <hr>
+        <form id="imageform" action="{% url 'communities:moreedit' group.id %}" method="POST" class="inline-wrapper" enctype="multipart/form-data"> 
+          {% csrf_token %}     
+          <input type="hidden" name="next" value="{{ request.path }}">
+          <div class="text2">Фотография</div>
+          <div class="inline-wrapper">
+            <div id="uploadimage" class="button2 visible" onclick="document.getElementById('fileinput').click()">Загрузить изображение</div>   
+            <div id="cancelupload" class="button2 hidden" onclick="cancelupload('')">Отмена</div>   
+            <div id="saveimage" class="button2 hidden" onclick="document.getElementById('imageform').submit()">Сохранить</div>  
+          </div>
+        </form>
+      {% endif %}
+      <hr>
+      <div class="inline-wrapper">  
+        <div class="text2">Передать владение</div>            
+        <div class="button2" onclick="showeditors()">Передать</div>         
+      </div>
+      <hr>
+      <div class="solid">
+        <div class="text3">Нельзя загружать фотографии большого размера и с шириной, превышающей высоту в два раза.
+          После удаления сообщество восстановить будет невозможно
+        </div> 
+      </div>
+    </div>   
+  </div>
+
+  <div class="plate">
+    <div class="inline-wrapper">
+      <div class="text1">Общая информация</div>
+      <div class="button1" onclick="hide('hid1', this)">Скрыть</div>      
+    </div>
+    <div id="hid1" class="visible">
+      <hr>
+      <div class="inline-wrapper">
+        <div class="text2" style="width: 170px;">Название:</div>
+        <div style="width: 100%; margin-right: 10px;"><input id="nameinput" class="input1 solid" maxlength="40" type="text" value="{{ group.groupname }}"></div>
+        <div class="button2" onclick="savevalue('name')">Сохранить</div>
+      </div>
+      <div class="inline-wrapper">
+        <div class="text2" style="width: 170px;">Идентификатор: </div>
+        <div style="width: 100%; margin-right: 10px;"><input id="sluginput" class="input1 solid" maxlength="40" type="text" value="{{ group.slug }}"></div>
+        <div class="button2" onclick="savevalue('slug')">Сохранить</div>
+      </div>
+      <div class="inline-wrapper">
+        <div class="text2" style="width: 170px;">Описание:</div> 
+        <div style="width: 100%; margin-right: 10px;"><textarea id="descriptioninput" maxlength="200" class="textarea1 solid" onload="auto_grow(this)" onchange="auto_grow(this)" onclick="auto_grow(this)">{{ group.description }}</textarea></div>
+        <div class="button2" onclick="savevalue('description')">Сохранить</div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="plate">
+    <div class="inline-wrapper">  
+      <div class="text2">Статьи пользователей</div> 
+      {% if group.allowarticles == 1 %}                   
+        <div class="inline-wrapper">
+          <div id="allowarticles3" class="button3 visible red" onclick="allowarticles(3)">Запретить</div>   
+          <div id="allowarticles1" class="button3 hidden green" onclick="allowarticles(1)">Публиковать</div>         
+          <div id="allowarticles2" class="button3 visible yellow" onclick="allowarticles(2)">Отправлять редакторам</div>  
+        </div>       
+      {% else %}        
+        {% if group.allowarticles == 2 %}                   
+          <div class="inline-wrapper">
+            <div id="allowarticles3" class="button3 visible red" onclick="allowarticles(3)">Запретить</div>   
+            <div id="allowarticles1" class="button3 visible green" onclick="allowarticles(1)">Публиковать</div>         
+            <div id="allowarticles2" class="button3 hidden yellow" onclick="allowarticles(2)">Отправлять редакторам</div>  
+          </div>       
+        {% else %}     
+          <div class="inline-wrapper">   
+            <div id="allowarticles3" class="button3 hidden red" onclick="allowarticles(3)">Запретить</div>   
+            <div id="allowarticles1" class="button3 visible green" onclick="allowarticles(1)">Публиковать</div>         
+            <div id="allowarticles2" class="button3 visible yellow" onclick="allowarticles(2)">Отправлять редакторам</div>  
+          </div>
+        {% endif %}      
+      {% endif %}   
+    </div>
+  </div>
+
+  <div class="solid">
+    <div class="text3">Предложенные статьи можно публиковать сразу (без проверки), публиковать с предварительной отправкой редакторам или выключить
+    </div> 
+  </div>
+
+  <div class="solid">
+    <div class="text3">Редактировать фотографии, рассматривать заявки участников и предложенные статьи вы и редакторы можете на главной странице сообщества. Эта же страница доступна только вам
+    </div> 
+  </div>
+
+  <div class="plate">
+    <div class="inline-wrapper">
+      <div class="text1">Редакторы: {{ group.editors.count }}</div>
+      <div class="button1" onclick="show('hid2.1', this)">Открыть</div>      
+    </div>
+    <div id="hid2.1" class="hidden">
+      <hr>
+      {% if group.editors.count > 5 %}
+        <div class="inline-wrapper">
+          <div class="inline-wrapper">
+            <i class="material-icons icon2 flip-vertical" style="margin-top: 5px; margin-right: 5px;">search</i>
+            <input class="input2" type="text" placeholder="поиск" onkeyup="searchlist('editors_list', this.value)">
+          </div>
+        </div>
+        <br>
+      {% endif %}
+      <div id="editors_list" style="max-height: 200px;  overflow-x: hidden; overflow-y: scroll;">
+        {% for user in group.editors.all %}
+          <div id='editor{{ user.id }}' name="{{ user }}">
+            <div class="inline-wrapper tohover">
+              <div class="inline-wrapper">
+                <img class="small-img" src="{{ group.image.url }}">
+                <div class="text2"><a class="link1" href="{% url 'UserProfile:userprofile' user %}">{{ user }}</a></div>
+              </div>  
+              {% if user != request.user %}
+                <div class="hidden showflex inline-wrapper">
+                  <div class="button2" onclick="banuser('{{ user.id }}')">Выгнать</div> 
+                  <div class="button2" onclick="touser('{{ user.id }}')">Понизить</div> 
+                </div>  
+              {% endif %}
+            </div>    
+          </div>       
+        {% empty %}
+          <div class="text3">В этой группе нет редакторов</div>   
+        {% endfor %}
+      </div>
+      <div class="text3">Редакторы могут публиковать статьи и принимать заявки пользователей</div>  
+    </div>
+    <hr>
+    <div class="inline-wrapper">
+      <div class="text1">Участники: {{ group.subscribers.count }}</div>
+      <div class="button1" onclick="show('hid2', this)">Открыть</div>      
+    </div>
+    <div id="hid2" class="hidden" >
+      <hr>
+      {% if group.subscribers.count > 5 %}
+        <div class="inline-wrapper">
+          <div class="inline-wrapper">
+            <i class="material-icons icon2 flip-vertical" style="margin-top: 5px; margin-right: 5px;">search</i>
+            <input class="input2" type="text" placeholder="поиск" onkeyup="searchlist('subscribers_list', this.value)">
+          </div>
+        </div>
+        <br>
+      {% endif %}
+      <div id="subscribers_list" style="max-height: 200px;  overflow-x: hidden; overflow-y: scroll;">
+        {% for user in group.subscribers.all %}
+          <div id='user{{ user.id }}' name="{{ user }}">
+            <div class="inline-wrapper tohover">
+              <div class="inline-wrapper">
+                <img class="small-img" src="{{ group.image.url }}">
+                <div class="text2"><a class="link1" href="{% url 'UserProfile:userprofile' user %}">{{ user }}</a></div>
+              </div>
+              <div class="hidden inline-wrapper showflex"> 
+                <div class="button2" onclick="banuser('{{ user.id }}')">Выгнать</div> 
+                <div class="button2" onclick="toeditor('{{ user.id }}')">Повысить</div> 
+              </div>
+            </div> 
+          </div>
+        {% empty %}
+          <div class="text3">В этой группе нет подписчиков</div>   
+        {% endfor %}
+      </div>
+      <div class="text3">Подписчики могут просматривать контент сообщества и получать от него уведомления</div>  
+    </div>
+    <hr>
+    <div class="inline-wrapper">
+      <div class="text1">Черный список: {{ group.banned.count }}</div>
+      <div class="button1" onclick="show('hid2.2', this)">Открыть</div>      
+    </div>
+    <div id="hid2.2" class="hidden">
+      <hr>
+      {% if group.banned.count > 5 %}
+        <div class="inline-wrapper">
+          <div class="inline-wrapper">
+            <i class="material-icons icon2 flip-vertical" style="margin-top: 5px; margin-right: 5px;">search</i>
+            <input class="input2" type="text" placeholder="поиск" onkeyup="searchlist('banned_list', this.value)">
+          </div>
+        </div>
+        <br>
+      {% endif %}
+      <div id="banned_list" style="max-height: 200px;  overflow-x: hidden; overflow-y: scroll;">
+        {% for user in group.banned.all %}
+          <div id='banned{{ user.id }}' name="{{ user }}">
+            <div class="inline-wrapper tohover">
+              <div class="inline-wrapper">
+                <img class="small-img" src="{{ group.image.url }}">
+                <div class="text2"><a class="link1" href="{% url 'UserProfile:userprofile' user %}">{{ user }}</a></div>
+              </div>
+              <div class="hidden showflex inline-wrapper"> 
+                <div class="button2" onclick="cancelban('{{ user.id }}')">Восстановить</div> 
+              </div>
+            </div> 
+          </div>
+        {% empty %}
+          <div class="text3">Черный список пустой</div>   
+        {% endfor %}    
+      </div>
+      <div class="text3">Пользователи из черного списка не могут просматривать контент сообщества и подписываться на него</div>  
+    </div>
+    <hr>
+    <div class="text3">Если какие-либо изменения не применились, обновите страницу</div>
+  </div>
+
+  <div class="plate">
+    <div class="inline-wrapper">
+      <div class="text1">Другое</div>   
+      <div class="button1" onclick="show('hid3', this)">Открыть</div> 
+    </div> 
+    <div id="hid3" class="hidden">
+      <hr>
+      <div class="inline-wrapper">
+        <div class="text2">Дата создания</div>   
+        <div class="text2">{{ group.pubdate }}</div>   
+      </div>
+      <div class="inline-wrapper">
+        <div class="text2">Подписок</div>   
+        <div class="text2">{{ group.subscribers.count }}</div>   
+      </div>
+      <div class="inline-wrapper">
+        <div class="text2">Постов</div>   
+        <div class="text2">{{ group.articles.count }}</div>   
+      </div>
+      <div class="inline-wrapper">
+        <div class="text2">Администратор</div>   
+        <div class="text2">{{ group.admin }}</div>   
+      </div>
+    </div>
+  </div>
+
+  <div class="solid">
+    <div class="text3">Эта страница доступна только администратору сообщества. Здесь вы можте изменить основную информацию о сообществе а также управлять статусом подписчиков (повышать до редакторов, добавлять в черный список и т. д.). Редакторы могут рассматривать заявки (в закрытом сообществе), а также публиковать свои или предложенные посты
+    </div> 
+  </div>
+
+  <div id="toadminlist" class="plate" style="display: none; position: fixed; top: 300px; width: 600px; right: 50%; margin-right: -300px; z-index: 1021">
+    <div class="text1">Передайте владение сообществом одному из редакторов</div>
+    <hr>
+    {% if group.editors.count > 5 %}
+      <div class="inline-wrapper">
+        <div class="inline-wrapper">
+          <i class="material-icons icon2 flip-vertical" style="margin-top: 5px; margin-right: 5px;">search</i>
+          <input class="input2" type="text" placeholder="поиск" onkeyup="searchlist('editors_list2', this.value)">
+        </div>
+      </div>
+      <br>
+    {% endif %}
+    <div id="editors_list2" style="max-height: 500px; overflow-x: hidden; overflow-y: scroll;">
+      <div class="solid">
+        <div class="text3">Вы можете передать свой статус администратора одному из редакторов</div>
+      </div>
+      {% for user in group.editors.all %}
+        <div id='editor{{ user.id }}' name="{{ user }}">
+          <div class="inline-wrapper tohover">
+            <div class="inline-wrapper">
+              <img class="small-img" src="{{ group.image.url }}">
+              <div class="text2"><a class="link1" href="{% url 'UserProfile:userprofile' user %}">{{ user }}</a></div>
+            </div>  
+            {% if user != request.user %}
+              <div class="hidden showflex inline-wrapper">
+                <div class="button2" onclick="toadmin('{{ user.id }}')">Назначить администратором</div> 
+              </div>  
+            {% endif %}
+          </div>    
+        </div>       
+      {% empty %}
+        <div class="text3">В этой группе нет редакторов</div>   
+      {% endfor %}
+    </div>
+    <hr>
+    <div class="inline-wrapper">
+      <div></div>
+      <div class="button3 red" onclick="showeditors()" style="width: calc(50% - 5px); text-align: center;">Отмена</div>
+      <div></div>
+    </div>
+  </div>
+
+<script src="{% static 'communities/js/edit.js' %}"></script>
+{% endblock %}

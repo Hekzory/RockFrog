@@ -1,0 +1,345 @@
+{% extends "base_general.html" %}
+
+{% load static %}
+
+{% block header %}
+<nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top" >
+  <div class="container">
+    <a class="navbar-brand">UndefinedCMS</a>
+    <button class="navbar-toggler" data-target="#my-nav" data-toggle="collapse">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div id="my-nav" class="collapse navbar-collapse justify-content-start">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link" href="/">Главная</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/news/">Новости</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/chat/">Чат</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/notifications/">Уведомления</a>
+        </li>    
+      </ul>
+    </div>
+    <div id="my-nav" class="collapse navbar-collapse justify-content-end">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          {% if request.user.is_authenticated %}
+          <a class="nav-link" href="/profile">Ваш профиль</a>
+          {% else %}
+          <a class="nav-link" href="/auth/login">Авторизация</a>
+          {% endif %}
+        </li>
+        {% if not request.user.is_authenticated %}
+        <li class="nav-item">
+          <a class="nav-link" href="/auth/register">Регистрация</a>
+        </li>
+        {% endif %}
+        {% if request.user.is_authenticated %}
+          {% if request.user.username == 'admin' %}
+            <li class="nav-item">
+              <a class="nav-link" href="/admin">Админ-панель</a>
+            </li>
+          {% endif %}
+        {% endif %}
+        {% if request.user.is_authenticated %}
+          <li class="nav-item">
+            <a class="nav-link" href="/auth/logout">Выйти</a>
+          </li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</nav>
+{% endblock %}
+
+{% block links %}
+  <link rel="stylesheet" href="{% static 'communities/css/style.css' %}"/>
+{% endblock %}
+
+{% block title %} Сообщества {% endblock %}
+{% block title_h1 %}{% endblock %}
+
+{% block content %}
+  {% block hr_active %}{% endblock %}
+  <div class="inline-wrapper">
+    <h1>Сообщества</h1>
+    <a class="button1" href="../">На главную</a>
+  </div>
+  <br>
+
+  {% if request.user.is_authenticated %}
+    <form id="creategroup" class="plate" action="create" method="POST" onsubmit="formValid(this); return false;">
+      {% csrf_token %}
+      <div class="text1">Создайте новое сообщество</div>
+      <div class="inline-wrapper">
+        <input id="groupnameinput" type="text" class="input1" placeholder="Название сообщества" name="groupname">
+        <div class="button0" style="width: 100px;" onclick="document.getElementById('creategroupsubmit').click()">Создать</div>
+      </div> 
+      <input id="creategroupsubmit" type="submit" class="hidden-input">
+    </form>
+    <br>
+  {% endif %}
+
+  <div class="plate">
+    <div class="inline-wrapper">
+      {% if request.user.is_authenticated %}
+        <div class="button0" onclick="showgroups('groups_list')">Все сообщества</div>      
+        <div class="button0" onclick="showgroups('admin_groups_list')">Вы администратор {{ request.user.groups_admins.count }}</div>
+        <div class="button0" onclick="showgroups('subs_groups_list')">Вы подписаны {{ request.user.groups_subs.count }}</div>
+        <div class="button0" onclick="showgroups('editors_groups_list')">Вы редактор {{ request.user.groups_editors.count }}</div>
+        <div class="button0" onclick="showgroups('banned_groups_list')">Вы заблокированы {{ request.user.groups_banned.count }}</div>
+        <div class="button0" onclick="showgroups('requests_groups_list')">Заявки {{ request.user.groups_requests.count }}</div>
+      {% else %}
+        <div class="text1">Все сообщества</div>   
+      {% endif %}
+    </div>
+    <hr> 
+    <div class="inline-wrapper">
+      <div class="inline-wrapper">
+        <i class="material-icons icon2 flip-vertical" style="margin-top: 5px; margin-right: 5px;">search</i>
+        <input id="main_groups_search" class="input2" type="text" placeholder="поиск" onkeyup="searchlist('groups_list', this.value)">
+      </div>
+    </div>
+    <br>
+    <div id='groups_list' class="main_groups_list" style="margin-right: 10px; margin-left: 10px;">
+      {% for group in groups %}      
+        <div class="inline-wrapper" name='{{ group }}'>
+          <div class="solid" style="width: calc(75% - 5px);">
+            <div class="inline-wrapper">
+              <div class="inline-wrapper">
+                {% if group.image != 'False' %}
+                  <img class="small-img" src="{{ group.image.url }}" alt=""> 
+                {% endif %}
+                <div class="text2-1"><a class="link1" href="{{ group.slug }}">{{ group }}</a></div>  
+                {% if group.public %}
+                  <i class="material-icons icon1" style="margin-top: 8px;" title="открытое сообщество">lock_open</i>
+                {% else %}
+                  <i class="material-icons icon1" style="margin-top: 8px;" title="закрытое сообщество">lock</i>
+                {% endif %}
+              </div>
+              <div></div>
+            </div>
+            {% if group.description %}
+              <div class="text3">{{ group.description }}</div>
+            {% else %}
+              <div class="text3">Описание отсутствует</div>
+            {% endif %}
+          </div>
+          <div class="solid" style="width: calc(25% - 5px);">
+            <div class="text3">Администратор: {{ group.admin }}</div>
+            <div class="text3">Участников: {{ group.subscribers.count }}</div>
+            <div class="text3">Создано: {{ group.pubdate }}</div>
+          </div>
+        </div>
+      {% empty %}
+        <div class="text2">Здесь ничего нет</div>
+      {% endfor %}
+    </div>
+
+    {% if request.user.is_authenticated %}
+      <div id='admin_groups_list' class="main_groups_list hidden" style="margin-right: 10px; margin-left: 10px;">
+        {% for group in request.user.groups_admins.all %}    
+          <div class="inline-wrapper" name='{{ group }}'>
+            <div class="solid" style="width: calc(75% - 5px);">
+              <div class="inline-wrapper">
+                <div class="inline-wrapper">
+                  {% if group.image != 'False' %}
+                    <img class="small-img" src="{{ group.image.url }}" alt=""> 
+                  {% endif %}
+                  <div class="text2-1"><a class="link1" href="{{ group.slug }}">{{ group }}</a></div>  
+                  {% if group.public %}
+                    <i class="material-icons icon1" style="margin-top: 8px;" title="открытое сообщество">lock_open</i>
+                  {% else %}
+                    <i class="material-icons icon1" style="margin-top: 8px;" title="закрытое сообщество">lock</i>
+                  {% endif %} 
+                </div>
+                <div></div>
+              </div>
+              {% if group.description %}
+                <div class="text3">{{ group.description }}</div>
+              {% else %}
+                <div class="text3">Описание отсутствует</div>
+              {% endif %}
+            </div>
+            <div class="solid" style="width: calc(25% - 5px);">
+              <div class="text3">Администратор: {{ group.admin }}</div>
+              <div class="text3">Участников: {{ group.subscribers.count }}</div>
+              <div class="text3">Создано: {{ group.pubdate }}</div>
+            </div>
+          </div>
+        {% empty %}
+          <div class="text2">Здесь ничего нет</div>
+        {% endfor %}
+      </div>
+      <div id='subs_groups_list' class="main_groups_list hidden" style="margin-right: 10px; margin-left: 10px;">
+        {% for group in request.user.groups_subs.all %}    
+          <div class="inline-wrapper" name='{{ group }}'>
+            <div class="solid" style="width: calc(75% - 5px);">
+              <div class="inline-wrapper">
+                <div class="inline-wrapper">
+                  {% if group.image != 'False' %}
+                    <img class="small-img" src="{{ group.image.url }}" alt=""> 
+                  {% endif %}
+                  <div class="text2-1"><a class="link1" href="{{ group.slug }}">{{ group }}</a></div>  
+                  {% if group.public %}
+                    <i class="material-icons icon1" style="margin-top: 8px;" title="открытое сообщество">lock_open</i>
+                  {% else %}
+                    <i class="material-icons icon1" style="margin-top: 8px;" title="закрытое сообщество">lock</i>
+                  {% endif %}  
+                </div>
+                <div></div>
+              </div>
+              {% if group.description %}
+                <div class="text3">{{ group.description }}</div>
+              {% else %}
+                <div class="text3">Описание отсутствует</div>
+              {% endif %}
+            </div>
+            <div class="solid" style="width: calc(25% - 5px);">
+              <div class="text3">Администратор: {{ group.admin }}</div>
+              <div class="text3">Участников: {{ group.subscribers.count }}</div>
+              <div class="text3">Создано: {{ group.pubdate }}</div>
+            </div>
+          </div>
+        {% empty %}
+          <div class="text2">Здесь ничего нет</div>
+        {% endfor %}
+      </div>
+      <div id='editors_groups_list' class="main_groups_list hidden" style="margin-right: 10px; margin-left: 10px;">
+        {% for group in request.user.groups_editors.all %}    
+          <div class="inline-wrapper" name='{{ group }}'>
+            <div class="solid" style="width: calc(75% - 5px);">
+              <div class="inline-wrapper">
+                <div class="inline-wrapper">
+                  {% if group.image != 'False' %}
+                    <img class="small-img" src="{{ group.image.url }}" alt=""> 
+                  {% endif %}
+                  <div class="text2-1"><a class="link1" href="{{ group.slug }}">{{ group }}</a></div>  
+                  {% if group.public %}
+                    <i class="material-icons icon1" style="margin-top: 8px;" title="открытое сообщество">lock_open</i>
+                  {% else %}
+                    <i class="material-icons icon1" style="margin-top: 8px;" title="закрытое сообщество">lock</i>
+                  {% endif %}  
+                </div>
+                <div></div>
+              </div>
+              {% if group.description %}
+                <div class="text3">{{ group.description }}</div>
+              {% else %}
+                <div class="text3">Описание отсутствует</div>
+              {% endif %}
+            </div>
+            <div class="solid" style="width: calc(25% - 5px);">
+              <div class="text3">Администратор: {{ group.admin }}</div>
+              <div class="text3">Участников: {{ group.subscribers.count }}</div>
+              <div class="text3">Создано: {{ group.pubdate }}</div>
+            </div>
+          </div>
+        {% empty %}
+          <div class="text2">Здесь ничего нет</div>
+        {% endfor %}
+      </div>
+      <div id='requests_groups_list' class="main_groups_list hidden" style="margin-right: 10px; margin-left: 10px;">
+        {% for group in request.user.groups_requests.all %}    
+          <div class="inline-wrapper" name='{{ group }}'>
+            <div class="solid" style="width: calc(75% - 5px);">
+              <div class="inline-wrapper">
+                <div class="inline-wrapper">
+                  {% if group.image != 'False' %}
+                    <img class="small-img" src="{{ group.image.url }}" alt=""> 
+                  {% endif %}
+                  <div class="text2-1"><a class="link1" href="{{ group.slug }}">{{ group }}</a></div>  
+                  {% if group.public %}
+                    <i class="material-icons icon1" style="margin-top: 8px;" title="открытое сообщество">lock_open</i>
+                  {% else %}
+                    <i class="material-icons icon1" style="margin-top: 8px;" title="закрытое сообщество">lock</i>
+                  {% endif %}  
+                </div>
+                <div></div>
+              </div>
+              {% if group.description %}
+                <div class="text3">{{ group.description }}</div>
+              {% else %}
+                <div class="text3">Описание отсутствует</div>
+              {% endif %}
+            </div>
+            <div class="solid" style="width: calc(25% - 5px);">
+              <div class="text3">Администратор: {{ group.admin }}</div>
+              <div class="text3">Участников: {{ group.subscribers.count }}</div>
+              <div class="text3">Создано: {{ group.pubdate }}</div>
+            </div>
+          </div>
+        {% empty %}
+          <div class="text2">Здесь ничего нет</div>
+        {% endfor %}
+      </div>
+      <div id='banned_groups_list' class="main_groups_list hidden" style="margin-right: 10px; margin-left: 10px;">
+        {% for group in request.user.groups_banned.all %}    
+          <div class="inline-wrapper" name='{{ group }}'>
+            <div class="solid" style="width: calc(75% - 5px);">
+              <div class="inline-wrapper">
+                <div class="inline-wrapper">
+                  {% if group.image != 'False' %}
+                    <img class="small-img" src="{{ group.image.url }}" alt=""> 
+                  {% endif %}
+                  <div class="text2-1"><a class="link1" href="{{ group.slug }}">{{ group }}</a></div>  
+                  {% if group.public %}
+                    <i class="material-icons icon1" style="margin-top: 8px;" title="открытое сообщество">lock_open</i>
+                  {% else %}
+                    <i class="material-icons icon1" style="margin-top: 8px;" title="закрытое сообщество">lock</i>
+                  {% endif %}  
+                </div>
+                <div></div>
+              </div>
+              {% if group.description %}
+                <div class="text3">{{ group.description }}</div>
+              {% else %}
+                <div class="text3">Описание отсутствует</div>
+              {% endif %}
+            </div>
+            <div class="solid" style="width: calc(25% - 5px);">
+              <div class="text3">Администратор: {{ group.admin }}</div>
+              <div class="text3">Участников: {{ group.subscribers.count }}</div>
+              <div class="text3">Создано: {{ group.pubdate }}</div>
+            </div>
+          </div>
+        {% empty %}
+          <div class="text2">Здесь ничего нет</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+
+<script>
+  function formValid(f) {
+  if( f.groupname.value.trim() != '' ) {
+    var csrftoken = $('input[name="csrfmiddlewaretoken"]').val();
+
+    $.ajax({
+      url : "create/",
+      type : "POST",
+      data : {
+        'groupname': f.groupname.value,
+        'csrfmiddlewaretoken': csrftoken
+      },
+
+      success : function(data) {
+        if( data == 0 ) {
+          showwarning("Название занято")
+        } else {
+          document.location.href = data
+        }
+      },
+    });
+  } else {
+    showwarning("Введите название")
+  }
+}
+</script>
+<script src="{% static 'communities/js/functions.js' %}"></script>
+{% endblock %}

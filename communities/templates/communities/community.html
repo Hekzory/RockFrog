@@ -1,0 +1,305 @@
+{% extends "communities/community_template.html" %}
+
+{% block main %}
+  <div class="content_block" style="display: block;">
+    {% if request.user.is_authenticated %}
+      {% if request.user in group.editors.all or request.user == group.admin or group.allowarticles != 3 and request.user in group.subscribers.all %}
+        <form id="postform" enctype='multipart/form-data' action="{% url 'communities:createarticle' groupid=group.id %}" method='POST'>
+          {% csrf_token %}
+          <div class="inline-wrapper">            
+            <div id="postplate" class="plate" style="width: 100%;">
+              <textarea id="postarea" class="textarea1" name="text" oninput="auto_grow(this)" onclick="showcreate()" style="border: none; height: 28px; min-height: 28px;" placeholder="Новая запись..."></textarea>
+              <div id="postadditions" style="display: none;">
+                <div id="postaddition1" style="flex-wrap: wrap; display: flex;"></div>
+                <div id="postaddition2" style="display: flex; flex-wrap: wrap;"></div>
+              </div>
+            </div>
+            <div id="postoptions" class="plate" style="width: calc(25% - 5px); height: 125px; text-align: center; display: none;">
+              <input id="postfileinput" name="files" type="file" multiple class="hidden-input">
+              <input id="postfileinput2" onchange="readfile(this)" type="file" class="hidden-input">
+              <div class="text2-1">{% if request.user in group.subscribers.all %}Предложить запись{% else %}Новая запись{% endif %}</div>    
+              <div class="inline-wrapper">
+                <div id="postfilebutton" class="button3 yellow" style="width: calc(50% - 5px);" onclick="document.getElementById('postfileinput2').click()">Файл</div>    
+                <div class="button3 red" onclick="showcreate()" style="width: calc(50% - 5px);">Отмена</div>
+              </div>
+              <div class="button3 green" onclick="createpost('{% if request.user in group.subscribers.all and group.allowarticles == 2 %}Запись будет отправлена редакторам.{% else %}Запись опубликуется сейчас.{% endif %}')">
+                {% if request.user in group.subscribers.all and group.allowarticles == 2 %}Предложить{% else %}Опубликовать{% endif %}
+              </div>
+            </div>
+          </div>
+        </form>          
+        <br>
+      {% endif %}
+    {% endif %}
+
+    {% if request.user == group.admin or request.user in group.editors.all %} 
+      {% if requestarticles %}
+        <div class="inline-wrapper plate solid" style="width: calc(75% - 5px);">
+          <div class="button0" onclick="showarticles(1)">Опубликованные посты</div> 
+          <div class="button0" onclick="showarticles(2)">Предложенные посты</div>          
+        </div>
+        <br>   
+      {% endif %}
+    {% endif %}   
+    
+    <div id="requestarticles" class="hidden">
+      {% if requestarticles and request.user == group.admin or request.user in group.editors.all %}
+        {% if requestarticles %}
+          {% for post in requestarticles %}
+            <div id='article{{ post.id }}' class="inline-wrapper" style="margin-bottom: 20px;">
+              <div style="width: calc(75% - 5px);">
+                <div class="plate" style="min-height: 146px;">
+                  <div class="text2">{{ post.text }}</div>
+                  <div id="post{{ post.id }}addition1" style="flex-wrap: wrap;"></div>
+                  <div id="post{{ post.id }}addition2" style="flex-wrap: wrap; display: flex;"></div>
+                  {% for file in post.files.all %}
+                    <script>
+                      //  console.log('{{ file.name }}')
+                      if( '{{ file.file }}'.substr(-3) == 'png' || '{{ file.file }}'.substr(-3) == 'jpg' ) {
+
+                        newimg = $('<img>')
+                        newdecorator = $('<div>')
+                        newicon = $('<i>')
+
+                        $(newimg).attr({'class': 'medium-img', 'src': '{{ file.file.url }}', 'name': '{{ file.name }}'})
+                        $(newdecorator).attr({'class': 'image-decorator'})
+                        $(newicon).attr({'class': 'material-icons icon-image-decorator'})
+                        $(newicon).text('remove_red_eye')
+
+                        current_number++
+                        $(newdecorator).attr({'onclick': 'showfile("{{ file.file.url }}", "{{ file.name }}", ' + current_number + ', "post{{ post.id }}addition1")'})
+
+                        newaddition = $('<div>')
+                        $(newaddition).css({'position': 'relative'})
+
+                        $(newdecorator).append(newicon)
+                        newaddition.append(newdecorator, newimg)
+
+                        $('#post{{ post.id }}addition1').append(newaddition)
+                      } else {
+                        newaddition = document.createElement('div')
+                        newaddition.setAttribute('class', 'button3 grey')
+                        newaddition.setAttribute('style', 'text-align: center;')
+                        text = document.createTextNode('{{ file.name }}')
+                        newaddition.append(text)
+                        link = document.createElement('a')
+                        link.setAttribute('href', '{{ file.file.url }}')
+                        link.setAttribute('download', '{{ file.name }}')
+                        link.append(newaddition)
+                        document.getElementById('post{{ post.id }}addition2').append(link)
+                        // console.log(1)
+                      }
+                    </script>
+                  {% endfor %}
+                </div>
+              </div>
+              <div class="solid" style="width: calc(25% - 5px); height: 146px; text-align: center;">    
+                <div class="inline-wrapper" style="height: 40px;">
+                  <div></div>
+                  <div class="inline-wrapper" style="height: 40px;">
+                    <img class="small-img" src="{{ group.image.url }}" alt="">
+                    <div class="text2-1">{{ post.group }}</div>
+                  </div>
+                  <div></div>
+                </div>      
+
+                <div class="inline-wrapper" style="margin: 24px auto; width: 60%;">
+                  <div class="inline-wrapper">
+                    <i class="material-icons icon1">attach_file</i>
+                    <div class="text2" style="margin-top: -5px;">{{ post.files.count }}</div>
+                  </div>
+                  <i class="material-icons icon1 pointer" onclick="allowarticle('{{ post.id }}')">done</i>
+                  <i class="material-icons icon1 pointer" onclick="deletearticle('{{ post.id }}')">clear</i>
+                </div>     
+                <div class="text3">{{ post.pubdate }}</div>
+              </div>
+            </div>        
+          {% endfor %}
+          <div class="plate" style="width: calc(75% - 5px);">
+            <div class="text2">Предложенных статей больше нет</div>
+          </div>
+        {% endif %}
+      {% endif %}
+    </div>
+
+    <div id="articles">
+      {% if articles %}      
+        {% for post in articles %}
+          {% if post.allowed %}
+            <div class="inline-wrapper">
+              <div style="width: calc(75% - 5px);">
+                <div class="plate">
+                  <div class="text2">{{ post.text }}</div>
+                  <div id="post{{ post.id }}addition1" style="flex-wrap: wrap; display: flex;">
+                  </div>
+                  <div id="post{{ post.id }}addition2" style="flex-wrap: wrap; display: flex;">
+                  </div>
+                  <script>current_number = 0</script>
+                  {% for file in post.files.all %}
+                    <script>
+                      if( '{{ file.file }}'.substr(-3) == 'png' || '{{ file.file }}'.substr(-3) == 'jpg' ) {
+
+                        newimg = $('<img>')
+                        newdecorator = $('<div>')
+                        newicon = $('<i>')
+
+                        $(newimg).attr({'class': 'medium-img', 'src': '{{ file.file.url }}', 'name': '{{ file.name }}'})
+                        $(newdecorator).attr({'class': 'image-decorator'})
+                        $(newicon).attr({'class': 'material-icons icon-image-decorator'})
+                        $(newicon).text('remove_red_eye')
+
+                        current_number++
+                        $(newdecorator).attr({'onclick': 'showfile("{{ file.file.url }}", "{{ file.name }}", ' + current_number + ', "post{{ post.id }}addition1")'})
+
+                        newaddition = $('<div>')
+                        newaddition.attr('fileid', '{{ file.id }}')
+                        $(newaddition).css({'position': 'relative'})
+
+                        $(newdecorator).append(newicon)
+                        newaddition.append(newdecorator, newimg)
+
+                        $('#post{{ post.id }}addition1').append(newaddition)
+
+                      } else {
+                        newaddition = document.createElement('div')
+                        newaddition.setAttribute('class', 'button3 grey')
+                        newaddition.setAttribute('style', 'text-align: center;')
+                        text = document.createTextNode(cutstring('{{ file.name }}'))
+                        newaddition.append(text)                        
+                        link = document.createElement('a')
+                        link.setAttribute('href', '{{ file.file.url }}')
+                        link.setAttribute('download', '{{ file.name }}')
+                        link.append(newaddition)
+                        $(link).attr('fileid', '{{ file.id }}')
+                        document.getElementById('post{{ post.id }}addition2').append(link)
+                        // console.log(1)
+                      }
+                    </script>
+                  {% endfor %}
+                </div>
+                <div style="padding: 0px 10px;">
+                  <div class="solid">
+                    <div class="text2">Комментарии: {{ post.comments.count }}</div>
+                    {% for mes in post.comments.all %}
+                      <hr>
+                      <div>
+                        <div class="text3">{{ mes.author.username }}</div>
+                        <div class="text2">{{ mes.text }}</div>
+                      </div>                  
+                    {% endfor %}
+                    <hr>
+                    <div class="inline-wrapper">
+                      {% if request.user.is_authenticated %}
+                          <input class="input1" style="border: none;" maxlength="40" type="text" placeholder="Оставить комментарий...">
+                          <div class="button0" style="width: 100px; margin-left: 10px;">Отправить</div>
+                      {% else %}
+                        <div class="text2">Авторизуйтесь, чтобы написать комментарий</div>
+                        <a class="button0" style="width: 100px; margin-left: 10px;" href="/auth/login">Войти</a>
+                      {% endif %}
+                    </div>
+                  </div>
+                </div> 
+              </div>
+              <div class="solid" style="width: calc(25% - 5px); height: 146px; text-align: center;">    
+                <div class="inline-wrapper" style="height: 40px;">
+                  <div></div>
+                  <div class="inline-wrapper" style="height: 40px;">
+                    <img class="small-img" src="{{ group.image.url }}" alt="">
+                    <div class="text2-1">{{ post.group }}</div>
+                  </div>
+                  <div></div>
+                </div>    
+
+                <div class="inline-wrapper" style="margin: 17px auto 15px; padding: 10px 10px 5px 10px; width: 80%; border-radius: 5px; border: 1px #CCC solid;">
+                  <div class="inline-wrapper"><i class="material-icons icon1">comment</i><div class="text2" style="margin-top: -5px;">{{ post.comments.count }}</div></div>
+                  <div class="inline-wrapper"><i class="material-icons icon1">attach_file</i><div class="text2" style="margin-top: -5px;">{{ post.files.count }}</div></div>
+                  {% if request.user.is_authenticated %}
+                    {% if request.user in post.likes.all %}
+                      <div class="inline-wrapper">
+                        <i id="like{{post.id}}" class="material-icons icon1 pointer" onclick="removelike('{{ post.id }}')">favorite</i>
+                        <div class="text2 pointer" onclick="showliked('{{ post.id }}')" style="margin-top: -5px;">{{ post.likes.count }}</div>
+                      </div>
+                    {% else %}
+                      <div class="inline-wrapper">
+                        <i id="like{{post.id}}" class="material-icons icon1 pointer" onclick="setlike('{{ post.id }}')">favorite_border</i>
+                        <div class="text2 pointer" onclick="showliked('{{ post.id }}')" style="margin-top: -5px;">{{ post.likes.count }}</div>
+                      </div>
+                    {% endif %}  
+                    {% if request.user in group.editors.all or request.user == group.admin %}
+                      <a id="delete{{ post.id }}" href="{% url 'communities:deletearticle' groupid=group.id articleid=post.id %}"></a>
+                      <i class="material-icons icon1 pointer" onclick="showedit('{{ post.id }}')">edit</i>
+                      <i class="material-icons icon1 pointer" onclick="showwarning2('Удалить этот пост?', 'deletepost({{ post.id }})')">delete</i>
+                    {% endif %}
+                  {% else %}
+                    <div class="inline-wrapper">
+                      <i class="material-icons icon1">favorite_border</i>
+                      <div class="text2 pointer" onclick="showliked('{{ post.id }}')" style="margin-top: -5px;">{{ post.likes.count }}</div>
+                    </div>
+                  {% endif %}
+                </div>     
+                <div class="text3">{{ post.pubdate }}</div>
+              </div>
+            </div>  
+            <br>                 
+          {% endif %}
+        {% endfor %}
+      {% else %}
+        <div class="plate">
+          <div class="text2">В этом сообществе нет постов</div>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  {% if request.user == group.admin or request.user in group.editors.all %}
+    <div id="editblock" style="display: none; width: 60%; position: fixed; top: 15%; left: 20%; z-index: 1021 ">    
+      <form id="editform" enctype='multipart/form-data' action="" method='POST's>
+        {% csrf_token %}
+        <div class="plate">    
+          <div class="text1">Редактировать пост</div>
+          <div id="editlate" class="plate" style="width: 100%; height: 500px; overflow-x: hidden; overflow-y: scroll;">
+            <textarea id="editarea" class="textarea1" name="text" oninput="auto_grow(this)" onclick="auto_grow(this)" style="border: none; height: 28px; min-height: 28px;" placeholder="Редактировать текст..."></textarea>
+            <div id="editadditions">
+              <input id='editremovedfiles' type="text" class="hidden-input" name="removedfiles">
+              <div id="editaddition1" style="flex-wrap: wrap; display: flex;"></div>
+              <div id="editaddition2" style="display: flex; flex-wrap: wrap;"></div>
+            </div>
+          </div>
+          <div class="solid">
+            <div class="text3">Вы можете изменить текст и файлы поста</div> 
+          </div>
+          <div id="editoptions" class="inline-wrapper" style="width: 70%; margin: auto;">
+            <input id="editfileinput" name="files" type="file" multiple class="hidden-input">
+            <input id="editfileinput2" onchange="readfile2(this)" multiple type="file" class="hidden-input">  
+            <div id="editfilebutton" class="button3 yellow" style="width: calc(33% - 5px);" onclick="document.getElementById('editfileinput2').click()">Файл</div>    
+            <div class="button3 red" onclick="showedit()" style="width: calc(34% - 5px);">Отмена</div>
+            <div class="button3 green" style="width: calc(33% - 5px);" onclick="editpost()">Опубликовать</div>
+          </div>
+        </div>
+      </form>  
+    </div> 
+  {% endif %} 
+
+  <div id="see_likes" class="plate" style="display: none; position: fixed; top: 300px; width: 600px; right: 50%; margin-right: -300px; z-index: 1021">
+    <div class="text1">Пользователи, которым понравилась запись</div>
+    <hr>
+    <div class="inline-wrapper">
+      <div class="inline-wrapper">
+        <i class="material-icons icon2 flip-vertical" style="margin-top: 5px; margin-right: 5px;">search</i>
+        <input class="input2" type="text" placeholder="поиск" onkeyup="searchlist('editors_list2', this.value)">
+      </div>
+    </div>
+    <br>
+    <div id="liked_users" style="max-height: 500px; overflow-x: hidden; overflow-y: scroll;">
+      <div class="solid">
+        <div class="text3">Этот раздел еще не завершен. Свяжитесь с разработчиками для подробной информации.</div>
+      </div>
+    </div>
+    <hr>
+    <div class="inline-wrapper">
+      <div></div>
+      <div class="button3 red" onclick="showliked()" style="width: calc(50% - 5px); text-align: center;">Закрыть</div>
+      <div></div>
+    </div>
+  </div>
+{% endblock %}
