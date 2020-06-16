@@ -105,7 +105,7 @@
       </div>
       <hr>
       <div class="inline-wrapper">
-        <div class="text2">Подписок</div>
+        <div class="text2">Участников</div>
         <div class="inline-wrapper">
           {% if request.user.is_authenticated and not request.user == group.admin and not request.user in group.editors.all and not request.user in group.banned.all %}
             {% if request.user in group.subscribers.all %}
@@ -123,7 +123,7 @@
           {% if request.user.is_authenticated and request.user in group.editors.all %}  
             <div id="sub_button" class="button3 red" style="margin-right: 10px;" onclick="showwarning2('Покинуть сообщество?<br>Вы будете лишены звания редактора.<br>{% if not  group.public %}Вернуться в это сообщество можно будет только по заявке.{% endif %}', 'unsubscribe()')">Отписаться</div>    
           {% endif %}      
-          <div class="text2">{{ group.subscribers.count }}</div>    
+          <div class="text2">{{ group.subscribers.count|add:group.editors.count|add:1 }}</div>    
         </div>           
       </div>
       <hr>

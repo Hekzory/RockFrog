@@ -97,7 +97,9 @@
                 <div class="inline-wrapper" style="height: 40px;">
                   <div></div>
                   <div class="inline-wrapper" style="height: 40px;">
-                    <img class="small-img" src="{{ group.image.url }}" alt="">
+                    {% if group.image != 'False' %}
+                      <img class="small-img" src="{{ group.image.url }}" alt=""> 
+                    {% endif %}
                     <div class="text2-1">{{ post.group }}</div>
                   </div>
                   <div></div>
@@ -204,7 +206,9 @@
                 <div class="inline-wrapper" style="height: 40px;">
                   <div></div>
                   <div class="inline-wrapper" style="height: 40px;">
-                    <img class="small-img" src="{{ group.image.url }}" alt="">
+                    {% if group.image != 'False' %}
+                      <img class="small-img" src="{{ group.image.url }}" alt=""> 
+                    {% endif %}                    
                     <div class="text2-1">{{ post.group }}</div>
                   </div>
                   <div></div>
