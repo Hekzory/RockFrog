@@ -17,6 +17,9 @@ class DialogPage(View):
                 context['user_messaging_with'] = user_messaging_with
             except ObjectDoesNotExist:
                 return HttpResponseRedirect('/conversations')
+            # Если пользователь пытается пообщаться с самим собой, посылаем его
+            if request.user.id == user_id:
+                return HttpResponseRedirect('/conversations')
             current_conversation = None
             # Ищем переписку с нужным пользователем
             for conversation in request.user.conversationlist.conversations.all():
