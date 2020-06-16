@@ -132,7 +132,7 @@
           </div>
           <div class="solid" style="width: calc(25% - 5px);">
             <div class="text3">Администратор: {{ group.admin }}</div>
-            <div class="text3">Участников: {{ group.subscribers.count }}</div>
+            <div class="text3">Участников: {{ group.subscribers.count|add:group.editors.count|add:1 }}</div>
             <div class="text3">Создано: {{ group.pubdate }}</div>
           </div>
         </div>
@@ -168,7 +168,7 @@
             </div>
             <div class="solid" style="width: calc(25% - 5px);">
               <div class="text3">Администратор: {{ group.admin }}</div>
-              <div class="text3">Участников: {{ group.subscribers.count }}</div>
+              <div class="text3">Участников: {{ group.subscribers.count|add:group.editors.count|add:1 }}</div>
               <div class="text3">Создано: {{ group.pubdate }}</div>
             </div>
           </div>
@@ -202,7 +202,7 @@
             </div>
             <div class="solid" style="width: calc(25% - 5px);">
               <div class="text3">Администратор: {{ group.admin }}</div>
-              <div class="text3">Участников: {{ group.subscribers.count }}</div>
+              <div class="text3">Участников: {{ group.subscribers.count|add:group.editors.count|add:1 }}</div>
               <div class="text3">Создано: {{ group.pubdate }}</div>
             </div>
           </div>
@@ -236,7 +236,7 @@
             </div>
             <div class="solid" style="width: calc(25% - 5px);">
               <div class="text3">Администратор: {{ group.admin }}</div>
-              <div class="text3">Участников: {{ group.subscribers.count }}</div>
+              <div class="text3">Участников: {{ group.subscribers.count|add:group.editors.count|add:1 }}</div>
               <div class="text3">Создано: {{ group.pubdate }}</div>
             </div>
           </div>
@@ -270,7 +270,7 @@
             </div>
             <div class="solid" style="width: calc(25% - 5px);">
               <div class="text3">Администратор: {{ group.admin }}</div>
-              <div class="text3">Участников: {{ group.subscribers.count }}</div>
+              <div class="text3">Участников: {{ group.subscribers.count|add:group.editors.count|add:1 }}</div>
               <div class="text3">Создано: {{ group.pubdate }}</div>
             </div>
           </div>
@@ -304,7 +304,7 @@
             </div>
             <div class="solid" style="width: calc(25% - 5px);">
               <div class="text3">Администратор: {{ group.admin }}</div>
-              <div class="text3">Участников: {{ group.subscribers.count }}</div>
+              <div class="text3">Участников: {{ group.subscribers.count|add:group.editors.count|add:1 }}</div>
               <div class="text3">Создано: {{ group.pubdate }}</div>
             </div>
           </div>
