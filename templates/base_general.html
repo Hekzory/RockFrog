@@ -15,6 +15,7 @@
     <title>{% block title %}{% endblock %}</title>
   </head>
   <body>
+  <div id="disabler" style="z-index: 0; position: fixed; top: 0; width: 100%; height: 100%; background-color: black; opacity: 0;"></div>
     <!--{% block header %}{% endblock %}-->
     {% include 'standart_menu.html' %}
     <div class="container">
@@ -53,10 +54,56 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
     <script src="/static/js/usual_notifications.js"></script>
+      <script type="text/javascript">
+      // a = document.getElementById('articles').offsetHeight
+      // console.log(a)
+      scrollHeight = Math.max(
+        document.body.scrollHeight, document.documentElement.scrollHeight,
+        document.body.offsetHeight, document.documentElement.offsetHeight,
+        document.body.clientHeight, document.documentElement.clientHeight
+      );
+      window.onload = function() {
+        if( window.innerHeight != scrollHeight ) {
+          scroller = document.createElement("a")
+          scroller.setAttribute('class', 'scroller')
+          scroller.setAttribute('onclick', 'window.scroll({top: 0, left: 0, behavior: "smooth" });')
+          document.body.append(scroller)
+        }
+      }
+    </script>
   </body>
 </html>
 
 <style>
+  .warning {
+    width: 380px;
+    padding: 10px;
+    z-index: 1023;
+    position: fixed;
+    top: 70px;
+    right: 50%;
+    margin-right: -190px;
+    border: 2px solid #E4AB0D;
+    background-color: white;
+    border-radius: 10px;
+    text-align: center;
+  }
+
+  .scroller {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 50px;
+    background-color: #F0F0F0;
+    transition: 0.1s;
+  }
+
+  .scroller:hover {
+    cursor: pointer;
+    background-color: #F6F6F6;
+  }
+
   .notification {
     width: 300px;
     padding: 10px 20px 10px;
