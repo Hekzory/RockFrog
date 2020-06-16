@@ -8,9 +8,9 @@
                 <ul id="msg-list" class="list-group">
                     {% for obj in chat %}
                         {% if obj.user == request.user %}
-                        <li class="text-left list-group-item">{{ obj.user.username }}: {{ obj.message }}</li>
+                        <li class="text-left list-group-item"><a href="/profile/">{{ obj.user.username }}</a>: {{ obj.message }}</li>
                     {% else %}
-                        <li class="text-left list-group-item">{{ obj.user.username }}: {{ obj.message }}</li>
+                        <li class="text-left list-group-item"><a href="/profile/{{ obj.user.username }}">{{ obj.user.username }}</a>: {{ obj.message }}</li>
                         {% endif %}
                     {% empty %}
                         <li class="text-left list-group-item">Сообщения отсутствуют!</li>
