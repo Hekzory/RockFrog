@@ -50,17 +50,18 @@ class RegistrationForm(forms.Form):
 
         userexp = re.compile('^[A-Za-z0-9_-]{8,100}$')
 
-        if not userexp.match(temp_password):
-            raise ValidationError("В пароле могут присутствовать лишь английские буквы, цифры, дефис и знак подчёркивания")
-
-        if temp_confirmpass != temp_password:
-            raise ValidationError("Пароли не совпадают.")
-
         if len(temp_password) < 8:
             raise ValidationError("Минимальная длина пароля - 8.")
 
         if len(temp_password) > 100:
             raise ValidationError("Максимальная длина пароля - 100.")
+
+        if temp_confirmpass != temp_password:
+            raise ValidationError("Пароли не совпадают.")
+
+        if not userexp.match(temp_password):
+            raise ValidationError("В пароле могут присутствовать лишь английские буквы, цифры, дефис и знак подчёркивания")
+
 
         return temp_confirmpass
 
@@ -69,16 +70,16 @@ class RegistrationForm(forms.Form):
 
         userexp = re.compile('^[a-z0-9_-]{3,20}$')
 
+        if len(temp_login) < 3:
+            raise ValidationError("Минимальная длина логина - 3.")
+        elif len(temp_login) > 20:
+            raise ValidationError("Максимальная длина логина - 20.")
+
         if not userexp.match(temp_login):
             raise ValidationError("В имени пользователя могут присутствовать лишь английские строчные буквы, цифры, дефис и знак подчёркивания")
 
         if User.objects.filter(username=temp_login).count() != 0:
             raise ValidationError("Пользователь с таким именем уже зарегистрирован.")
-
-        if len(temp_login) < 3:
-            raise ValidationError("Минимальная длина логина - 3.")
-        elif len(temp_login) > 20:
-            raise ValidationError("Максимальная длина логина - 20.")
 
         return temp_login
 
