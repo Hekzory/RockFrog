@@ -156,6 +156,7 @@ notificationSocket.onclose = function(e) {
 function showwarning(text) {
 	if( $('#warning').css('display') == "none" ) {
 		$('#warning-text').text(text)
+		$('#warning-apply').css('display', 'none')
 		$('#warning').show(300)
 		$('#disabler').css({'z-index': '1021'})
 		$('#warning-text').delay(200).animate({'opacity': '1'}, 300)

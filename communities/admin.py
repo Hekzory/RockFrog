@@ -6,7 +6,7 @@ class GroupsAdmin(admin.ModelAdmin):
     fields = ['groupname', 'slug', 'description', 'image', 'pubdate', 'admin', 'editors', 'subscribers', 'public', 'subrequests', 'banned', 'allowarticles']
 
 class ArticlesAdmin(admin.ModelAdmin):
-    fields = ['group', 'text', 'allowed', 'pubdate', 'likes']
+    fields = ['group', 'text', 'allowed', 'pubdate', 'likes', 'author']
 
 class CommentsAdmin(admin.ModelAdmin):
     fields = ['author', 'text', 'pubdate', 'article']

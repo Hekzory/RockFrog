@@ -50,8 +50,9 @@
               <div style="width: calc(75% - 5px);">
                 <div class="plate" style="min-height: 146px;">
                   <div class="text2">{{ post.text }}</div>
-                  <div id="post{{ post.id }}addition1" style="flex-wrap: wrap;"></div>
+                  <div id="post{{ post.id }}addition1" style="flex-wrap: wrap; display: flex;"></div>
                   <div id="post{{ post.id }}addition2" style="flex-wrap: wrap; display: flex;"></div>
+                  <script>current_number = 0</script>
                   {% for file in post.files.all %}
                     <script>
                       //  console.log('{{ file.name }}')
@@ -61,7 +62,7 @@
                         newdecorator = $('<div>')
                         newicon = $('<i>')
 
-                        $(newimg).attr({'class': 'medium-img', 'src': '{{ file.file.url }}', 'name': '{{ file.name }}'})
+                        $(newimg).attr({'class': 'medium-img', 'src': '{{ file.file.url }}', 'name': '{{ file.name }}', 'onError': 'removeElement(this.parentElement)'})
                         $(newdecorator).attr({'class': 'image-decorator'})
                         $(newicon).attr({'class': 'material-icons icon-image-decorator'})
                         $(newicon).text('remove_red_eye')
@@ -97,10 +98,13 @@
                 <div class="inline-wrapper" style="height: 40px;">
                   <div></div>
                   <div class="inline-wrapper" style="height: 40px;">
-                    {% if group.image != 'False' %}
-                      <img class="small-img" src="{{ group.image.url }}" alt=""> 
+                    {% if post.author != None %}
+                      <img class="small-img" src="/media/{{ post.author.profile.avatar }}" alt="" onError="removeElement(this)">                    
+                      <div class="text2-1"><a class="link1" href="{% url 'UserProfile:userprofile' post.author %}">{{ post.author }}</a></div>
+                    {% else %}
+                      <img class="small-img" src="{{ group.image.url }}" alt="" onError="removeElement(this)"> 
+                      <div class="text2-1">{{ post.group }}</div>
                     {% endif %}
-                    <div class="text2-1">{{ post.group }}</div>
                   </div>
                   <div></div>
                 </div>      
@@ -145,7 +149,7 @@
                         newdecorator = $('<div>')
                         newicon = $('<i>')
 
-                        $(newimg).attr({'class': 'medium-img', 'src': '{{ file.file.url }}', 'name': '{{ file.name }}'})
+                        $(newimg).attr({'class': 'medium-img', 'src': '{{ file.file.url }}', 'name': '{{ file.name }}', 'onError': 'removeElement(this.parentElement)'})
                         $(newdecorator).attr({'class': 'image-decorator'})
                         $(newicon).attr({'class': 'material-icons icon-image-decorator'})
                         $(newicon).text('remove_red_eye')
@@ -161,6 +165,8 @@
                         newaddition.append(newdecorator, newimg)
 
                         $('#post{{ post.id }}addition1').append(newaddition)
+
+                        console.log(1)
 
                       } else {
                         newaddition = document.createElement('div')
@@ -192,8 +198,8 @@
                     <hr>
                     <div class="inline-wrapper">
                       {% if request.user.is_authenticated %}
-                          <input class="input1" style="border: none;" maxlength="40" type="text" placeholder="Оставить комментарий...">
-                          <div class="button0" style="width: 100px; margin-left: 10px;">Отправить</div>
+                        <input class="input1" style="border: none;" maxlength="40" type="text" placeholder="Оставить комментарий...">
+                        <div class="button0" style="width: 100px; margin-left: 10px;">Отправить</div>
                       {% else %}
                         <div class="text2">Авторизуйтесь, чтобы написать комментарий</div>
                         <a class="button0" style="width: 100px; margin-left: 10px;" href="/auth/login">Войти</a>
@@ -206,10 +212,13 @@
                 <div class="inline-wrapper" style="height: 40px;">
                   <div></div>
                   <div class="inline-wrapper" style="height: 40px;">
-                    {% if group.image != 'False' %}
-                      <img class="small-img" src="{{ group.image.url }}" alt=""> 
-                    {% endif %}                    
-                    <div class="text2-1">{{ post.group }}</div>
+                    {% if post.author != None %}
+                      <img class="small-img" src="/media/{{ post.author.profile.avatar }}" alt="" onError="removeElement(this)">                   
+                      <div class="text2-1"><a class="link1" href="{% url 'UserProfile:userprofile' post.author %}">{{ post.author }}</a></div>
+                    {% else %}
+                      <img class="small-img" src="{{ group.image.url }}" alt="" onError="removeElement(this)"> 
+                      <div class="text2-1">{{ post.group }}</div>
+                    {% endif %}
                   </div>
                   <div></div>
                 </div>    
@@ -221,12 +230,12 @@
                     {% if request.user in post.likes.all %}
                       <div class="inline-wrapper">
                         <i id="like{{post.id}}" class="material-icons icon1 pointer" onclick="removelike('{{ post.id }}')">favorite</i>
-                        <div class="text2 pointer" onclick="showliked('{{ post.id }}')" style="margin-top: -5px;">{{ post.likes.count }}</div>
+                        <div class="text2 pointer" style="margin-top: -5px;">{{ post.likes.count }}</div>
                       </div>
                     {% else %}
                       <div class="inline-wrapper">
                         <i id="like{{post.id}}" class="material-icons icon1 pointer" onclick="setlike('{{ post.id }}')">favorite_border</i>
-                        <div class="text2 pointer" onclick="showliked('{{ post.id }}')" style="margin-top: -5px;">{{ post.likes.count }}</div>
+                        <div class="text2 pointer" style="margin-top: -5px;">{{ post.likes.count }}</div>
                       </div>
                     {% endif %}  
                     {% if request.user in group.editors.all or request.user == group.admin %}
@@ -237,7 +246,7 @@
                   {% else %}
                     <div class="inline-wrapper">
                       <i class="material-icons icon1">favorite_border</i>
-                      <div class="text2 pointer" onclick="showliked('{{ post.id }}')" style="margin-top: -5px;">{{ post.likes.count }}</div>
+                      <div class="text2 pointer" style="margin-top: -5px;">{{ post.likes.count }}</div>
                     </div>
                   {% endif %}
                 </div>     
@@ -256,12 +265,12 @@
   </div>
 
   {% if request.user == group.admin or request.user in group.editors.all %}
-    <div id="editblock" style="display: none; width: 60%; position: fixed; top: 15%; left: 20%; z-index: 1021 ">    
-      <form id="editform" enctype='multipart/form-data' action="" method='POST's>
+    <div id="editblock" style="display: none; width: 60%; position: fixed; top: 15%; height: 70%; left: 20%; z-index: 1021 ">    
+      <form id="editform" enctype='multipart/form-data' action="" method='POST' style="height: 100%;">
         {% csrf_token %}
-        <div class="plate">    
+        <div class="plate" style="height: 100%;">    
           <div class="text1">Редактировать пост</div>
-          <div id="editlate" class="plate" style="width: 100%; height: 500px; overflow-x: hidden; overflow-y: scroll;">
+          <div id="editlate" class="plate" style="width: 100%; height: calc(100% - 140px); overflow-x: hidden; overflow-y: scroll;">
             <textarea id="editarea" class="textarea1" name="text" oninput="auto_grow(this)" onclick="auto_grow(this)" style="border: none; height: 28px; min-height: 28px;" placeholder="Редактировать текст..."></textarea>
             <div id="editadditions">
               <input id='editremovedfiles' type="text" class="hidden-input" name="removedfiles">

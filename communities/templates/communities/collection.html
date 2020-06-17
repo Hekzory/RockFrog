@@ -25,7 +25,7 @@
 		          	newdecorator = $('<div>')
 		          	newicon = $('<i>')
 
-		          	$(newimg).attr({'class': 'medium-img', 'src': '{{ file.file.url }}'})
+		          	$(newimg).attr({'class': 'medium-img', 'src': '{{ file.file.url }}', 'onError': 'removeElement(this.parentElement)'})
 		          	$(newdecorator).attr({'class': 'image-decorator'})
 		          	$(newicon).attr({'class': 'material-icons icon-image-decorator'})
 		          	$(newicon).text('remove_red_eye')

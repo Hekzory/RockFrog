@@ -33,9 +33,15 @@ class GroupArticle(models.Model):
 	pubdate = models.DateTimeField('date published', default=datetime.now())      
 	group = models.ForeignKey(Group, on_delete=models.CASCADE, related_name='articles') 
 	likes = models.ManyToManyField(User, blank=True, related_name='likes')
+	author = models.ForeignKey(User, on_delete=models.PROTECT, null=True, blank=True, related_name='articles_author', default=None)
 
 	def __str__(self):
 		return self.text
+
+	def save(self, *args, **kwargs):
+	    if self.author is None:
+	        self.author = self.group.admin
+	    super(GroupArticle, self).save(*args, **kwargs)
 
 class ArticleFile(models.Model):
 	name = models.CharField(max_length=40)

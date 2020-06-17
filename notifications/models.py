@@ -40,7 +40,7 @@ def save_user_NotificationList(sender, instance, **kwargs):
 def create_Notification_onchat(sender, instance, created, **kwargs):
     if created:
         notification_text = strip_tags(str(instance.message))
-        notification_name = strip_tags(str(instance.user.username)+': новое сообщение в чате')
+        notification_name = strip_tags(str(instance.user.username)+' написал в чат')
         notification_href = '/chat'
         notification = Notification.objects.create(not_text = notification_text, not_name = notification_name, not_link = notification_href)
         notification.save()
