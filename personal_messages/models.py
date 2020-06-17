@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.dispatch import receiver
 from django.db.models.signals import post_save
 import datetime
-
+from django.utils import timezone
 
 class ConversationMessage(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -12,6 +12,10 @@ class ConversationMessage(models.Model):
 
     def __str__(self):
         return self.text[:32]
+
+    def is_earlier_24(self):
+        print(timezone.now())
+        return self.date_time > (timezone.now() - datetime.timedelta(days=1))
 
 
 class Conversation(models.Model):

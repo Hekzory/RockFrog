@@ -12,7 +12,7 @@
     </div>
   </div>
   <div class="p-2">
-    <h3>Переписка с {{user_messaging_with}}</h3>
+    <h3>Переписка с <a id="username">{{user_messaging_with}}</a></h3>
   </div>
   <div class="p-2">
     Был в сети <>
@@ -22,13 +22,20 @@
 
 
 {% block content %}
+{% csrf_token %}
 <div class="container">
   <div id="msg-list-div" class="overflow-auto" style="max-height: 60vh !important;">
 <div id="msg-list" class="list-group list-group-flush">
 {% for message in messages %}
-  <div class="list-group-item list-group-item-action flex-column align-items-start">
+  <div class="list-group-item list-group-item-action flex-column align-items-start" id="{{message.id}}">
     <div class="d-flex w-100 justify-content-between">
       <h5 class="mb-1">{{message.user.username}}</h5>
+      {% if request.user.id == message.user.id and message.is_earlier_24 %}
+      <div>
+        <small><button class="btn btn-link" onclick="delete_message({{message.id}})">Удалить</button></small>
+        <!--<small>Редактировать</small>-->
+      </div>
+      {% endif %}
       <small>{{message.date_time}}</small>
     </div>
     <p class="mb-1">{{message.text}}</p>
@@ -48,4 +55,5 @@
   <button type="submit" class="btn btn-primary mb-2" id="send">Отправить</button>
 </div>
 <script src="{% static 'js/PM_websocket.js' %}"></script>
+<script src="{% static 'js/pm_manage.js' %}"></script>
 {% endblock %}
