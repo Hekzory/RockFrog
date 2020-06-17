@@ -5,6 +5,7 @@
 {% block links %}
   <link rel="stylesheet" href="{% static 'communities/css/style.css' %}"/>
   <script src="{% static 'communities/js/functions.js' %}"></script>
+  <meta charset="utf-8"/>
 {% endblock %}
 
 {% block header %}
@@ -84,7 +85,7 @@
             <div class="image-decorator" onclick="showfile('{{ group.image.url }}', 'main_image.jpg', 1, 'mainimage')" style="margin: 0; width: 100%; height: 100%;">
               <i class="material-icons icon-image-decorator" style="font-size: 80px; margin-top: 50px; margin-left: calc(50% - 40px);">remove_red_eye</i>
             </div>
-            <img class="group-img" src="{{ group.image.url }}"> 
+            <img class="group-img" src="{{ group.image.url }}" onError="removeElement(this.parentElement.parentElement.parentElement)"> 
           </div>     
         </div>
       </div>

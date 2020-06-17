@@ -49,7 +49,7 @@ function deletegroup() {
 
         success : function(data) {
         	// console.log(data)
-			// document.location.href = '/groups/'
+			document.location.href = '/groups/'
         },
     });
 }
@@ -272,12 +272,14 @@ function savevalue(type) {
 function readURL(input) {
   if( input.files ) {
     file = input.files[0]    
+
+    if( file.type != 'image/png' & file.type != 'image/jpeg' ) {        
+        showwarning('Загрузите изображение в формате jpeg или png')
+    } else 
     if( file.size > 5000000 ) {        
         showwarning('Файл слишком большой')
     } else
-    if( file.type != 'image/png' & file.type != 'image/jpeg' ) {        
-        showwarning('Загрузите изображение в формате jpeg или png')
-    } else {
+    {
         setimage(input, 'testimg')
         img = document.getElementById('testimg')
         img.onload = function() {
@@ -355,12 +357,26 @@ function showeditors() {
     if( $('#toadminlist').css('display') == "none" ) {
         $('#toadminlist').show(300)
         $('#disabler').css({'z-index': '1021'}) 
-        $('#disabler').animate({'opacity': '0.7'}, 300)             
+        $('#disabler').animate({'opacity': '0.7'}, 300)  
+
+        if ($(document).height() > $(window).height()) {
+            var scrollTop = ($('html').scrollTop()) ? $('html').scrollTop() : $('body').scrollTop()
+            $('html').addClass('noscroll').css('top',-scrollTop)       
+        }
+
     } else {
         $('#toadminlist').hide(300)
         $('#disabler').animate({'opacity': '0'}, 300)
-        $('#disabler').animate({'z-index': '0'}, 300)   
+        $('#disabler').animate({'z-index': '0'}, 300) 
+
+        var scrollTop = parseInt($('html').css('top'))
+        $('html').removeClass('noscroll')
+        $('html,body').scrollTop(-scrollTop)   
     }
+}
+
+function removeElement(element) {
+     element.remove();
 }
 
 //var form = document.getElementById("form1");

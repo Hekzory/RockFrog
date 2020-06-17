@@ -79,7 +79,7 @@
   <div class="inline-wrapper">
     {% if group.image.url != '/media/False' %}
       <div style="margin-right: 20px;">
-        <img id="groupimage" class="group-img" src="{{ group.image.url }}" alt="" style="margin-bottom: 10px;">
+        <img id="groupimage" class="group-img" src="{{ group.image.url }}" alt="" style="margin-bottom: 10px;" onError="removeElement(this)">
         <form id="imageform" action="{% url 'communities:moreedit' group.id %}" method="POST" class="inline-wrapper" enctype="multipart/form-data"> 
           {% csrf_token %}     
           <input type="hidden" name="next" value="{{ request.path }}">
@@ -97,7 +97,7 @@
       <div class="inline-wrapper">  
         <div class="text2">Удалить сообщество</div>            
         <div class="inline-wrapper">
-          <div id="delete" class="button2 visible" onclick="showwarning2('Удалить сообщество? Отменить это действие невозможно.', 'deletegroup()')">Удалить</div>         
+          <div id="delete" class="button2 visible" onclick="showwarning2('Удалить сообщество?', 'deletegroup()')">Удалить</div>         
         </div>       
       </div>
       <hr>
@@ -219,7 +219,7 @@
           <div id='editor{{ user.id }}' name="{{ user }}">
             <div class="inline-wrapper tohover">
               <div class="inline-wrapper">
-                <img class="small-img" src="{{ group.image.url }}">
+                <img class="small-img" src="/media/{{ user.profile.avatar }}" alt="" onError="removeElement(this)"> 
                 <div class="text2"><a class="link1" href="{% url 'UserProfile:userprofile' user %}">{{ user }}</a></div>
               </div>  
               {% if user != request.user %}
@@ -257,7 +257,7 @@
           <div id='user{{ user.id }}' name="{{ user }}">
             <div class="inline-wrapper tohover">
               <div class="inline-wrapper">
-                <img class="small-img" src="{{ group.image.url }}">
+                <img class="small-img" src="/media/{{ user.profile.avatar }}" alt="" onError="removeElement(this)"> 
                 <div class="text2"><a class="link1" href="{% url 'UserProfile:userprofile' user %}">{{ user }}</a></div>
               </div>
               <div class="hidden inline-wrapper showflex"> 
@@ -293,7 +293,7 @@
           <div id='banned{{ user.id }}' name="{{ user }}">
             <div class="inline-wrapper tohover">
               <div class="inline-wrapper">
-                <img class="small-img" src="{{ group.image.url }}">
+                <img class="small-img" src="/media/{{ user.profile.avatar }}" alt="" onError="removeElement(this)"> 
                 <div class="text2"><a class="link1" href="{% url 'UserProfile:userprofile' user %}">{{ user }}</a></div>
               </div>
               <div class="hidden showflex inline-wrapper"> 
@@ -311,50 +311,22 @@
     <div class="text3">Если какие-либо изменения не применились, обновите страницу</div>
   </div>
 
-  <div class="plate">
-    <div class="inline-wrapper">
-      <div class="text1">Другое</div>   
-      <div class="button1" onclick="show('hid3', this)">Открыть</div> 
-    </div> 
-    <div id="hid3" class="hidden">
-      <hr>
-      <div class="inline-wrapper">
-        <div class="text2">Дата создания</div>   
-        <div class="text2">{{ group.pubdate }}</div>   
-      </div>
-      <div class="inline-wrapper">
-        <div class="text2">Подписок</div>   
-        <div class="text2">{{ group.subscribers.count }}</div>   
-      </div>
-      <div class="inline-wrapper">
-        <div class="text2">Постов</div>   
-        <div class="text2">{{ group.articles.count }}</div>   
-      </div>
-      <div class="inline-wrapper">
-        <div class="text2">Администратор</div>   
-        <div class="text2">{{ group.admin }}</div>   
-      </div>
-    </div>
-  </div>
-
   <div class="solid">
     <div class="text3">Эта страница доступна только администратору сообщества. Здесь вы можте изменить основную информацию о сообществе а также управлять статусом подписчиков (повышать до редакторов, добавлять в черный список и т. д.). Редакторы могут рассматривать заявки (в закрытом сообществе), а также публиковать свои или предложенные посты
     </div> 
   </div>
 
-  <div id="toadminlist" class="plate" style="display: none; position: fixed; top: 300px; width: 600px; right: 50%; margin-right: -300px; z-index: 1021">
+  <div id="toadminlist" class="plate" style="display: none; position: fixed; top: 15%; height: 70%; width: 600px; right: 50%; margin-right: -300px; z-index: 1021">
     <div class="text1">Передайте владение сообществом одному из редакторов</div>
     <hr>
-    {% if group.editors.count > 5 %}
+    <div class="inline-wrapper">
       <div class="inline-wrapper">
-        <div class="inline-wrapper">
-          <i class="material-icons icon2 flip-vertical" style="margin-top: 5px; margin-right: 5px;">search</i>
-          <input class="input2" type="text" placeholder="поиск" onkeyup="searchlist('editors_list2', this.value)">
-        </div>
+        <i class="material-icons icon2 flip-vertical" style="margin-top: 5px; margin-right: 5px;">search</i>
+        <input class="input2" type="text" placeholder="поиск" onkeyup="searchlist('editors_list2', this.value)">
       </div>
-      <br>
-    {% endif %}
-    <div id="editors_list2" style="max-height: 500px; overflow-x: hidden; overflow-y: scroll;">
+    </div>
+    <br>
+    <div id="editors_list2" style="height: calc(100% - 150px); overflow-x: hidden; overflow-y: scroll;">
       <div class="solid">
         <div class="text3">Вы можете передать свой статус администратора одному из редакторов</div>
       </div>
@@ -362,7 +334,7 @@
         <div id='editor{{ user.id }}' name="{{ user }}">
           <div class="inline-wrapper tohover">
             <div class="inline-wrapper">
-              <img class="small-img" src="{{ group.image.url }}">
+              <img class="small-img" src="/media/{{ user.profile.avatar }}" alt="" onError="removeElement(this)"> 
               <div class="text2"><a class="link1" href="{% url 'UserProfile:userprofile' user %}">{{ user }}</a></div>
             </div>  
             {% if user != request.user %}

@@ -233,17 +233,19 @@ function showcreate() {
 function readfile(input) {
   	if( input.files ) {
 	    file = input.files[0]    
-	    if( file.size > 5000000 ) {        
-	        showwarning('Файл слишком большой')
-	        files = document.getElementById('postfileinput2').files
-			files = Object.values(files).splice(-1,1)
-			document.getElementById('postfileinput2').files = new FileListItem(files)
-	    } else if( file.type != 'image/png' & file.type != 'image/jpeg' & file.type != 'application/pdf' & file.type != 'text/plain' & file.type != 'application/msword' ) {        
+	    if( file.type != 'image/png' & file.type != 'image/jpeg' & file.type != 'application/pdf' & file.type != 'text/plain' & file.type != 'application/msword' ) {        
 	        showwarning('Такой формат файла недоступен')
 	       	files = document.getElementById('postfileinput2').files
 			files = Object.values(files).splice(-1,1)	
 			document.getElementById('postfileinput2').files = new FileListItem(files)        
-	    } else {
+	    } else 
+	   	if( file.size > 5000000 ) {        
+	        showwarning('Файл слишком большой')
+	        files = document.getElementById('postfileinput2').files
+			files = Object.values(files).splice(-1,1)
+			document.getElementById('postfileinput2').files = new FileListItem(files)
+	    } else 
+	    {
 	     	files = Object.values(document.getElementById('postfileinput').files)
 	    	newfile = Object.values(document.getElementById('postfileinput2').files)
 	    	files = files.concat(newfile)
@@ -295,11 +297,13 @@ function readfile(input) {
 function readfile2(input) {
   	if( input.files ) {
 	    file = input.files[0]    
-	    if( file.size > 5000000 ) {        
-	        // showwarning('Файл слишком большой')
-	    } else if( file.type != 'image/png' & file.type != 'image/jpeg' & file.type != 'application/pdf' & file.type != 'text/plain' & file.type != 'application/msword' ) {        
+	    if( file.type != 'image/png' & file.type != 'image/jpeg' & file.type != 'application/pdf' & file.type != 'text/plain' & file.type != 'application/msword' ) {        
 	        // showwarning('Такой формат файла недоступен')
-	    } else {
+	    } else 
+	   	if( file.size > 5000000 ) {        
+	        // showwarning('Файл слишком большой')
+	    } else 
+	    {
 	     	files = Object.values(document.getElementById('editfileinput').files)
 	    	newfile = Object.values(document.getElementById('editfileinput2').files)
 	    	files = files.concat(newfile)
@@ -472,8 +476,9 @@ function showedit(postid) {
 
 	        success : function(returned) {
 	            result = returned
-	            $('#editarea').text(returned)
+	            $('#editarea').val(returned)
 	            // console.log(result)
+	            console.log(1)
 	        },
 	    });
 
@@ -491,7 +496,6 @@ function showedit(postid) {
 	    $("#editaddition2 a").removeAttr('href')
 	    $("#editaddition2 a").removeAttr('download')
 
-    	$('#editarea').text(123)
         $('#editblock').show(300)
         $('#disabler').css({'z-index': '1021'}) 
         $('#disabler').animate({'opacity': '0.7'}, 300)  
@@ -504,8 +508,8 @@ function showedit(postid) {
         $('#disabler').animate({'opacity': '0'}, 300)
         $('#disabler').animate({'z-index': '0'}, 300)  
         var scrollTop = parseInt($('html').css('top'))
-			$('html').removeClass('noscroll')
-			$('html,body').scrollTop(-scrollTop) 
+		$('html').removeClass('noscroll')
+		$('html,body').scrollTop(-scrollTop) 
     }
 }
 
@@ -622,4 +626,8 @@ function cutstring(text, val=7) {
       text = text.slice(0, val) + '...'
     }
     return text
+}
+
+function removeElement(element) {
+     element.remove();
 }

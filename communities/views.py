@@ -4,6 +4,7 @@ from django.db.models import F
 # from django.template import loader
 from django.views.generic import View
 from communities.models import *
+from notifications.models import *
 # from .forms import GroupEditForm
 from django.contrib.auth.models import User
 # from django.urls import reverse
@@ -91,6 +92,7 @@ class CreateArticle(View):
 			if bound_form.is_valid():
 				new_article = bound_form.save(commit=False)
 				new_article.group = group
+				new_article.author = request.user
 				new_article.pubdate = datetime.now()
 				if group.allowarticles == 2 and not (request.user in group.editors.all() or request.user == group.admin):	
 					new_article.allowed = False
@@ -133,7 +135,6 @@ class EditArticle(View):
 			article = GroupArticle.objects.get(id=articleid)
 			if bound_form.is_valid():
 				article.text = request.POST.get("text")
-				article.save()
 
 				for fileid in request.POST.get("removedfiles").split():
 					try:
@@ -155,6 +156,16 @@ class DeleteArticle(View):
 		group = Group.objects.get(id=groupid)
 		if request.user in group.editors.all() or request.user == group.admin:
 			article = GroupArticle.objects.get(id=articleid)
+
+			if request.user != article.author:
+				notification_text = "Ваш пост в " + group.groupname + " удален"
+				notification_name = "Пост удален"
+				notification_href = '/groups/' + group.slug + '/'
+				notification = Notification(not_text=notification_text, not_name=notification_name, not_link=notification_href, not_date=datetime.now())
+				notification.save()
+				notificationlist = Notificationlist.objects.get(user=article.author).notifications
+				notificationlist.add(notification)
+
 			article.delete()
 		slug = group.slug
 		return HttpResponseRedirect('/groups/' + str(slug) + '/')
@@ -165,7 +176,7 @@ class DeleteArticle(View):
 
 def creategroup(request):
 	if request.user.is_authenticated:
-		group = Group(groupname=request.POST.get("groupname"), admin=request.user)	
+		group = Group(groupname=request.POST.get("groupname"), admin=request.user, pubdate = datetime.now())	
 		group.save()
 		group.slug = str(group.id)
 		group.save()
@@ -180,10 +191,30 @@ def edit(request, groupid):
 			if request.POST.get('type') == 'allowarticle':
 				article = GroupArticle.objects.get(id=request.POST.get('data'))
 				article.allowed = True
+				article.pubdate = datetime.now()
 				article.save()
+
+				notification_text = "Ваш пост в " + group.groupname + " опубликован"
+				notification_name = "Пост опубликован"
+				notification_href = '/groups/' + group.slug + '/'
+				notification = Notification(not_text=notification_text, not_name=notification_name, not_link=notification_href, not_date=datetime.now())
+				notification.save()
+				notificationlist = Notificationlist.objects.get(user=article.author).notifications
+				notificationlist.add(notification)
+
 				return HttpResponse('Ok')
 			elif request.POST.get('type') == 'deletearticle':
 				article = GroupArticle.objects.get(id=request.POST.get('data'))
+
+				if request.user != article.author:
+					notification_text = "Ваш пост в " + group.groupname + " отклонен"
+					notification_name = "Пост отклонен"
+					notification_href = '/groups/' + group.slug + '/'
+					notification = Notification(not_text=notification_text, not_name=notification_name, not_link=notification_href, not_date=datetime.now())
+					notification.save()
+					notificationlist = Notificationlist.objects.get(user=article.author).notifications
+					notificationlist.add(notification)
+
 				article.delete()
 				return HttpResponse('Ok')
 			elif request.POST.get('type') == 'getpost':
@@ -191,6 +222,16 @@ def edit(request, groupid):
 				return HttpResponse(article.text)
 			elif request.POST.get('type') == 'deletepost':
 				article = GroupArticle.objects.get(id=request.POST.get('data'))
+
+				if request.user != article.author:
+					notification_text = "Ваш пост в " + group.groupname + " удален"
+					notification_name = "Пост удален"
+					notification_href = '/groups/' + group.slug + '/'
+					notification = Notification(not_text=notification_text, not_name=notification_name, not_link=notification_href, not_date=datetime.now())
+					notification.save()
+					notificationlist = Notificationlist.objects.get(user=article.author).notifications
+					notificationlist.add(notification)
+
 				article.delete()
 				return HttpResponse('Ok')
 			elif request.POST.get('type') == 'delete_from_collection':		
@@ -223,6 +264,15 @@ def moreedit(request, groupid):
 				user = User.objects.filter(id=request.POST.get('userid'))[0]
 				group.subrequests.remove(user)
 				group.subscribers.add(user)
+
+				notification_text = "Вас приняли в сообщество " + group.groupname
+				notification_name = "Заявка принята"
+				notification_href = '/groups/' + group.slug + '/'
+				notification = Notification(not_text=notification_text, not_name=notification_name, not_link=notification_href, not_date=datetime.now())
+				notification.save()
+				notificationlist = Notificationlist.objects.get(user=user).notifications
+				notificationlist.add(notification)
+
 				return HttpResponse('allowed')
 			elif request.POST.get('type') == 'rejectsub':
 				user = User.objects.filter(id=request.POST.get('userid'))[0]
