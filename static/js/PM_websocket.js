@@ -70,6 +70,7 @@ document.querySelector('#send').onclick = function(e) {
 function send_delete_message(id) {
     PMSocket.send(JSON.stringify({
         'type': 'delete',
-        'id': id
+        'id': id,
+        'user_messaging_with': document.querySelector('#username').text,
     }));
 }

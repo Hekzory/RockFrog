@@ -45,7 +45,16 @@ class Conversation(models.Model):
         if len(self.messages.all()) != 0:
             return self.messages.all().latest('date_time').text
         else:
-            return "Сообщения отсутствуют"
+            return "Возникла ошибка, пожалуйста, сообщите о ней администратору"
+
+    def get_last_message_author(self):
+        if len(self.messages.all()) != 0:
+            return self.messages.all().latest('date_time').user.username
+        else:
+            return "Возникла ошибка, пожалуйста, сообщите о ней администратору"
+
+    def is_empty(self):
+        return len(self.messages.all()) == 0
 
     def get_last_message_date_time(self):
         if len(self.messages.all()) != 0:
