@@ -30,7 +30,7 @@ class LoginForm(forms.Form):
 
 
 class RegistrationForm(forms.Form):
-    login = forms.CharField(max_length=16)
+    login = forms.CharField(max_length=64)
     email = forms.CharField(max_length=32)
     password = forms.CharField(max_length=32, widget=forms.PasswordInput())
     confirmpass = forms.CharField(max_length=32, widget=forms.PasswordInput())
