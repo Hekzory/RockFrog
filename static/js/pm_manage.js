@@ -1,4 +1,7 @@
 function delete_message(message_id) {
+    if (message_id == $("#current_edit").val()) {
+        cancel_edit();
+    }
     var csrftoken = $('input[name="csrfmiddlewaretoken"]').val();
     $.ajax({
         url : "/conversations/delete_message",
@@ -37,21 +40,23 @@ function save_edit() {
     var message_id = $('#current_edit').val();
     var csrftoken = $('input[name="csrfmiddlewaretoken"]').val();
     var currentMessage = $("#id_text").val();
-    $.ajax({
-        url : "/conversations/edit_message",
-        type : "POST",
-        data : {
-            'message' : currentMessage,
-            'message_id' : message_id,
-        	'csrfmiddlewaretoken': csrftoken,
-        },
+    if (currentMessage != "") {
+        $.ajax({
+            url : "/conversations/edit_message",
+            type : "POST",
+            data : {
+                'message' : currentMessage,
+                'message_id' : message_id,
+                'csrfmiddlewaretoken': csrftoken,
+            },
 
-        success : function(data) {
-			send_edit_message(message_id);
-        },
-    });
-    $("#id_text").val("");
-    $("#send").show();
-    $("#save_message").hide();
-    $("#cancel_edit").hide();
+            success : function(data) {
+                send_edit_message(message_id);
+            },
+        });
+        $("#id_text").val("");
+        $("#send").show();
+        $("#save_message").hide();
+        $("#cancel_edit").hide();
+    }
 }

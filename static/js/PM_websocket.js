@@ -57,7 +57,12 @@ chatlist.scrollTop = chatlist.scrollHeight;
 document.querySelector('#id_text').focus();
 document.querySelector('#id_text').onkeyup = function(e) {
     if (e.keyCode === 13) {  // enter, return
-        document.querySelector('#send').click();
+        if ($("#send").is(":visible")) {
+            document.querySelector('#send').click();
+        }
+        else {
+            document.querySelector('#save_message').click();
+        }
     }
 };
 

@@ -104,7 +104,7 @@ class DeleteMessage(View):
 class EditMessage(View):
     def post(self, request):
         message = ConversationMessage.objects.get(id=request.POST["message_id"])
-        if message.is_earlier_24() and message.user.id == request.user.id:
+        if message.is_earlier_24() and message.user.id == request.user.id and request.POST["message"].strip() != "":
             message.text = request.POST["message"]
             message.save()
             return JsonResponse({"response":"ok"})
