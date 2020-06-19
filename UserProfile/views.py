@@ -82,8 +82,15 @@ class EditProfileView(View):
             check = bound_form.is_valid()
             if check:
                 bound_form.change_profile(request.user, request.FILES)
+                initial_params = dict()
+                initial_params['about'] = request.user.profile.about
+                initial_params['birth_date'] = request.user.profile.birth_date
+                initial_params['email'] = request.user.profile.email
+                initial_params['city'] = request.user.profile.city
+                initial_params['phone'] = request.user.profile.phone
+                initial_params['interests'] = request.user.profile.interests
                 template = loader.get_template('UserProfile/editprofile.html')
-                form = ProfileForm()
+                form = ProfileForm(initial=initial_params)
                 context = {'form': form}
                 return HttpResponse(template.render(context, request))
             else:
