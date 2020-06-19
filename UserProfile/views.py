@@ -5,6 +5,8 @@ from django.contrib.auth.models import User
 from django.views.generic import View
 from .forms import *
 # Create your views here.
+
+
 def index(request):
     if request.user.is_authenticated:
         template = loader.get_template('UserProfile/yourprofile.html')
@@ -21,7 +23,19 @@ def userprofile(request, username):
     else:
         return HttpResponseNotFound("User not found")
     if request.user.is_authenticated:
-        template = loader.get_template('UserProfile/userprofile.html')
+        viewed_user = User.objects.get(username=username)
+        blacklist = request.user.profile.blacklist
+        viewed_user_blacklist = viewed_user.profile.blacklist
+        if blacklist.filter(pk=viewed_user.pk).exists():
+            in_list = True
+        else:
+            in_list = False
+        context['in_list'] = in_list
+
+        if viewed_user_blacklist.filter(pk=request.user.pk).exists():
+            template = loader.get_template('UserProfile/blocked_forbidden.html')
+        else:
+            template = loader.get_template('UserProfile/userprofile.html')
         return HttpResponse(template.render(context, request))
     else:
         if user.profile.privacysettings.allow_to_view_for_unreg:
@@ -110,4 +124,39 @@ class EditPrivacyView(View):
                 return HttpResponse(template.render(context, request))
 
 
+class BlockedUsersView(View):
+    def get(self, request):
+        if not request.user.is_authenticated:
+            return HttpResponseRedirect('/')
+        else:
+            template = loader.get_template('UserProfile/blacklist.html')
+            context = {'blacklist': request.user.profile.blacklist.all()}
+            return HttpResponse(template.render(context, request))
 
+
+class BlockUserView(View):
+    def get(self, request, username):
+        if not request.user.is_authenticated:
+            return HttpResponseRedirect('/')
+        else:
+            if not User.objects.filter(username=username).first() is not None:
+                return HttpResponseNotFound("User not found")
+            blacklist = request.user.profile.blacklist
+            blocked_user = User.objects.get(username=username)
+            if not blacklist.filter(pk=blocked_user.pk).exists():
+                blacklist.add(blocked_user)
+            return HttpResponseRedirect('/profile/'+str(username)+'/')
+
+
+class UnblockUserView(View):
+    def get(self, request, username):
+        if not request.user.is_authenticated:
+            return HttpResponseRedirect('/')
+        else:
+            if not User.objects.filter(username=username).first() is not None:
+                return HttpResponseNotFound("User not found")
+            blacklist = request.user.profile.blacklist
+            blocked_user = User.objects.get(username=username)
+            if blacklist.filter(pk=blocked_user.pk).exists():
+                blacklist.remove(blocked_user)
+            return HttpResponseRedirect('/profile/'+str(username)+'/')

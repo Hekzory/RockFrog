@@ -17,6 +17,7 @@ class Profile(models.Model):
     phone = models.TextField(max_length=30, blank=True)
     interests = models.TextField(max_length=500, blank=True)
     avatar = models.ImageField(upload_to=user_directorypath, default='/static/profile.jpg')
+    blacklist = models.ManyToManyField(User, related_name='blacklists')
 
     def __str__(self):
         return self.user.username
@@ -25,6 +26,9 @@ class Profile(models.Model):
 class PrivacySettings(models.Model):
     allow_to_view_for_unreg = models.BooleanField(default=True)
     profile = models.OneToOneField(Profile, on_delete=models.CASCADE)
+
+
+
 
 
 @receiver(post_save, sender=User)
