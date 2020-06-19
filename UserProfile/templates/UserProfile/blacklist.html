@@ -12,32 +12,24 @@
     <div class="container">
       <div class="row">
         <div class="col-lg-8">
-          <h1 class="my-4">Приватность</h1>
+          <h1 class="my-4">Чёрный список</h1>
           <div class="card mb-4">
             <div class="card-body">
               <p class="card-text">
-
-              <form class="form-privacy" action="{% url 'UserProfile:edit_privacy' %}" method="post" enctype='multipart/form-data'>
-              {% csrf_token %}
-
-                <div class="form-row align-items-center">
-                    <div class="col-auto">
-                      <label for="inputAbout">Отображение страницы незарегистрированным пользователям</label>
-                      {{ form.allow_to_view_for_unreg }}
-                      {% if form.allow_to_view_for_unreg.errors %}
-                        <div class="alert alert-danger my-3">
-                          {{ form.allow_to_view_for_unreg.errors }}
-                        </div>
-                      {% endif %}
-                    </div>
-                  </div>
-
-
-
-                  <hr>
-                  <button class="btn btn-lg btn-primary btn-block text-uppercase" type="submit">Сохранить</button>
-                </form>
-
+               <table class="table table-borderless">
+                  <tbody>
+                    {% for user in blacklist %}
+                    <tr>
+                      <td><a href="/profile/{{user.username}}">{{ user.username }}</a> </td>
+                      <td><a href="/profile/{{user.username}}/unblock">Разблокировать</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                      <td>Чёрный список пуст. </td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
 
               </p>
             </div>
@@ -48,8 +40,8 @@
           <div class="list-group">
             <a href="{% url 'UserProfile:index' %}" class="list-group-item list-group-item-action">Просмотр</a>
             <a href="{% url 'UserProfile:editprofile' %}" class="list-group-item list-group-item-action">Редактирование</a>
-            <a href="{% url 'UserProfile:edit_privacy' %}" class="list-group-item list-group-item-action active">Приватность</a>
-            <a href="{% url 'UserProfile:blockedusers' %}" class="list-group-item list-group-item-action">Чёрный список</a>
+            <a href="{% url 'UserProfile:edit_privacy' %}" class="list-group-item list-group-item-action">Приватность</a>
+              <a href="{% url 'UserProfile:blockedusers' %}" class="list-group-item list-group-item-action active">Чёрный список</a>
           </div>
         </div>
       </div>
