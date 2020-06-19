@@ -44,7 +44,14 @@ class PMConsumer(WebsocketConsumer):
                 user_messaging_with = User.objects.get(pk=user_messaging_with_id)
             except:
                 pass
-            if message is not None and message.strip() != "":
+            # Проверка на нахождение в чёрном списке
+            check = True
+            user_blacklist = user.profile.blacklist
+            viewed_user_blacklist = user_messaging_with.profile.blacklist
+            if viewed_user_blacklist.filter(pk=user.pk).exists() or user_blacklist.filter(pk=user_messaging_with.pk).exists():
+                check = False
+            # Последние проверки на само сообщение и авторизацию
+            if message is not None and message.strip() != "" and check:
                 if user.is_authenticated and user_messaging_with is not None:
                     # Создаем сообщение и кладём в переписку
                     new_conversation_message = ConversationMessage(user=user, text=message, date_time=datetime.datetime.now())

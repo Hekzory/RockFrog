@@ -1,9 +1,10 @@
 from django.shortcuts import render
 from django.views import View
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseRedirect, JsonResponse
+from django.http import HttpResponseRedirect, JsonResponse, HttpResponse
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
+from django.template import loader
 from .models import *
 import datetime
 
@@ -16,7 +17,9 @@ class DialogPage(View):
                 user_messaging_with = User.objects.get(pk=user_id)
                 context['user_messaging_with'] = user_messaging_with
             except ObjectDoesNotExist:
-                return HttpResponseRedirect('/conversations')
+                # Если пользователь не был найден, отображаем страницу об ошибке
+                template = loader.get_template('personal_messages/user_not_found.html')
+                return HttpResponse(template.render(context, request), status=404)
             # Если пользователь пытается пообщаться с самим собой, посылаем его
             if request.user.id == user_id:
                 return HttpResponseRedirect('/conversations')
@@ -38,6 +41,13 @@ class DialogPage(View):
                     current_conversation.update_last_view_user2()
                 context['messages'] = current_conversation.get_messages_sorted_by_date()
                 context['conversation_id'] = current_conversation.pk
+            # Проверка на наличие в чёрных списках
+            context["is_viewer_blacklisted"] = False
+            context["is_viewed_blacklisted"] = False
+            if user_messaging_with.profile.blacklist.filter(pk=request.user.pk).exists():
+                context["is_viewer_blacklisted"] = True
+            elif request.user.profile.blacklist.filter(pk=user_messaging_with.pk).exists():
+                context["is_viewed_blacklisted"] = True
             return render(request, 'personal_messages/base.html', context)
         else:
             return HttpResponseRedirect('/auth/login')
