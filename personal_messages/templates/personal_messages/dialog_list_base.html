@@ -5,7 +5,11 @@
       <small>{{conversation.1.last_interaction}}</small>
     </div>
     <div class="d-flex w-100 justify-content-between">
-      <p class="mb-1">{{conversation.1.get_last_message}}</p>
+      {% if conversation.1.is_empty %}
+      <p class="mb-1">Сообщения отсутствуют</p>
+      {% else %}
+      <p class="mb-1">{{conversation.1.get_last_message_author}}: {{conversation.1.get_last_message}}</p>
+      {% endif %}
       {% if conversation.2 > 0 %}
       <small><button class="btn bg-primary text-light">{{conversation.2}}</button></small>
       {% endif %}

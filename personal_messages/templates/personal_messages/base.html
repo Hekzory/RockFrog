@@ -12,7 +12,7 @@
     </div>
   </div>
   <div class="p-2">
-    <h3>Переписка с {{user_messaging_with}}</h3>
+    <h3>Переписка с <a id="username">{{user_messaging_with}}</a></h3>
   </div>
   <div class="p-2">
     Был в сети <>
@@ -22,13 +22,21 @@
 
 
 {% block content %}
+{% csrf_token %}
 <div class="container">
   <div id="msg-list-div" class="overflow-auto" style="max-height: 60vh !important;">
 <div id="msg-list" class="list-group list-group-flush">
 {% for message in messages %}
-  <div class="list-group-item list-group-item-action flex-column align-items-start">
+  <div class="list-group-item list-group-item-action flex-column align-items-start" id="{{message.id}}">
     <div class="d-flex w-100 justify-content-between">
       <h5 class="mb-1">{{message.user.username}}</h5>
+      {% if request.user.id == message.user.id and message.is_earlier_24 %}
+      <div>
+        <small><button class="btn btn-link" onclick="delete_message({{message.id}})">Удалить</button></small>
+        <small><button class="btn btn-link" onclick="edit_message({{message.id}})">Редактировать</button></small>
+        <!--<small>Редактировать</small>-->
+      </div>
+      {% endif %}
       <small>{{message.date_time}}</small>
     </div>
     <p class="mb-1">{{message.text}}</p>
@@ -40,12 +48,18 @@
 </div>
   </div>
 </div>
-<div class="form-inline affix-bottom mt-1 h-20">
+<div id="chat-form" class="form-inline affix-bottom mt-1 h-20">
   <div id="chat-bottom" class="form-group mx-3 mb-2">
     <input type="text" name="text" class="form-control" required="" id="id_text">
   </div>
   <input id="user_messaging" value="{{user_messaging_with.id}}" hidden>
-  <button type="submit" class="btn btn-primary mb-2" id="send">Отправить</button>
+  <input id="current_edit" value="-1" hidden>
+  <div>
+  <button type="button" class="btn btn-primary mb-2" id="send">Отправить</button>
+  <button type="button" class="btn btn-success mb-2" onclick="save_edit()" id="save_message" style="display: none;">Сохранить</button>
+  <button type="button" class="btn btn-danger mb-2" onclick="cancel_edit()" id="cancel_edit" style="display: none;">Отменить</button>
+  </div>
 </div>
 <script src="{% static 'js/PM_websocket.js' %}"></script>
+<script src="{% static 'js/pm_manage.js' %}"></script>
 {% endblock %}

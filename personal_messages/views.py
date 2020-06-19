@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.views import View
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from .models import *
@@ -82,4 +82,21 @@ class DialogsListBase(View):
         else:
             return HttpResponseRedirect('/auth/login')
 
-# Create your views here.
+class DeleteMessage(View):
+    def post(self, request):
+        message = ConversationMessage.objects.get(id=request.POST["message_id"])
+        if message.is_earlier_24() and message.user.id == request.user.id:
+            message.delete()
+            return JsonResponse({"response":"ok"})
+        else:
+            return JsonResponse({"response": "error"})
+
+class EditMessage(View):
+    def post(self, request):
+        message = ConversationMessage.objects.get(id=request.POST["message_id"])
+        if message.is_earlier_24() and message.user.id == request.user.id:
+            message.text = request.POST["message"]
+            message.save()
+            return JsonResponse({"response":"ok"})
+        else:
+            return JsonResponse({"response": "error"})
