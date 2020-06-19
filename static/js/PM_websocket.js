@@ -27,6 +27,7 @@ PMSocket.onmessage = function(e) {
           <h5 class="mb-1">'+username+'</h5> \
           <div> \
           <small><button class="btn btn-link" onclick="delete_message('+id+')">Удалить</button></small> \
+          <small><button class="btn btn-link" onclick="edit_message('+id+')">Редактировать</button></small> \
           </div> \
           <small>'+datetime+'</small> \
         </div> \
@@ -40,6 +41,10 @@ PMSocket.onmessage = function(e) {
     if (type == "delete") {
         var id = parseInt(data['message_id'])
         $("#"+id).remove();
+    }
+    if (type == "edit") {
+        var id = parseInt(data['message_id'])
+        $("#"+id).children()[1].textContent = data['message'];
     }
 };
 
@@ -70,6 +75,14 @@ document.querySelector('#send').onclick = function(e) {
 function send_delete_message(id) {
     PMSocket.send(JSON.stringify({
         'type': 'delete',
+        'id': id,
+        'user_messaging_with': document.querySelector('#username').text,
+    }));
+}
+
+function send_edit_message(id) {
+    PMSocket.send(JSON.stringify({
+        'type': 'edit',
         'id': id,
         'user_messaging_with': document.querySelector('#username').text,
     }));

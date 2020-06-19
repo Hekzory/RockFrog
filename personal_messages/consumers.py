@@ -95,6 +95,25 @@ class PMConsumer(WebsocketConsumer):
                         'message_id': id,
                     }
                 )
+        elif type == "edit":
+            id = text_data_json['id']
+            user_messaging_with = text_data_json['user_messaging_with']
+            try:
+                message = ConversationMessage.objects.get(id=id)
+            except ConversationMessage.DoesNotExist:
+                message = "error"
+            if message != "error" and self.user.is_authenticated and self.user.id == message.user.id and message.is_earlier_24():
+                # Обновляем список диалогов обоим пользователям, создавая событие в WebSocket'ах
+                channel_layer_temp = get_channel_layer()
+                async_to_sync(channel_layer_temp.group_send)("dialog_list_" + self.user.username, {"type": "update_dialogs"})
+                async_to_sync(channel_layer_temp.group_send)("dialog_list_" + user_messaging_with, {"type": "update_dialogs"})
+                async_to_sync(self.channel_layer.group_send)(
+                    self.room_group_name,
+                    {
+                        'type': 'edit_message',
+                        'message_id': id,
+                    }
+                )
 
 
     def pm_message(self, event):
@@ -117,6 +136,16 @@ class PMConsumer(WebsocketConsumer):
         self.send(text_data=json.dumps({
             'type': type,
             'message_id': id,
+        }))
+
+    def edit_message(self, event):
+        type = "edit"
+        id = event['message_id']
+        message = ConversationMessage.objects.get(id=id)
+        self.send(text_data=json.dumps({
+            'type': type,
+            'message_id': id,
+            'message' : message.text,
         }))
 
 

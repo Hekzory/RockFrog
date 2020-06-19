@@ -14,7 +14,6 @@ class ConversationMessage(models.Model):
         return self.text[:32]
 
     def is_earlier_24(self):
-        print(timezone.now())
         return self.date_time > (timezone.now() - datetime.timedelta(days=1))
 
 

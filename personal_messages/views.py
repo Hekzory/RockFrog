@@ -84,10 +84,19 @@ class DialogsListBase(View):
 
 class DeleteMessage(View):
     def post(self, request):
-        print(request.POST)
         message = ConversationMessage.objects.get(id=request.POST["message_id"])
         if message.is_earlier_24() and message.user.id == request.user.id:
             message.delete()
+            return JsonResponse({"response":"ok"})
+        else:
+            return JsonResponse({"response": "error"})
+
+class EditMessage(View):
+    def post(self, request):
+        message = ConversationMessage.objects.get(id=request.POST["message_id"])
+        if message.is_earlier_24() and message.user.id == request.user.id:
+            message.text = request.POST["message"]
+            message.save()
             return JsonResponse({"response":"ok"})
         else:
             return JsonResponse({"response": "error"})
