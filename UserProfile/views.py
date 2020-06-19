@@ -17,13 +17,15 @@ def index(request):
 
 
 def userprofile(request, username):
+    template = None
     if User.objects.filter(username=username).first() is not None:
-        user = User.objects.get(username=username)
-        context = {'user': user}
-    else:
-        return HttpResponseNotFound("User not found")
-    if request.user.is_authenticated:
         viewed_user = User.objects.get(username=username)
+        context = {'user': viewed_user}
+    else:
+        context = dict()
+        template = loader.get_template('UserProfile/user_not_found.html')
+        return HttpResponse(template.render(context, request), status=404)
+    if request.user.is_authenticated:
         blacklist = request.user.profile.blacklist
         viewed_user_blacklist = viewed_user.profile.blacklist
         if blacklist.filter(pk=viewed_user.pk).exists():
@@ -36,14 +38,12 @@ def userprofile(request, username):
             template = loader.get_template('UserProfile/blocked_forbidden.html')
         else:
             template = loader.get_template('UserProfile/userprofile.html')
-        return HttpResponse(template.render(context, request))
     else:
         if user.profile.privacysettings.allow_to_view_for_unreg:
             template = loader.get_template('UserProfile/userprofile.html')
-            return HttpResponse(template.render(context, request))
         else:
             template = loader.get_template('UserProfile/unregistered_forbidden.html')
-            return HttpResponse(template.render(context, request))
+    return HttpResponse(template.render(context, request))
 
 
 class ProfileView(View):
@@ -139,8 +139,9 @@ class BlockUserView(View):
         if not request.user.is_authenticated:
             return HttpResponseRedirect('/')
         else:
-            if not User.objects.filter(username=username).first() is not None:
-                return HttpResponseNotFound("User not found")
+            if User.objects.filter(username=username).first() is None:
+                template = loader.get_template('UserProfile/user_not_found.html')
+                return HttpResponse(template.render(dict(), request), status=404)
             blacklist = request.user.profile.blacklist
             blocked_user = User.objects.get(username=username)
             if not blacklist.filter(pk=blocked_user.pk).exists():
@@ -153,8 +154,9 @@ class UnblockUserView(View):
         if not request.user.is_authenticated:
             return HttpResponseRedirect('/')
         else:
-            if not User.objects.filter(username=username).first() is not None:
-                return HttpResponseNotFound("User not found")
+            if User.objects.filter(username=username).first() is None:
+                template = loader.get_template('UserProfile/user_not_found.html')
+                return HttpResponse(template.render(dict(), request), status=404)
             blacklist = request.user.profile.blacklist
             blocked_user = User.objects.get(username=username)
             if blacklist.filter(pk=blocked_user.pk).exists():
