@@ -4,13 +4,13 @@ from django.core.exceptions import ValidationError
 
 
 class ProfileForm(forms.Form):
-    about = forms.CharField(max_length=500, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    about = forms.CharField(max_length=500, widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 4}) )
     birth_date = forms.DateField(widget=forms.SelectDateWidget(attrs={'class': 'form-control'}, years=list(range(1900, 2020))))
     email = forms.CharField(max_length=50, widget=forms.TextInput(attrs={'class': 'form-control'}))
     city = forms.CharField(max_length=30, widget=forms.TextInput(attrs={'class': 'form-control'}))
     phone = forms.CharField(max_length=30, widget=forms.TextInput(attrs={'class': 'form-control'}))
-    interests = forms.CharField(max_length=500, widget=forms.TextInput(attrs={'class': 'form-control'}))
-    avatar = forms.ImageField()
+    interests = forms.CharField(max_length=500, widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 4}))
+    avatar = forms.ImageField(required=False)
 
 
     def get_about(self):
@@ -43,7 +43,8 @@ class ProfileForm(forms.Form):
         profile.city = self.get_city()
         profile.phone = self.get_phone()
         profile.interests = self.get_interests()
-        profile.avatar = self.get_avatar()
+        if self.get_avatar() is not None:
+            profile.avatar = self.get_avatar()
         profile.save()
 
 
