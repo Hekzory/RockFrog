@@ -86,14 +86,14 @@
   {% endif %}
 
   <div class="plate">
-    <div class="inline-wrapper">
+    <div class="inline-wrapper" id="table_buttons">
       {% if request.user.is_authenticated %}
-        <div class="button0" onclick="showgroups('groups_list')">Все сообщества</div>      
-        <div class="button0" onclick="showgroups('admin_groups_list')">Вы администратор {{ request.user.groups_admins.count }}</div>
-        <div class="button0" onclick="showgroups('subs_groups_list')">Вы подписаны {{ request.user.groups_subs.count }}</div>
-        <div class="button0" onclick="showgroups('editors_groups_list')">Вы редактор {{ request.user.groups_editors.count }}</div>
-        <div class="button0" onclick="showgroups('banned_groups_list')">Вы заблокированы {{ request.user.groups_banned.count }}</div>
-        <div class="button0" onclick="showgroups('requests_groups_list')">Заявки {{ request.user.groups_requests.count }}</div>
+        <div class="button0 button0-active" onclick="showgroups('groups_list', this)">Все сообщества</div>      
+        <div class="button0" onclick="showgroups('admin_groups_list', this)">Вы администратор {{ request.user.groups_admins.count }}</div>
+        <div class="button0" onclick="showgroups('subs_groups_list', this)">Вы подписаны {{ request.user.groups_subs.count }}</div>
+        <div class="button0" onclick="showgroups('editors_groups_list', this)">Вы редактор {{ request.user.groups_editors.count }}</div>
+        <div class="button0" onclick="showgroups('banned_groups_list', this)">Вы заблокированы {{ request.user.groups_banned.count }}</div>
+        <div class="button0" onclick="showgroups('requests_groups_list', this)">Заявки {{ request.user.groups_requests.count }}</div>
       {% else %}
         <div class="text1">Все сообщества</div>   
       {% endif %}
@@ -112,7 +112,7 @@
           <div class="solid" style="width: calc(75% - 5px);">
             <div class="inline-wrapper">
               <div class="inline-wrapper">
-                <img class="small-img" src="{{ group.image.url }}" alt="" onError="removeElement(this)"> 
+                <img class="small-img" src="{{ group.image.url }}" alt="" onerror="this.remove()"> 
                 <div class="text2-1"><a class="link1" href="{{ group.slug }}">{{ group }}</a></div>  
                 {% if group.public %}
                   <i class="material-icons icon1" style="margin-top: 8px;" title="открытое сообщество">lock_open</i>
@@ -146,7 +146,7 @@
             <div class="solid" style="width: calc(75% - 5px);">
               <div class="inline-wrapper">
                 <div class="inline-wrapper">
-                  <img class="small-img" src="{{ group.image.url }}" alt="" onError="removeElement(this)"> 
+                  <img class="small-img" src="{{ group.image.url }}" alt="" onerror="this.remove()"> 
                   <div class="text2-1"><a class="link1" href="{{ group.slug }}">{{ group }}</a></div>  
                   {% if group.public %}
                     <i class="material-icons icon1" style="margin-top: 8px;" title="открытое сообщество">lock_open</i>
@@ -178,7 +178,7 @@
             <div class="solid" style="width: calc(75% - 5px);">
               <div class="inline-wrapper">
                 <div class="inline-wrapper">
-                  <img class="small-img" src="{{ group.image.url }}" alt="" onError="removeElement(this)"> 
+                  <img class="small-img" src="{{ group.image.url }}" alt="" onerror="this.remove()"> 
                   <div class="text2-1"><a class="link1" href="{{ group.slug }}">{{ group }}</a></div>  
                   {% if group.public %}
                     <i class="material-icons icon1" style="margin-top: 8px;" title="открытое сообщество">lock_open</i>
@@ -210,7 +210,7 @@
             <div class="solid" style="width: calc(75% - 5px);">
               <div class="inline-wrapper">
                 <div class="inline-wrapper">
-                  <img class="small-img" src="{{ group.image.url }}" alt="" onError="removeElement(this)"> 
+                  <img class="small-img" src="{{ group.image.url }}" alt="" onerror="this.remove()"> 
                   <div class="text2-1"><a class="link1" href="{{ group.slug }}">{{ group }}</a></div>  
                   {% if group.public %}
                     <i class="material-icons icon1" style="margin-top: 8px;" title="открытое сообщество">lock_open</i>
@@ -242,7 +242,7 @@
             <div class="solid" style="width: calc(75% - 5px);">
               <div class="inline-wrapper">
                 <div class="inline-wrapper">
-                  <img class="small-img" src="{{ group.image.url }}" alt="" onError="removeElement(this)"> 
+                  <img class="small-img" src="{{ group.image.url }}" alt="" onerror="this.remove()"> 
                   <div class="text2-1"><a class="link1" href="{{ group.slug }}">{{ group }}</a></div>  
                   {% if group.public %}
                     <i class="material-icons icon1" style="margin-top: 8px;" title="открытое сообщество">lock_open</i>
@@ -274,7 +274,7 @@
             <div class="solid" style="width: calc(75% - 5px);">
               <div class="inline-wrapper">
                 <div class="inline-wrapper">
-                  <img class="small-img" src="{{ group.image.url }}" alt="" onError="removeElement(this)"> 
+                  <img class="small-img" src="{{ group.image.url }}" alt="" onerror="this.remove()"> 
                   <div class="text2-1"><a class="link1" href="{{ group.slug }}">{{ group }}</a></div>  
                   {% if group.public %}
                     <i class="material-icons icon1" style="margin-top: 8px;" title="открытое сообщество">lock_open</i>

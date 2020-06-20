@@ -1,14 +1,17 @@
 {% extends "communities/community_template.html" %}
 
 {% block main %}
+<script>
+	$('#to_information').addClass('button0-active')
+</script>
 
 <div class="content_block">
 	<div class="plate">
-	    <div class="inline-wrapper">
-	    <div class="button0" onclick="showgroups('description')">Описание</div>
-	    <div class="button0" onclick="showgroups('members_list')">Все участники {{ group.subscribers.count|add:group.editors.count|add:1 }}</div>
-	    <div class="button0" onclick="showgroups('subscribers_list')">Подписчики {{ group.subscribers.count }}</div>
-	    <div class="button0" onclick="showgroups('editors_list')">Редакторы {{ group.editors.count }}</div>
+	    <div class="inline-wrapper" id="table_buttons">
+		    <div class="button0 button0-active" onclick="showgroups('description', this)">Общее</div>
+		    <div class="button0" onclick="showgroups('members_list', this)">Все участники {{ group.subscribers.count|add:group.editors.count|add:1 }}</div>
+		    <div class="button0" onclick="showgroups('subscribers_list', this)">Подписчики {{ group.subscribers.count }}</div>
+		    <div class="button0" onclick="showgroups('editors_list', this)">Редакторы {{ group.editors.count }}</div>
 	    </div>
 	    <hr> 
 	    <div class="inline-wrapper">
@@ -28,7 +31,7 @@
 			<div class="inline-wrapper">
 				<div class="text2">Администратор сообщества</div>
 				<div class="inline-wrapper">
-                    <img class="small-img" src="/media/{{ group.admin.profile.avatar }}" alt="" onError="removeElement(this)"> 
+                    <img class="small-img" src="/media/{{ group.admin.profile.avatar }}" alt=""> 
 					<div class="text2"><a class="link1" href="{% url 'UserProfile:userprofile' group.admin %}">{{ group.admin }}</a></div>
 				</div>             
 			</div>
@@ -47,12 +50,17 @@
 				<div class="text2">Ваша роль</div>
 				<div class="text2">{% if request.user in group.subscribers.all %}Участник{% elif request.user in group.editors.all %}Редактор{% elif request.user == group.admin %}Администратор{% else %}Посетитель{% endif %}</div>
 			</div>
+			<hr>
+			<div class="inline-wrapper">
+	            <div class="text2">Ссылка: {{ request.get_host }}/groups/{{ group.slug }}/</div> 
+	            <div class="button3 yellow" onclick="copyLink('{{ request.get_host }}/groups/{{ group.slug }}/')" style="margin-top: 1px;">копировать</div>          
+          	</div>
 	    </div>
 	    <div id='members_list' class="hidden main_groups_list" style="margin-right: 10px; margin-left: 10px;">
 			{% for user in group.subscribers.all %}
 			<div class="inline-wrapper" name="{{ user }}">
 				<div class="inline-wrapper">
-                    <img class="small-img" src="/media/{{ user.profile.avatar }}" alt="" onError="removeElement(this)"> 
+                    <img class="small-img" src="/media/{{ user.profile.avatar }}" alt=""> 
 					<div class="text2"><a class="link1" href="{% url 'UserProfile:userprofile' user %}">{{ user }}</a></div>
 				</div>
 				<div></div>
@@ -61,7 +69,7 @@
 			{% for user in group.editors.all %}
 			<div class="inline-wrapper" name="{{ user }}">
 				<div class="inline-wrapper">
-                    <img class="small-img" src="/media/{{ user.profile.avatar }}" alt="" onError="removeElement(this)"> 
+                    <img class="small-img" src="/media/{{ user.profile.avatar }}" alt=""> 
 					<div class="text2"><a class="link1" href="{% url 'UserProfile:userprofile' user %}">{{ user }}</a></div>
 					<div class="text3">редактор</div>
 				</div>
@@ -70,7 +78,7 @@
 			{% endfor %}
 			<div class="inline-wrapper" name="{{ group.admin }}">
 				<div class="inline-wrapper">
-                    <img class="small-img" src="/media/{{ group.admin.profile.avatar }}" alt="" onError="removeElement(this)"> 
+                    <img class="small-img" src="/media/{{ group.admin.profile.avatar }}" alt=""> 
 					<div class="text2"><a class="link1" href="{% url 'UserProfile:userprofile' group.admin %}">{{ group.admin }}</a></div>
 					<div class="text3">администратор</div>
 				</div>
@@ -81,7 +89,7 @@
 			{% for user in group.subscribers.all %}
 			<div class="inline-wrapper" name="{{ user }}">
 				<div class="inline-wrapper">
-                    <img class="small-img" src="/media/{{ user.profile.avatar }}" alt="" onError="removeElement(this)"> 
+                    <img class="small-img" src="/media/{{ user.profile.avatar }}" alt=""> 
 					<div class="text2"><a class="link1" href="{% url 'UserProfile:userprofile' user %}">{{ user }}</a></div>
 				</div>
 				<div></div>
@@ -94,7 +102,7 @@
 			{% for user in group.editors.all %}
 			<div class="inline-wrapper" name="{{ user }}">
 				<div class="inline-wrapper">
-                    <img class="small-img" src="/media/{{ user.profile.avatar }}" alt="" onError="removeElement(this)">  
+                    <img class="small-img" src="/media/{{ user.profile.avatar }}" alt="">  
 					<div class="text2"><a class="link1" href="{% url 'UserProfile:userprofile' user %}">{{ user }}</a></div>
 				</div>
 				<div></div>

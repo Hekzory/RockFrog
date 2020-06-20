@@ -1,6 +1,9 @@
 {% extends "communities/community_template.html" %}
 
 {% block main %}
+  <script>
+    $('#to_collection').addClass('button0-active')
+  </script>
 
 <div class="content_block">
 	<div class="plate">
@@ -25,7 +28,7 @@
 		          	newdecorator = $('<div>')
 		          	newicon = $('<i>')
 
-		          	$(newimg).attr({'class': 'medium-img', 'src': '{{ file.file.url }}', 'onError': 'removeElement(this.parentElement)'})
+		          	$(newimg).attr({'class': 'medium-img', 'src': '{{ file.file.url }}', 'onError': 'deleteErrorImage(this)', 'alt': ''})
 		          	$(newdecorator).attr({'class': 'image-decorator'})
 		          	$(newicon).attr({'class': 'material-icons icon-image-decorator'})
 		          	$(newicon).text('remove_red_eye')

@@ -12,6 +12,7 @@ from .forms import *
 import os
 from datetime import datetime
 import re
+import os.path
 
 def home(request):
     groups = Group.objects.annotate(members=models.Count('subscribers') + models.Count('editors')).order_by('-members')
@@ -27,7 +28,7 @@ def community(request, groupslug):
 		context = {'group': group, 'articles': articles, 'requestarticles': requestarticles, 'articles_count': articles_count}
 		return render(request, 'communities/community.html', context)
 	else:
-		return HttpResponseRedirect('/')
+		return render(request, 'communities/nogroup.html')
 
 def information(request, groupslug):
 	if Group.objects.filter(slug=groupslug).exists():
@@ -36,7 +37,7 @@ def information(request, groupslug):
 		context = {'group': group, 'articles_count': articles_count}
 		return render(request, 'communities/information.html', context)
 	else:
-		return HttpResponseRedirect('/')
+		return render(request, 'communities/nogroup.html')
 
 def collection(request, groupslug):
 	if Group.objects.filter(slug=groupslug).exists():
@@ -45,7 +46,7 @@ def collection(request, groupslug):
 		context = {'group': group, 'articles_count': articles_count}
 		return render(request, 'communities/collection.html', context)
 	else:
-		return HttpResponseRedirect('/')
+		return render(request, 'communities/nogroup.html')
 
 def unsubscribe(request, groupid):
 	group = Group.objects.get(id=groupid)
@@ -135,6 +136,7 @@ class EditArticle(View):
 			article = GroupArticle.objects.get(id=articleid)
 			if bound_form.is_valid():
 				article.text = request.POST.get("text")
+				article.save()
 
 				for fileid in request.POST.get("removedfiles").split():
 					try:
@@ -142,7 +144,6 @@ class EditArticle(View):
 						file.delete()
 					except:
 						pass
-
 				
 				for file in request.FILES.getlist('files'):
 					if file.content_type in ['image/png', 'image/jpeg', 'application/pdf', 'text/plain', 'application/msword'] and file.size <= 5000000:
@@ -157,14 +158,17 @@ class DeleteArticle(View):
 		if request.user in group.editors.all() or request.user == group.admin:
 			article = GroupArticle.objects.get(id=articleid)
 
-			if request.user != article.author:
-				notification_text = "Ваш пост в " + group.groupname + " удален"
-				notification_name = "Пост удален"
-				notification_href = '/groups/' + group.slug + '/'
-				notification = Notification(not_text=notification_text, not_name=notification_name, not_link=notification_href, not_date=datetime.now())
-				notification.save()
-				notificationlist = Notificationlist.objects.get(user=article.author).notifications
-				notificationlist.add(notification)
+			if request.user != article.author and not article.author is None:
+				try:
+					notification_text = "Ваш пост в " + group.groupname + " удален"
+					notification_name = "Пост удален"
+					notification_href = '/groups/' + group.slug + '/'
+					notification = Notification(not_text=notification_text, not_name=notification_name, not_link=notification_href, not_date=datetime.now())
+					notification.save()
+					notificationlist = Notificationlist.objects.get(user=article.author).notifications
+					notificationlist.add(notification)
+				except:
+					pass
 
 			article.delete()
 		slug = group.slug
@@ -194,13 +198,17 @@ def edit(request, groupid):
 				article.pubdate = datetime.now()
 				article.save()
 
-				notification_text = "Ваш пост в " + group.groupname + " опубликован"
-				notification_name = "Пост опубликован"
-				notification_href = '/groups/' + group.slug + '/'
-				notification = Notification(not_text=notification_text, not_name=notification_name, not_link=notification_href, not_date=datetime.now())
-				notification.save()
-				notificationlist = Notificationlist.objects.get(user=article.author).notifications
-				notificationlist.add(notification)
+				if not article.author is None:
+					try:
+						notification_text = "Ваш пост в " + group.groupname + " опубликован"
+						notification_name = "Пост опубликован"
+						notification_href = '/groups/' + group.slug + '/'
+						notification = Notification(not_text=notification_text, not_name=notification_name, not_link=notification_href, not_date=datetime.now())
+						notification.save()
+						notificationlist = Notificationlist.objects.get(user=article.author).notifications
+						notificationlist.add(notification)
+					except:
+						pass
 
 				return HttpResponse('Ok')
 			elif request.POST.get('type') == 'deletearticle':
@@ -223,25 +231,37 @@ def edit(request, groupid):
 			elif request.POST.get('type') == 'deletepost':
 				article = GroupArticle.objects.get(id=request.POST.get('data'))
 
-				if request.user != article.author:
-					notification_text = "Ваш пост в " + group.groupname + " удален"
-					notification_name = "Пост удален"
-					notification_href = '/groups/' + group.slug + '/'
-					notification = Notification(not_text=notification_text, not_name=notification_name, not_link=notification_href, not_date=datetime.now())
-					notification.save()
-					notificationlist = Notificationlist.objects.get(user=article.author).notifications
-					notificationlist.add(notification)
+				if request.user != article.author and not article.author is None:
+					try:
+						notification_text = "Ваш пост в " + group.groupname + " удален"
+						notification_name = "Пост удален"
+						notification_href = '/groups/' + group.slug + '/'
+						notification = Notification(not_text=notification_text, not_name=notification_name, not_link=notification_href, not_date=datetime.now())
+						notification.save()
+						notificationlist = Notificationlist.objects.get(user=article.author).notifications
+						notificationlist.add(notification)
+					except:
+						pass
 
 				article.delete()
 				return HttpResponse('Ok')
-			elif request.POST.get('type') == 'delete_from_collection':		
+			if request.POST.get('type') == 'delete_from_collection':		
 				print(request.POST.get('file'))	
 				try:
 					groupfile = group.files.get(id=request.POST.get('file'))
 					groupfile.delete()
 				except:
 					pass
-				return HttpResponse('Ok')				
+					
+				return HttpResponse('Ok')
+	if request.POST.get('type') == 'delete_from_collection' and not os.path.isfile(request.POST.get('file')):		
+		print(request.POST.get('file'))	
+		try:
+			groupfile = group.files.get(id=request.POST.get('file'))
+			groupfile.delete()
+		except:
+			pass
+		return HttpResponse('Ok')	
 	return HttpResponse('error0')
 
 def moreedit(request, groupid):
@@ -265,13 +285,16 @@ def moreedit(request, groupid):
 				group.subrequests.remove(user)
 				group.subscribers.add(user)
 
-				notification_text = "Вас приняли в сообщество " + group.groupname
-				notification_name = "Заявка принята"
-				notification_href = '/groups/' + group.slug + '/'
-				notification = Notification(not_text=notification_text, not_name=notification_name, not_link=notification_href, not_date=datetime.now())
-				notification.save()
-				notificationlist = Notificationlist.objects.get(user=user).notifications
-				notificationlist.add(notification)
+				try:
+					notification_text = "Вас приняли в сообщество " + group.groupname
+					notification_name = "Заявка принята"
+					notification_href = '/groups/' + group.slug + '/'
+					notification = Notification(not_text=notification_text, not_name=notification_name, not_link=notification_href, not_date=datetime.now())
+					notification.save()
+					notificationlist = Notificationlist.objects.get(user=user).notifications
+					notificationlist.add(notification)
+				except:
+					pass
 
 				return HttpResponse('allowed')
 			elif request.POST.get('type') == 'rejectsub':
@@ -281,7 +304,15 @@ def moreedit(request, groupid):
 			elif request.POST.get('type') == 'allowarticles':				
 				group.allowarticles = request.POST.get('data')
 				group.save()
-				return HttpResponse('Ok')	
+				return HttpResponse('Ok')
+			elif request.POST.get('type') == 'deletegroupimage':
+				try:				
+					os.remove('media/' + group.image.name)
+				except:
+					pass
+				group.image = False
+				group.save()
+				return HttpResponse('Ok')		
 			elif request.POST.get('type') == 'uploadimage':
 				if request.FILES['groupimage'].content_type != 'image/png' and request.FILES['groupimage'].content_type != 'image/jpeg' and file.size <= 5000000:
 					return HttpResponseRedirect('/groups/' + str(slug) + '/edit/')
@@ -299,14 +330,35 @@ def moreedit(request, groupid):
 
 				group.save()
 				return HttpResponseRedirect('/groups/' + str(slug) + '/edit/')
-			elif request.POST.get('type') == 'checkslug':				
-				if request.POST.get('slug') == '' or request.POST.get('slug') == 'create' or not re.match("[a-zA-Z_][0-9a-zA-Z_]*$", request.POST.get('slug')):
+			elif request.POST.get('type') == 'checkslug':		
+				newslug = request.POST.get('slug').lower()
+
+				if newslug.replace(' ', '') == '':
+					group.slug = str(group.id)
+					group.save()
+					return HttpResponse('/groups/' + group.slug + '/edit/')
+
+				if newslug.replace(' ', '') != newslug:
+					return HttpResponse('spaces')	
+
+				if newslug == '':
+					return HttpResponse('empty')
+
+				pattern = re.compile("^[a-zA-Z]+$") 
+				if not pattern.match(newslug):
 					return HttpResponse('wrong')
+
+				if newslug == group.slug:
+					HttpResponse('/groups/' + group.slug + '/edit/')
+				elif newslug == 'create' or Group.objects.filter(slug=newslug).exists():
+					return HttpResponse('hasAlready')
+
 				try:
-					group.slug = request.POST.get('slug')
+					group.slug = newslug
 					group.save()
 				except:
-					return HttpResponse('')
+					return HttpResponse('error')
+
 				return HttpResponse('/groups/' + group.slug + '/edit/')
 			elif request.POST.get('type') == 'banuser':
 				user = User.objects.get(id=request.POST.get('userid'))
@@ -359,16 +411,15 @@ def moreedit(request, groupid):
 	return HttpResponse('error')
 
 def editgroup(request, groupslug):
-	group = Group.objects.filter(slug=groupslug)
-	if group:
-		group = group[0]
+	if Group.objects.filter(slug=groupslug).exists():
+		group = Group.objects.get(slug=groupslug)
 		if group.admin != request.user:
-			return HttpResponseRedirect('../')
+			return HttpResponseRedirect('/groups/' + group.slug + '/')
 		else:
 			group = {'group': group}
 			return render(request, 'communities/edit.html', group)
 	else:
-		return HttpResponseRedirect('/')
+		return render(request, 'communities/nogroup.html')
 
 
 '''

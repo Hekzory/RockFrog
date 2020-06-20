@@ -54,11 +54,14 @@ function deletegroup() {
     });
 }
 
-function allowarticles(number) {
+function allowarticles() {
     var csrftoken = $('input[name="csrfmiddlewaretoken"]').val();
+    // console.log($('#allow_articles_selector').val())
 
-    ans = sendajax('allowarticles', number)
+
+    ans = sendajax('allowarticles', $('#allow_articles_selector').val())
     // console.log(ans)
+    /*
     if( number == 1 ){
         document.getElementById('allowarticles1').style.display = 'none'
         document.getElementById('allowarticles2').style.display = 'block'
@@ -72,6 +75,7 @@ function allowarticles(number) {
         document.getElementById('allowarticles1').style.display = 'block'
         document.getElementById('allowarticles2').style.display = 'block'
     }
+    */
 }
 
 function showdelete() {
@@ -161,17 +165,46 @@ function toeditor(userid) {
 
 function toadmin(userid) {
     userid = parseInt(userid)
-    ans = sendajax('toadmin', userid)
-    // console.log(ans)
-    location.replace('../../../')
-    // document.getElementById('back').click()
+    var csrftoken = $('input[name="csrfmiddlewaretoken"]').val();
+
+    $.ajax({
+        url :  $("#cururl").attr("cururl") + "edit/moreedit/",
+        type : "POST",
+        data : {
+            'type': 'toadmin',
+            'data': userid,
+            'csrfmiddlewaretoken': csrftoken
+        },
+
+        success : function(returned) {
+            document.location.href = '/groups/' + $('#groupslug').attr('groupslug') + '/'
+        },
+    });
+    
 }
 
 function touser(userid) {
     userid = parseInt(userid)
     ans = sendajax('touser', userid)
-    console.log(ans)
+    // console.log(ans)
     document.getElementById('editor' + userid).style.display = 'none'
+}
+
+function deletegroupimage() {
+    var csrftoken = $('input[name="csrfmiddlewaretoken"]').val();
+
+    $.ajax({
+        url : $("#cururl").attr("cururl") + "edit/moreedit/",
+        type : "POST",
+        data : {
+            'type': 'deletegroupimage',
+            'csrfmiddlewaretoken': csrftoken
+        },
+
+        success : function(data) {
+            location.reload(true);        
+        },
+    });
 }
 
 function cancelban(userid) {
@@ -207,18 +240,24 @@ function checkslug(slug) {
         },
 
         success : function(data) {
-            console.log(data)
-            if( data == 0) {
+            // console.log(data)
+            if( data == 'hasAlready' ) {
                 showwarning('Такой идентификатор уже занят')
-                // return false                
             }
             else if( data == 'wrong' )
             {
-                showwarning('Неправильный формат')
+                showwarning('Используйте только английские буквы')
             }
-            else {
+            else if( data == 'empty' )
+            {
+                showwarning('Пустое поле')
+            }
+            else if( data == 'spaces' )
+            {
+                showwarning('Без пробелов')
+            }
+            else if( data != 'error' ) {
                 document.location.href = data
-                // return true
             }
         },
     });
@@ -290,9 +329,11 @@ function readURL(input) {
                 showwarning('Слишком вытянутая картинка')
             } else {
                 setimage(input, 'groupimage')
-                document.getElementById('uploadimage').style.display = "none"
-                document.getElementById('cancelupload').style.display = "block"
-                document.getElementById('saveimage').style.display = "block"
+                $('#stage1').hide()
+                $('#stage2').show()
+                // document.getElementById('uploadimage').style.display = "none"
+                // document.getElementById('cancelupload').style.display = "block"
+                // document.getElementById('saveimage').style.display = "block"
             }
         }        
     }    
@@ -318,7 +359,7 @@ function uploadfile() {
 
         success : function(data) {
             // location.reload(true)
-            console.log(data)
+            // console.log(data)
         },
     });
 }
@@ -337,9 +378,11 @@ function setimage(input, imgid) {
 
 function cancelupload(url) {
     $('#groupimage').attr('src', url);
-    document.getElementById('uploadimage').style.display = "block"
-    document.getElementById('cancelupload').style.display = "none"
-    document.getElementById('saveimage').style.display = "none"
+    $('#stage2').hide()
+    $('#stage1').show()
+    // document.getElementById('uploadimage').style.display = "block"
+    // document.getElementById('cancelupload').style.display = "none"
+    // document.getElementById('saveimage').style.display = "none"
 }
 
 function searchlist(id, s) {
@@ -375,12 +418,18 @@ function showeditors() {
     }
 }
 
+function copyLink(text) {
+    navigator.clipboard.writeText(text)
+}
+
+function update_symbols(id_symbols, id_input, count) {
+    $('#' + id_symbols).text('Еще символов: ' + (count - $('#' + id_input).val().length))
+}
+
+/*
+
 function removeElement(element) {
      element.remove();
 }
 
-//var form = document.getElementById("form1");
-//document.getElementById("submit1").addEventListener("click", function () {
-//    checkslug();
-    // form.submit();
-//});
+*/

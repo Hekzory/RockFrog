@@ -70,6 +70,7 @@
 {% block content %}
   {% csrf_token %}
   <div id="groupid" class="hidden" groupid="{{ group.id }}"></div>
+  <div id="groupslug" class="hidden" groupslug="{{ group.slug }}"></div>
   <div id="cururl" class="hidden" cururl="/groups/{{ group.id }}/"></div>
 
   <div class="inline-wrapper">
@@ -85,7 +86,7 @@
             <div class="image-decorator" onclick="showfile('{{ group.image.url }}', 'main_image.jpg', 1, 'mainimage')" style="margin: 0; width: 100%; height: 100%;">
               <i class="material-icons icon-image-decorator" style="font-size: 80px; margin-top: 50px; margin-left: calc(50% - 40px);">remove_red_eye</i>
             </div>
-            <img class="group-img" src="{{ group.image.url }}" onError="removeElement(this.parentElement.parentElement.parentElement)"> 
+            <img class="group-img" src="{{ group.image.url }}" onError="this.parentElement.parentElement.parentElement.remove()"> 
           </div>     
         </div>
       </div>
@@ -173,9 +174,9 @@
 
   {% if request.user in group.subscribers.all or request.user in group.editors.all or request.user == group.admin or group.public and request.user not in group.banned.all %}  
     <div class="inline-wrapper plate solid">
-      <a class="button0" href="{% url 'communities:community' group.slug %}">Главная</a>
-      <a class="button0" href="{% url 'communities:collection' group.slug %}">Коллекция</a>
-      <a class="button0" href="{% url 'communities:information' group.slug %}">Информация</a>
+      <a id="to_main" class="button0" href="{% url 'communities:community' group.slug %}">Главная</a>
+      <a id="to_collection" class="button0" href="{% url 'communities:collection' group.slug %}">Коллекция</a>
+      <a id="to_information" class="button0" href="{% url 'communities:information' group.slug %}">Информация</a>
     </div>
     <br>
 

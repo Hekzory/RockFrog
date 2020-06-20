@@ -1,6 +1,10 @@
 {% extends "communities/community_template.html" %}
 
 {% block main %}
+  <script>
+    $('#to_main').addClass('button0-active')
+  </script>
+
   <div class="content_block" style="display: block;">
     {% if request.user.is_authenticated %}
       {% if request.user in group.editors.all or request.user == group.admin or group.allowarticles != 3 and request.user in group.subscribers.all %}
@@ -62,7 +66,7 @@
                         newdecorator = $('<div>')
                         newicon = $('<i>')
 
-                        $(newimg).attr({'class': 'medium-img', 'src': '{{ file.file.url }}', 'name': '{{ file.name }}', 'onError': 'removeElement(this.parentElement)'})
+                        $(newimg).attr({'class': 'medium-img', 'src': '{{ file.file.url }}', 'name': '{{ file.name }}', 'onError': 'this.parentElement.parentElement.remove()'})
                         $(newdecorator).attr({'class': 'image-decorator'})
                         $(newicon).attr({'class': 'material-icons icon-image-decorator'})
                         $(newicon).text('remove_red_eye')
@@ -99,10 +103,10 @@
                   <div></div>
                   <div class="inline-wrapper" style="height: 40px;">
                     {% if post.author != None %}
-                      <img class="small-img" src="/media/{{ post.author.profile.avatar }}" alt="" onError="removeElement(this)">                    
+                      <img class="small-img" src="/media/{{ post.author.profile.avatar }}" alt="">                    
                       <div class="text2-1"><a class="link1" href="{% url 'UserProfile:userprofile' post.author %}">{{ post.author }}</a></div>
                     {% else %}
-                      <img class="small-img" src="{{ group.image.url }}" alt="" onError="removeElement(this)"> 
+                      <img class="small-img" src="{{ group.image.url }}" alt=""> 
                       <div class="text2-1">{{ post.group }}</div>
                     {% endif %}
                   </div>
@@ -149,7 +153,7 @@
                         newdecorator = $('<div>')
                         newicon = $('<i>')
 
-                        $(newimg).attr({'class': 'medium-img', 'src': '{{ file.file.url }}', 'name': '{{ file.name }}', 'onError': 'removeElement(this.parentElement)'})
+                        $(newimg).attr({'class': 'medium-img', 'src': '{{ file.file.url }}', 'name': '{{ file.name }}', 'onError': 'this.parentElement.parentElement.remove()'})
                         $(newdecorator).attr({'class': 'image-decorator'})
                         $(newicon).attr({'class': 'material-icons icon-image-decorator'})
                         $(newicon).text('remove_red_eye')
@@ -166,7 +170,7 @@
 
                         $('#post{{ post.id }}addition1').append(newaddition)
 
-                        console.log(1)
+                        // console.log(1)
 
                       } else {
                         newaddition = document.createElement('div')
@@ -213,10 +217,10 @@
                   <div></div>
                   <div class="inline-wrapper" style="height: 40px;">
                     {% if post.author != None %}
-                      <img class="small-img" src="/media/{{ post.author.profile.avatar }}" alt="" onError="removeElement(this)">                   
+                      <img class="small-img" src="/media/{{ post.author.profile.avatar }}" alt="">                   
                       <div class="text2-1"><a class="link1" href="{% url 'UserProfile:userprofile' post.author %}">{{ post.author }}</a></div>
                     {% else %}
-                      <img class="small-img" src="{{ group.image.url }}" alt="" onError="removeElement(this)"> 
+                      <img class="small-img" src="{{ group.image.url }}" alt=""> 
                       <div class="text2-1">{{ post.group }}</div>
                     {% endif %}
                   </div>
@@ -270,7 +274,7 @@
         {% csrf_token %}
         <div class="plate" style="height: 100%;">    
           <div class="text1">Редактировать пост</div>
-          <div id="editlate" class="plate" style="width: 100%; height: calc(100% - 140px); overflow-x: hidden; overflow-y: scroll;">
+          <div id="editplate" class="plate" style="width: 100%; height: calc(100% - 140px); overflow-x: hidden; overflow-y: scroll;">
             <textarea id="editarea" class="textarea1" name="text" oninput="auto_grow(this)" onclick="auto_grow(this)" style="border: none; height: 28px; min-height: 28px;" placeholder="Редактировать текст..."></textarea>
             <div id="editadditions">
               <input id='editremovedfiles' type="text" class="hidden-input" name="removedfiles">

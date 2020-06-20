@@ -4,6 +4,7 @@
 
 {% block links %}
   <link rel="stylesheet" href="{% static 'communities/css/style.css' %}"/>
+  <script src="{% static 'communities/js/edit.js' %}"></script>
 {% endblock %}
 
 {% block header %}
@@ -71,22 +72,28 @@
   </div>
   <br>  
 
-  <div id="cururl" class="hidden" cururl="/groups/{{ group.id }}/"></div>
-  <input id="fileinput" class="hidden-input" form="imageform" type="file" name="groupimage" onchange="readURL(this)">
+  <div id="cururl" class="hidden" cururl="/groups/{{ group.id }}/"></div>  
+  <div id="groupslug" class="hidden" groupslug="{{ group.slug }}"></div>
   <input form="imageform" class="hidden-input" type="text" name="type" value="uploadimage">
   <img id="testimg" class="hidden-input">
 
   <div class="inline-wrapper">
     {% if group.image.url != '/media/False' %}
+      <input id="fileinput" class="hidden-input" form="imageform" type="file" name="groupimage" onchange="readURL(this)">
       <div style="margin-right: 20px;">
-        <img id="groupimage" class="group-img" src="{{ group.image.url }}" alt="" style="margin-bottom: 10px;" onError="removeElement(this)">
-        <form id="imageform" action="{% url 'communities:moreedit' group.id %}" method="POST" class="inline-wrapper" enctype="multipart/form-data"> 
+        <img id="groupimage" class="group-img" src="{{ group.image.url }}" alt="" style="margin-bottom: 2px;">
+        <form id="imageform" action="{% url 'communities:moreedit' group.id %}" method="POST" enctype="multipart/form-data"> 
           {% csrf_token %}     
           <input type="hidden" name="next" value="{{ request.path }}">
           <div></div>
-          <div id="uploadimage" class="button0 visible green" onclick="document.getElementById('fileinput').click()">Загрузить файл</div>   
-          <div id="cancelupload" class="button0 hidden red" onclick="cancelupload('{{ group.image.url }}')">Отмена</div>   
-          <div id="saveimage" class="button0 hidden green" onclick="document.getElementById('imageform').submit()">Сохранить</div>  
+          <div id="stage1" class="inline-wrapper">
+            <div id="uploadimage" class="button0 green" onclick="document.getElementById('fileinput').click()">Файл</div> 
+            <div id="deletegroupimage" class="button0 red" onclick="deletegroupimage()">Удалить</div>             
+          </div> 
+          <div id="stage2" class="inline-wrapper" style="display: none;"> 
+            <div id="saveimage" class="button0 green" onclick="document.getElementById('imageform').submit()">Сохранить</div>   
+            <div id="cancelupload" class="button0 red" onclick="cancelupload('{{ group.image.url }}')">Отмена</div>               
+          </div>
           <div></div>
         </form>
       </div>
@@ -110,15 +117,14 @@
         {% endif %}   
       </div>
       {% if group.image.url == '/media/False' %}
+        <input id="fileinput" class="hidden-input" form="imageform" type="file" name="groupimage" onchange="document.getElementById('imageform').submit()">
         <hr>
         <form id="imageform" action="{% url 'communities:moreedit' group.id %}" method="POST" class="inline-wrapper" enctype="multipart/form-data"> 
           {% csrf_token %}     
           <input type="hidden" name="next" value="{{ request.path }}">
           <div class="text2">Фотография</div>
           <div class="inline-wrapper">
-            <div id="uploadimage" class="button2 visible" onclick="document.getElementById('fileinput').click()">Загрузить изображение</div>   
-            <div id="cancelupload" class="button2 hidden" onclick="cancelupload('')">Отмена</div>   
-            <div id="saveimage" class="button2 hidden" onclick="document.getElementById('imageform').submit()">Сохранить</div>  
+            <div id="uploadimage" class="button2 visible" onclick="document.getElementById('fileinput').click()">Загрузить изображение</div>    
           </div>
         </form>
       {% endif %}
@@ -128,13 +134,24 @@
         <div class="button2" onclick="showeditors()">Передать</div>         
       </div>
       <hr>
+      <div class="inline-wrapper">  
+        <div class="text2">Посты пользователей</div>   
+        <select class="pointer" onchange="allowarticles()" name="" id="allow_articles_selector">
+          <option value="1" {% if group.allowarticles == 1 %}selected{% endif %}>Публикуются</option>
+          <option value="2" {% if group.allowarticles == 2 %}selected{% endif %}>Проверяются</option>
+          <option value="3" {% if group.allowarticles == 3 %}selected{% endif %}>Без предлагаемых постов</option>
+        </select>              
+      </div>
+      <!--<hr>
       <div class="solid">
         <div class="text3">Нельзя загружать фотографии большого размера и с шириной, превышающей высоту в два раза.
           После удаления сообщество восстановить будет невозможно
         </div> 
-      </div>
+      </div>-->
     </div>   
   </div>
+
+  <br>
 
   <div class="plate">
     <div class="inline-wrapper">
@@ -145,22 +162,47 @@
       <hr>
       <div class="inline-wrapper">
         <div class="text2" style="width: 170px;">Название:</div>
-        <div style="width: 100%; margin-right: 10px;"><input id="nameinput" class="input1 solid" maxlength="40" type="text" value="{{ group.groupname }}"></div>
-        <div class="button2" onclick="savevalue('name')">Сохранить</div>
+        <div style="width: 100%; margin-right: 10px;">
+          <input id="nameinput" class="input1 solid" maxlength="48" type="text" value="{{ group.groupname }}" oninput="update_symbols('symbols_nameinput', 'nameinput', 48)">
+          <div class="text3" id="symbols_nameinput" style="margin-top: -10px; margin-bottom: 15px;">Символов: 20</div>
+        </div>
+        <div class="button2" onclick="savevalue('name')" style="margin-top: 1px;">Сохранить</div>
       </div>
       <div class="inline-wrapper">
-        <div class="text2" style="width: 170px;">Идентификатор: </div>
-        <div style="width: 100%; margin-right: 10px;"><input id="sluginput" class="input1 solid" maxlength="40" type="text" value="{{ group.slug }}"></div>
-        <div class="button2" onclick="savevalue('slug')">Сохранить</div>
+        <div class="text2" style="width: 170px;">Ссылка: </div>
+        <div style="width: 100%; margin-right: 10px;">
+          <div class="inline-wrapper">
+            <div class="text2">{{ request.get_host }}/groups/</div>
+            <input id="sluginput" placeholder="{{ group.id }}" class="input1 solid" maxlength="20" type="text" value="{{ group.slug }}" style="margin-top: 2px; text-transform:lowercase" oninput="update_symbols('symbols_sluginput', 'sluginput', 20)">
+            <div class="text2">/</div>  
+            <div class="button3 yellow" onclick="copyLink('{{ request.get_host }}/groups/{{ group.slug }}/')" style="margin-top: 1px;">копировать</div>          
+          </div>
+          <div class="text3" id="symbols_sluginput" style="margin-top: -10px; margin-bottom: 15px;">Символов: 20</div>
+          <div class="solid">
+            <div class="text3">По умолчанию в ссылке используется числовой идентификатор сообщества. Вы можете настроить другой, используя буквы. Чтобы вернуть значение по умолчанию, отправьте пустое поле</div>
+          </div>
+        </div>
+        <div class="button2" onclick="savevalue('slug')" style="margin-top: 1px;">Сохранить</div>
       </div>
+      <br>
       <div class="inline-wrapper">
         <div class="text2" style="width: 170px;">Описание:</div> 
-        <div style="width: 100%; margin-right: 10px;"><textarea id="descriptioninput" maxlength="200" class="textarea1 solid" onload="auto_grow(this)" onchange="auto_grow(this)" onclick="auto_grow(this)">{{ group.description }}</textarea></div>
-        <div class="button2" onclick="savevalue('description')">Сохранить</div>
+        <div style="width: 100%; margin-right: 10px;">
+          <textarea id="descriptioninput" maxlength="200" class="textarea1 solid" oninput="auto_grow(this); update_symbols('symbols_descriptioninput', 'descriptioninput', 200)" onclick="auto_grow(this)">{{ group.description }}</textarea>
+          <div class="text3" id="symbols_descriptioninput" style="margin-top: -10px; margin-bottom: 15px;">Символов: 20</div>
+        </div>
+        <div class="button2" onclick="savevalue('description')" style="margin-top: 1px;">Сохранить</div>
       </div>
     </div>
   </div>
+
+  <script>
+    update_symbols('symbols_nameinput', 'nameinput', 48)
+    update_symbols('symbols_sluginput', 'sluginput', 20)
+    update_symbols('symbols_descriptioninput', 'descriptioninput', 200)
+  </script>
   
+  <!--
   <div class="plate">
     <div class="inline-wrapper">  
       <div class="text2">Статьи пользователей</div> 
@@ -192,11 +234,16 @@
     <div class="text3">Предложенные статьи можно публиковать сразу (без проверки), публиковать с предварительной отправкой редакторам или выключить
     </div> 
   </div>
+  -->
+  
+  <br>
 
   <div class="solid">
     <div class="text3">Редактировать фотографии, рассматривать заявки участников и предложенные статьи вы и редакторы можете на главной странице сообщества. Эта же страница доступна только вам
     </div> 
   </div>
+
+  <br>
 
   <div class="plate">
     <div class="inline-wrapper">
@@ -219,7 +266,7 @@
           <div id='editor{{ user.id }}' name="{{ user }}">
             <div class="inline-wrapper tohover">
               <div class="inline-wrapper">
-                <img class="small-img" src="/media/{{ user.profile.avatar }}" alt="" onError="removeElement(this)"> 
+                <img class="small-img" src="/media/{{ user.profile.avatar }}" alt=""> 
                 <div class="text2"><a class="link1" href="{% url 'UserProfile:userprofile' user %}">{{ user }}</a></div>
               </div>  
               {% if user != request.user %}
@@ -257,7 +304,7 @@
           <div id='user{{ user.id }}' name="{{ user }}">
             <div class="inline-wrapper tohover">
               <div class="inline-wrapper">
-                <img class="small-img" src="/media/{{ user.profile.avatar }}" alt="" onError="removeElement(this)"> 
+                <img class="small-img" src="/media/{{ user.profile.avatar }}" alt=""> 
                 <div class="text2"><a class="link1" href="{% url 'UserProfile:userprofile' user %}">{{ user }}</a></div>
               </div>
               <div class="hidden inline-wrapper showflex"> 
@@ -293,7 +340,7 @@
           <div id='banned{{ user.id }}' name="{{ user }}">
             <div class="inline-wrapper tohover">
               <div class="inline-wrapper">
-                <img class="small-img" src="/media/{{ user.profile.avatar }}" alt="" onError="removeElement(this)"> 
+                <img class="small-img" src="/media/{{ user.profile.avatar }}" alt=""> 
                 <div class="text2"><a class="link1" href="{% url 'UserProfile:userprofile' user %}">{{ user }}</a></div>
               </div>
               <div class="hidden showflex inline-wrapper"> 
@@ -310,6 +357,8 @@
     <hr>
     <div class="text3">Если какие-либо изменения не применились, обновите страницу</div>
   </div>
+
+  <br>
 
   <div class="solid">
     <div class="text3">Эта страница доступна только администратору сообщества. Здесь вы можте изменить основную информацию о сообществе а также управлять статусом подписчиков (повышать до редакторов, добавлять в черный список и т. д.). Редакторы могут рассматривать заявки (в закрытом сообществе), а также публиковать свои или предложенные посты
@@ -334,7 +383,7 @@
         <div id='editor{{ user.id }}' name="{{ user }}">
           <div class="inline-wrapper tohover">
             <div class="inline-wrapper">
-              <img class="small-img" src="/media/{{ user.profile.avatar }}" alt="" onError="removeElement(this)"> 
+              <img class="small-img" src="/media/{{ user.profile.avatar }}" alt=""> 
               <div class="text2"><a class="link1" href="{% url 'UserProfile:userprofile' user %}">{{ user }}</a></div>
             </div>  
             {% if user != request.user %}
@@ -355,6 +404,4 @@
       <div></div>
     </div>
   </div>
-
-<script src="{% static 'communities/js/edit.js' %}"></script>
 {% endblock %}
