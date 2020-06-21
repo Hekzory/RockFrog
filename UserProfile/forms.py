@@ -37,7 +37,7 @@ class ProfileForm(forms.Form):
         return self.cleaned_data['avatar']
 
     def change_profile(self, user, avatar):
-        profile = user.profilet
+        profile = user.profile
         self.clean()
         profile.about = self.get_about()
         profile.birth_date = self.get_birth_date()
