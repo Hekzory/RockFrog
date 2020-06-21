@@ -1,4 +1,4 @@
-<!-- Required meta tags -->
+ <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
@@ -12,32 +12,55 @@
     <div class="container">
       <div class="row">
         <div class="col-lg-8">
-          <h1 class="my-4">Приватность</h1>
+          <h1 class="my-4">Безопасность</h1>
           <div class="card mb-4">
             <div class="card-body">
               <p class="card-text">
 
-              <form class="form-privacy" action="{% url 'UserProfile:edit_privacy' %}" method="post" enctype='multipart/form-data'>
+              <form class="form-privacy" action="{% url 'UserProfile:edit_security' %}" method="post" enctype='multipart/form-data'>
               {% csrf_token %}
 
                 <div class="form-row align-items-center">
                     <div class="col-auto">
-                      <label for="inputAbout">Отображение страницы незарегистрированным пользователям</label>
-                      {{ form.allow_to_view_for_unreg }}
-                      {% if form.allow_to_view_for_unreg.errors %}
+                      <label for="inputOldPassword">Текущий пароль</label>
+                      {{ form.old_password }}
+                      {% if form.old_password.errors %}
                         <div class="alert alert-danger my-3">
-                          {{ form.allow_to_view_for_unreg.errors }}
+                          {{ form.old_password.errors }}
+                        </div>
+                      {% endif %}
+                      {% if change_error %}
+                        <div class="alert alert-danger my-3">
+                            Текущий пароль указан неправильно.
+                          </div>
+                      {% endif %}
+                    </div>
+                </div>
+                <div class="form-row align-items-center">
+                    <div class="col-auto">
+                      <label for="inputNewPassword">Новый пароль</label>
+                      {{ form.new_password }}
+                      {% if form.new_password.errors %}
+                        <div class="alert alert-danger my-3">
+                          {{ form.new_password.errors }}
+                        </div>
+                      {% endif %}
+                    </div>
+                </div>
+                  <div class="form-row align-items-center">
+                    <div class="col-auto">
+                      <label for="inputConfirmPassword">Повторите новый пароль</label>
+                      {{ form.confirm_password }}
+                      {% if form.confirm_password.errors %}
+                        <div class="alert alert-danger my-3">
+                          {{ form.confirm_password.errors }}
                         </div>
                       {% endif %}
                     </div>
                   </div>
-
-
-
                   <hr>
-                  <button class="btn btn-lg btn-primary btn-block text-uppercase" type="submit">Сохранить</button>
+                  <button class="btn btn-lg btn-primary btn-block text-uppercase" type="submit">Сменить пароль</button>
                 </form>
-
 
               </p>
             </div>
@@ -48,8 +71,8 @@
           <div class="list-group">
             <a href="{% url 'UserProfile:index' %}" class="list-group-item list-group-item-action">Просмотр</a>
             <a href="{% url 'UserProfile:editprofile' %}" class="list-group-item list-group-item-action">Редактирование</a>
-            <a href="{% url 'UserProfile:edit_security' %}" class="list-group-item list-group-item-action">Безопасность</a>
-            <a href="{% url 'UserProfile:edit_privacy' %}" class="list-group-item list-group-item-action active">Приватность</a>
+            <a href="{% url 'UserProfile:edit_security' %}" class="list-group-item list-group-item-action active">Безопасность</a>
+            <a href="{% url 'UserProfile:edit_privacy' %}" class="list-group-item list-group-item-action">Приватность</a>
             <a href="{% url 'UserProfile:blockedusers' %}" class="list-group-item list-group-item-action">Чёрный список</a>
           </div>
         </div>
