@@ -660,7 +660,7 @@ function cutstring(text, val=7) {
 }
 
 function copyLink(text) {
-    navigator.clipboard.writeText(text)
+    navigator.clipboard.writeText(window.location.hostname + text)
 }
 
 function deleteErrorImage(element) {

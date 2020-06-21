@@ -419,7 +419,7 @@ function showeditors() {
 }
 
 function copyLink(text) {
-    navigator.clipboard.writeText(text)
+    navigator.clipboard.writeText(window.location.hostname + text)
 }
 
 function update_symbols(id_symbols, id_input, count) {

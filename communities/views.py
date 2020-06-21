@@ -25,7 +25,7 @@ def community(request, groupslug):
 		articles = group.articles.filter(allowed=True).order_by('-pubdate')
 		articles_count = articles.count()
 		requestarticles = group.articles.filter(allowed=False).order_by('-pubdate')
-		if group.articles.filter(allowed=False, author=request.user):
+		if request.user.is_authenticated and group.articles.filter(allowed=False, author=request.user):
 			author_request_articles = group.articles.filter(allowed=False, author=request.user).order_by('-pubdate')
 		else:
 			author_request_articles = []
