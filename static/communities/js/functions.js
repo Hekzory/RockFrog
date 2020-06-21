@@ -63,6 +63,7 @@ function setlike(articleid) {
         success : function(json) {
         	document.getElementById("like" + articleid).innerHTML = "favorite";
 			document.getElementById("like" + articleid).setAttribute("onclick","removelike(" + articleid + ")");
+			$('#like' + articleid).parent().find('div').text(parseInt($('#like' + articleid).parent().find('div').text()) + 1)
         },
     });
 }
@@ -82,6 +83,7 @@ function removelike(articleid) {
         success : function(json) {
         	document.getElementById("like" + articleid).innerHTML = "favorite_border";
 			document.getElementById("like" + articleid).setAttribute("onclick","setlike(" + articleid + ")");
+			$('#like' + articleid).parent().find('div').text(parseInt($('#like' + articleid).parent().find('div').text()) - 1)
         },
     });
 }
@@ -192,16 +194,35 @@ function showarticles(name) {
 	if( name == 1 ) {
 		location.reload(true)
 		document.getElementById('articles').style.display = 'block'
+		document.getElementById('author_request_articles').style.display = 'none'
 		document.getElementById('requestarticles').style.display = 'none'
-	} else {
+
+		$('#articles_button_1').addClass('button0-active')
+		$('#articles_button_2').removeClass('button0-active')
+		$('#articles_button_3').removeClass('button0-active')
+	} else if( name == 2 ) {
 		document.getElementById('articles').style.display = 'none'
+		document.getElementById('author_request_articles').style.display = 'none'
 		document.getElementById('requestarticles').style.display = 'block'
+
+		$('#articles_button_1').removeClass('button0-active')
+		$('#articles_button_2').addClass('button0-active')
+		$('#articles_button_3').removeClass('button0-active')
+	} else if( name == 3 ) {
+		document.getElementById('articles').style.display = 'none'
+		document.getElementById('requestarticles').style.display = 'none'
+		document.getElementById('author_request_articles').style.display = 'block'
+
+		$('#articles_button_1').removeClass('button0-active')
+		$('#articles_button_2').removeClass('button0-active')
+		$('#articles_button_3').addClass('button0-active')
 	}
 }
 
 function auto_grow(element) {
     element.style.height = "5px";
     element.style.height = (element.scrollHeight)+"px";
+    // console.log($(element).val())
 }
 
 function allowarticle(id) {	
@@ -211,6 +232,11 @@ function allowarticle(id) {
 
 function deletearticle(id) {	
 	sendajax('deletearticle', id)
+	document.getElementById('article' + id).style.display = 'none'
+}
+
+function delete_request_article(id) {	
+	sendajax('delete_request_article', id)
 	document.getElementById('article' + id).style.display = 'none'
 }
 
@@ -477,8 +503,9 @@ function showedit(postid) {
 	        success : function(returned) {
 	            result = returned
 	            $('#editarea').val(returned)
+	            // document.getElementById("editarea").reload(true);
+	            // document.getElementById('editarea').innerHTML = returned
 	            // console.log(result)
-	            console.log(1)
 	        },
 	    });
 
@@ -525,9 +552,13 @@ function deletepost(id) {
 	document.getElementById('delete' + id).click()
 }
 
-function showgroups(id) {
+function showgroups(id, button) {
 	$('.main_groups_list').hide()
+	$('#table_buttons').children().removeClass('button0-active')
+
 	$('#' + id).show()
+	$(button).addClass('button0-active')
+
 	$('#main_groups_search').attr('onkeyup', "searchlist('" + id + "', this.value)")
 }
 
@@ -628,6 +659,18 @@ function cutstring(text, val=7) {
     return text
 }
 
+function copyLink(text) {
+    navigator.clipboard.writeText(text)
+}
+
+function deleteErrorImage(element) {
+	delete_from_collection($(element).parent().attr('fileid'))
+}
+
+/*
+
 function removeElement(element) {
      element.remove();
 }
+
+*/
