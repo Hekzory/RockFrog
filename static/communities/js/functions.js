@@ -194,10 +194,28 @@ function showarticles(name) {
 	if( name == 1 ) {
 		location.reload(true)
 		document.getElementById('articles').style.display = 'block'
+		document.getElementById('author_request_articles').style.display = 'none'
 		document.getElementById('requestarticles').style.display = 'none'
-	} else {
+
+		$('#articles_button_1').addClass('button0-active')
+		$('#articles_button_2').removeClass('button0-active')
+		$('#articles_button_3').removeClass('button0-active')
+	} else if( name == 2 ) {
 		document.getElementById('articles').style.display = 'none'
+		document.getElementById('author_request_articles').style.display = 'none'
 		document.getElementById('requestarticles').style.display = 'block'
+
+		$('#articles_button_1').removeClass('button0-active')
+		$('#articles_button_2').addClass('button0-active')
+		$('#articles_button_3').removeClass('button0-active')
+	} else if( name == 3 ) {
+		document.getElementById('articles').style.display = 'none'
+		document.getElementById('requestarticles').style.display = 'none'
+		document.getElementById('author_request_articles').style.display = 'block'
+
+		$('#articles_button_1').removeClass('button0-active')
+		$('#articles_button_2').removeClass('button0-active')
+		$('#articles_button_3').addClass('button0-active')
 	}
 }
 
@@ -214,6 +232,11 @@ function allowarticle(id) {
 
 function deletearticle(id) {	
 	sendajax('deletearticle', id)
+	document.getElementById('article' + id).style.display = 'none'
+}
+
+function delete_request_article(id) {	
+	sendajax('delete_request_article', id)
 	document.getElementById('article' + id).style.display = 'none'
 }
 

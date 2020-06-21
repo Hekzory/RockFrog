@@ -330,6 +330,17 @@ option {
 .icon1 {
 	color: grey;
 	font-size: 20px;
+	padding: 7px;
+	margin-top: -7px;
+	margin-left: -4px;
+	margin-right: -4px;
+	border-radius: 30px;
+	transition: background-color 0.2s, color 0.2s;
+}
+
+.icon1:hover {
+	background-color: #ccc;
+	color: #333;
 }
 
 .icon2 {

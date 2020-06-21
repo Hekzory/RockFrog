@@ -25,7 +25,17 @@ def community(request, groupslug):
 		articles = group.articles.filter(allowed=True).order_by('-pubdate')
 		articles_count = articles.count()
 		requestarticles = group.articles.filter(allowed=False).order_by('-pubdate')
-		context = {'group': group, 'articles': articles, 'requestarticles': requestarticles, 'articles_count': articles_count}
+		if group.articles.filter(allowed=False, author=request.user):
+			author_request_articles = group.articles.filter(allowed=False, author=request.user).order_by('-pubdate')
+		else:
+			author_request_articles = []
+		context = {
+			'group': group,
+			'articles': articles,
+			'requestarticles': requestarticles,
+			'articles_count': articles_count,
+			'author_request_articles': author_request_articles
+		}
 		return render(request, 'communities/community.html', context)
 	else:
 		return render(request, 'communities/nogroup.html')
@@ -168,7 +178,7 @@ class DeleteArticle(View):
 					notificationlist = Notificationlist.objects.get(user=article.author).notifications
 					notificationlist.add(notification)
 				except:
-					pass
+					print('Notification Error')
 
 			article.delete()
 		slug = group.slug
@@ -208,20 +218,23 @@ def edit(request, groupid):
 						notificationlist = Notificationlist.objects.get(user=article.author).notifications
 						notificationlist.add(notification)
 					except:
-						pass
+						print('Notification Error')
 
 				return HttpResponse('Ok')
 			elif request.POST.get('type') == 'deletearticle':
 				article = GroupArticle.objects.get(id=request.POST.get('data'))
 
 				if request.user != article.author:
-					notification_text = "Ваш пост в " + group.groupname + " отклонен"
-					notification_name = "Пост отклонен"
-					notification_href = '/groups/' + group.slug + '/'
-					notification = Notification(not_text=notification_text, not_name=notification_name, not_link=notification_href, not_date=datetime.now())
-					notification.save()
-					notificationlist = Notificationlist.objects.get(user=article.author).notifications
-					notificationlist.add(notification)
+					try:
+						notification_text = "Ваш пост в " + group.groupname + " отклонен"
+						notification_name = "Пост отклонен"
+						notification_href = '/groups/' + group.slug + '/'
+						notification = Notification(not_text=notification_text, not_name=notification_name, not_link=notification_href, not_date=datetime.now())
+						notification.save()
+						notificationlist = Notificationlist.objects.get(user=article.author).notifications
+						notificationlist.add(notification)
+					except:
+						print('Notification Error')
 
 				article.delete()
 				return HttpResponse('Ok')
@@ -241,27 +254,32 @@ def edit(request, groupid):
 						notificationlist = Notificationlist.objects.get(user=article.author).notifications
 						notificationlist.add(notification)
 					except:
-						pass
+						print('Notification Error')
 
 				article.delete()
 				return HttpResponse('Ok')
 			if request.POST.get('type') == 'delete_from_collection':		
-				print(request.POST.get('file'))	
+				# print(request.POST.get('file'))	
 				try:
 					groupfile = group.files.get(id=request.POST.get('file'))
 					groupfile.delete()
 				except:
 					pass
-					
+
 				return HttpResponse('Ok')
+		if request.POST.get('type') == 'delete_request_article':
+			article = GroupArticle.objects.get(id=request.POST.get('data'))
+			article.delete()
+			return HttpResponse('Ok')
 	if request.POST.get('type') == 'delete_from_collection' and not os.path.isfile(request.POST.get('file')):		
-		print(request.POST.get('file'))	
+		# print(request.POST.get('file'))	
 		try:
 			groupfile = group.files.get(id=request.POST.get('file'))
 			groupfile.delete()
 		except:
 			pass
 		return HttpResponse('Ok')	
+
 	return HttpResponse('error0')
 
 def moreedit(request, groupid):
