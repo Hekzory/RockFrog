@@ -175,7 +175,6 @@
             <div class="text2">{{ request.get_host }}/groups/</div>
             <input id="sluginput" placeholder="{{ group.id }}" class="input1 solid" maxlength="20" type="text" value="{{ group.slug }}" style="margin-top: 2px; text-transform:lowercase" oninput="update_symbols('symbols_sluginput', 'sluginput', 20)">
             <div class="text2">/</div>  
-            <div class="button3 yellow" onclick="copyLink('{{ request.get_host }}/groups/{{ group.slug }}/')" style="margin-top: 1px;">копировать</div>          
           </div>
           <div class="text3" id="symbols_sluginput" style="margin-top: -10px; margin-bottom: 15px;">Символов: 20</div>
           <div class="solid">
