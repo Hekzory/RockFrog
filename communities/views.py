@@ -371,6 +371,9 @@ def moreedit(request, groupid):
 				elif newslug == 'create' or Group.objects.filter(slug=newslug).exists():
 					return HttpResponse('hasAlready')
 
+				if len(newslug) > 20:
+					return HttpResponse('error')
+
 				try:
 					group.slug = newslug
 					group.save()
@@ -411,12 +414,13 @@ def moreedit(request, groupid):
 				group.save()
 				return HttpResponse('Ok')
 			elif request.POST.get('type') == 'editname':
-				if request.POST.get('data').strip() != '':
+				if request.POST.get('data').strip() != '' and len(request.POST.get('data')) <= 48:
 					group.groupname = request.POST.get('data')
 				group.save()
 				return HttpResponse('/groups/' + group.slug + '/edit/')		
 			elif request.POST.get('type') == 'editdescription':
-				group.description = request.POST.get('data')
+				if len(request.POST.get('data')) <= 200:
+					group.description = request.POST.get('data')
 				group.save()
 				return HttpResponse('/groups/' + group.slug + '/edit/')
 		elif request.POST.get('type') == 'sendsubrequest':
