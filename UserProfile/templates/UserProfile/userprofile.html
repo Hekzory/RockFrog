@@ -7,7 +7,7 @@
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <title>Главная</title>
   </head>
   <body>
@@ -15,12 +15,14 @@
     <div class="container">
       <div class="row">
         <div class="col-lg-8">
+          {% if user.profile.verified %}
+          <h1 class="my-4">Профиль {{ user.username }} <i class="material-icons" title="Подтверждённый пользователь">check_circle_outline</i></h1>
+          {% else %}
           <h1 class="my-4">Профиль {{ user.username }}</h1>
+          {% endif %}
           <div class="card mb-4">
             <div class="card-body">
               <p class="card-text">
-
-
                 <table class="table table-striped">
                   <tbody>
                     <tr>
