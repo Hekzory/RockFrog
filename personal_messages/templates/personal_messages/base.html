@@ -12,7 +12,11 @@
     </div>
   </div>
   <div class="p-2">
+    {% if user_messaging_with.profile.verified %}
+    <h3>Переписка с <a href="/profile/{{user_messaging_with.username}}" id="username">{{user_messaging_with}} <i class="material-icons" title="Подтверждённый пользователь">check_circle_outline</i></a></h3>
+    {% else %}
     <h3>Переписка с <a href="/profile/{{user_messaging_with.username}}" id="username">{{user_messaging_with}}</a></h3>
+    {% endif %}
   </div>
   <div class="p-2">
     Был в сети <>

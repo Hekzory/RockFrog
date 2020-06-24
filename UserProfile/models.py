@@ -18,6 +18,7 @@ class Profile(models.Model):
     interests = models.TextField(max_length=500, blank=True)
     avatar = models.ImageField(upload_to=user_directorypath, default='/static/profile.jpg')
     blacklist = models.ManyToManyField(User, related_name='blacklists')
+    verified = models.BooleanField(default=False)
 
     def __str__(self):
         return self.user.username

@@ -33,6 +33,9 @@
 				<div class="inline-wrapper">
                     <img class="small-img" src="/media/{{ group.admin.profile.avatar }}" alt=""> 
 					<div class="text2"><a class="link1" href="{% url 'UserProfile:userprofile' group.admin %}">{{ group.admin }}</a></div>
+					{% if group.admin.profile.verified %}
+						<i class="material-icons icon3" title="Подтвержденный пользователь">done</i>
+					{% endif %}
 				</div>             
 			</div>
 			<hr>
@@ -63,6 +66,9 @@
 				<div class="inline-wrapper">
                     <img class="small-img" src="/media/{{ user.profile.avatar }}" alt=""> 
 					<div class="text2"><a class="link1" href="{% url 'UserProfile:userprofile' user %}">{{ user }}</a></div>
+					{% if user.profile.verified %}
+						<i class="material-icons icon3" title="Подтвержденный пользователь">done</i>
+					{% endif %}
 				</div>
 				<div></div>
 			</div>
@@ -72,6 +78,9 @@
 				<div class="inline-wrapper">
                     <img class="small-img" src="/media/{{ user.profile.avatar }}" alt=""> 
 					<div class="text2"><a class="link1" href="{% url 'UserProfile:userprofile' user %}">{{ user }}</a></div>
+					{% if user.profile.verified %}
+						<i class="material-icons icon3" title="Подтвержденный пользователь">done</i>
+					{% endif %}
 					<div class="text3">редактор</div>
 				</div>
 				<div></div>
@@ -81,6 +90,9 @@
 				<div class="inline-wrapper">
                     <img class="small-img" src="/media/{{ group.admin.profile.avatar }}" alt=""> 
 					<div class="text2"><a class="link1" href="{% url 'UserProfile:userprofile' group.admin %}">{{ group.admin }}</a></div>
+					{% if group.admin.profile.verified %}
+						<i class="material-icons icon3" title="Подтвержденный пользователь">done</i>
+					{% endif %}
 					<div class="text3">администратор</div>
 				</div>
 				<div></div>
@@ -92,6 +104,9 @@
 				<div class="inline-wrapper">
                     <img class="small-img" src="/media/{{ user.profile.avatar }}" alt=""> 
 					<div class="text2"><a class="link1" href="{% url 'UserProfile:userprofile' user %}">{{ user }}</a></div>
+					{% if user.profile.verified %}
+						<i class="material-icons icon3" title="Подтвержденный пользователь">done</i>
+					{% endif %}
 				</div>
 				<div></div>
 			</div>
@@ -105,6 +120,9 @@
 				<div class="inline-wrapper">
                     <img class="small-img" src="/media/{{ user.profile.avatar }}" alt="">  
 					<div class="text2"><a class="link1" href="{% url 'UserProfile:userprofile' user %}">{{ user }}</a></div>
+					{% if user.profile.verified %}
+						<i class="material-icons icon3" title="Подтвержденный пользователь">done</i>
+					{% endif %}
 				</div>
 				<div></div>
 			</div>

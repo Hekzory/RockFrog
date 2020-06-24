@@ -114,6 +114,9 @@
                     {% if post.author != None %}
                       <img class="small-img" src="/media/{{ post.author.profile.avatar }}" alt="" onError="this.remove()">                    
                       <div class="text2-1"><a class="link1" href="{% url 'UserProfile:userprofile' post.author %}">{{ post.author }}</a></div>
+                      {% if post.author.profile.verified %}
+                        <i class="material-icons icon3" title="Подтвержденный пользователь">done</i>
+                      {% endif %}
                     {% else %}
                       <img class="small-img" src="{{ group.image.url }}" alt="" onError="this.remove()"> 
                       <div class="text2-1">{{ post.group }}</div>
@@ -199,6 +202,9 @@
                     {% if post.author != None %}
                       <img class="small-img" src="/media/{{ post.author.profile.avatar }}" alt="" onError="this.remove()">                    
                       <div class="text2-1"><a class="link1" href="{% url 'UserProfile:userprofile' post.author %}">{{ post.author }}</a></div>
+                      {% if post.author.profile.verified %}
+                        <i class="material-icons icon3" title="Подтвержденный пользователь">done</i>
+                      {% endif %}
                     {% else %}
                       <img class="small-img" src="{{ group.image.url }}" alt="" onError="this.remove()"> 
                       <div class="text2-1">{{ post.group }}</div>
@@ -310,6 +316,9 @@
                     {% if post.author != None %}
                       <img class="small-img" src="/media/{{ post.author.profile.avatar }}" alt="" onError="this.remove()">                   
                       <div class="text2-1"><a class="link1" href="{% url 'UserProfile:userprofile' post.author %}">{{ post.author }}</a></div>
+                      {% if post.author.profile.verified %}
+                        <i class="material-icons icon3" title="Подтвержденный пользователь">done</i>
+                      {% endif %}
                     {% else %}
                       <img class="small-img" src="{{ group.image.url }}" alt="" onError="this.remove()"> 
                       <div class="text2-1">{{ post.group }}</div>
