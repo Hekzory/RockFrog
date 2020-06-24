@@ -167,28 +167,26 @@ class BlockUserView(View):
         else:
             user_id = request.POST['user_id']
             if user_id == request.user.id:
-                return JsonResponse({'status' : 'CantBlockYourself'})
+                return JsonResponse({'status': 'CantBlockYourself'})
             if User.objects.filter(id=user_id).first() is None:
-                template = loader.get_template('UserProfile/user_not_found.html')
-                return JsonResponse({'status' : 'UserNotFound'})
+                return JsonResponse({'status': 'UserNotFound'})
             blacklist = request.user.profile.blacklist
             blocked_user = User.objects.get(id=user_id)
-
             if not blacklist.filter(pk=blocked_user.pk).exists():
                 blacklist.add(blocked_user)
-            return JsonResponse({'status' : 'ok'})
+            return JsonResponse({'status': 'ok'})
 
 
 class UnblockUserView(View):
-    def get(self, request, username):
+    def post(self, request):
         if not request.user.is_authenticated:
-            return HttpResponseRedirect('/')
+            return JsonResponse({'status' : 'NotAuthenticated'})
         else:
-            if User.objects.filter(username=username).first() is None:
-                template = loader.get_template('UserProfile/user_not_found.html')
-                return HttpResponse(template.render(dict(), request), status=404)
+            user_id = request.POST['user_id']
+            if User.objects.filter(id=user_id).first() is None:
+                return JsonResponse({'status': 'UserNotFound'})
             blacklist = request.user.profile.blacklist
-            blocked_user = User.objects.get(username=username)
+            blocked_user = User.objects.get(id=user_id)
             if blacklist.filter(pk=blocked_user.pk).exists():
                 blacklist.remove(blocked_user)
-            return HttpResponseRedirect('/profile/'+str(username)+'/')
+            return JsonResponse({'status': 'ok'})

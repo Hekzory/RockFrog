@@ -81,10 +81,10 @@
             <a href="/conversations/user/{{user.id}}" class="list-group-item list-group-item-action">Написать сообщение</a>
             {% if in_list %}
                 {% csrf_token %}
-                <a href="/profile/{{user.username}}/unblock" class="list-group-item list-group-item-action">Удалить из черного списка</a>
+                <a id='blacklist_button' onclick="unblock_user({{user.id}})" class="list-group-item list-group-item-action">Удалить из чёрного списка</a>
             {% else %}
                  {% csrf_token %}
-                 <a id="blacklist_button" onclick="block_user({{user.id}})" class="list-group-item list-group-item-action">Добавить в черный список</a>
+                 <a id="blacklist_button" onclick="block_user({{user.id}})" class="list-group-item list-group-item-action">Добавить в чёрный список</a>
             {% endif %}
           </div>
         </div>
