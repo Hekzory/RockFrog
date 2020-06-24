@@ -348,6 +348,22 @@ option {
 	font-size: 22px;
 }
 
+.icon3 {
+	color: #333;
+	font-size: 13px;
+	padding: 3px;
+	border-radius: 5px;
+	background-color: #E0E0E0;
+	margin: 9px 2px 12px;
+}
+
+.icon3-1 {
+	color: grey;
+	font-size: 20px;
+	border-radius: 5px;
+	margin: 9px 2px;
+}
+
 .close {
   position: absolute;
   right: 32px;

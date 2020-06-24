@@ -267,6 +267,9 @@
               <div class="inline-wrapper">
                 <img class="small-img" src="/media/{{ user.profile.avatar }}" alt=""> 
                 <div class="text2"><a class="link1" href="{% url 'UserProfile:userprofile' user %}">{{ user }}</a></div>
+                {% if user.profile.verified %}
+                  <i class="material-icons icon3" title="Подтвержденный пользователь">done</i>
+                {% endif %}
               </div>  
               {% if user != request.user %}
                 <div class="hidden showflex inline-wrapper">
@@ -305,6 +308,9 @@
               <div class="inline-wrapper">
                 <img class="small-img" src="/media/{{ user.profile.avatar }}" alt=""> 
                 <div class="text2"><a class="link1" href="{% url 'UserProfile:userprofile' user %}">{{ user }}</a></div>
+                {% if user.profile.verified %}
+                  <i class="material-icons icon3" title="Подтвержденный пользователь">done</i>
+                {% endif %}
               </div>
               <div class="hidden inline-wrapper showflex"> 
                 <div class="button2" onclick="banuser('{{ user.id }}')">Выгнать</div> 
@@ -341,6 +347,9 @@
               <div class="inline-wrapper">
                 <img class="small-img" src="/media/{{ user.profile.avatar }}" alt=""> 
                 <div class="text2"><a class="link1" href="{% url 'UserProfile:userprofile' user %}">{{ user }}</a></div>
+                {% if user.profile.verified %}
+                  <i class="material-icons icon3" title="Подтвержденный пользователь">done</i>
+                {% endif %}
               </div>
               <div class="hidden showflex inline-wrapper"> 
                 <div class="button2" onclick="cancelban('{{ user.id }}')">Восстановить</div> 
@@ -384,6 +393,9 @@
             <div class="inline-wrapper">
               <img class="small-img" src="/media/{{ user.profile.avatar }}" alt=""> 
               <div class="text2"><a class="link1" href="{% url 'UserProfile:userprofile' user %}">{{ user }}</a></div>
+              {% if user.profile.verified %}
+                <i class="material-icons icon3" title="Подтвержденный пользователь">done</i>
+              {% endif %}
             </div>  
             {% if user != request.user %}
               <div class="hidden showflex inline-wrapper">
