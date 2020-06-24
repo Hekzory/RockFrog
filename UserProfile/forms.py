@@ -14,7 +14,6 @@ class ProfileForm(forms.Form):
     interests = forms.CharField(max_length=500, widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 4}))
     avatar = forms.ImageField(required=False)
 
-
     def get_about(self):
         return self.cleaned_data['about']
 
