@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound, JsonResponse
 from django.template import loader
 from django.contrib.auth.models import User
 from django.views.generic import View
@@ -161,21 +161,22 @@ class BlockedUsersView(View):
 
 
 class BlockUserView(View):
-    def get(self, request, username):
+    def post(self, request):
         if not request.user.is_authenticated:
-            return HttpResponseRedirect('/')
+            return JsonResponse({'status' : 'NotAuthenticated'})
         else:
-            if username == request.user.username:
-                return HttpResponseRedirect('/profile')
-            if User.objects.filter(username=username).first() is None:
+            user_id = request.POST['user_id']
+            if user_id == request.user.id:
+                return JsonResponse({'status' : 'CantBlockYourself'})
+            if User.objects.filter(id=user_id).first() is None:
                 template = loader.get_template('UserProfile/user_not_found.html')
-                return HttpResponse(template.render(dict(), request), status=404)
+                return JsonResponse({'status' : 'UserNotFound'})
             blacklist = request.user.profile.blacklist
-            blocked_user = User.objects.get(username=username)
+            blocked_user = User.objects.get(id=user_id)
 
             if not blacklist.filter(pk=blocked_user.pk).exists():
                 blacklist.add(blocked_user)
-            return HttpResponseRedirect('/profile/'+str(username)+'/')
+            return JsonResponse({'status' : 'ok'})
 
 
 class UnblockUserView(View):
