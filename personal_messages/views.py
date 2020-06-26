@@ -13,6 +13,7 @@ class DialogPage(View):
     def get(self, request, user_id):
         context = dict()
         if request.user.is_authenticated:
+            request.user.profile.last_online_update()
             try:
                 user_messaging_with = User.objects.get(pk=user_id)
                 context['user_messaging_with'] = user_messaging_with
@@ -45,7 +46,7 @@ class DialogPage(View):
             context["is_viewer_blacklisted"] = False
             context["is_viewed_blacklisted"] = False
             if user_messaging_with.profile.blacklist.filter(pk=request.user.pk).exists():
-                context["is_viewer_blacklisted"] = True
+                coуntext["is_viewer_blacklisted"] = True
             elif request.user.profile.blacklist.filter(pk=user_messaging_with.pk).exists():
                 context["is_viewed_blacklisted"] = True
             return render(request, 'personal_messages/base.html', context)
@@ -94,6 +95,9 @@ class DialogsListBase(View):
 
 class DeleteMessage(View):
     def post(self, request):
+        if not request.user.is_authenticated:
+            return HttpResponseRedirect('/')
+        request.user.profile.last_online_update()
         message = ConversationMessage.objects.get(id=request.POST["message_id"])
         if message.is_earlier_24() and message.user.id == request.user.id:
             message.delete()
@@ -103,6 +107,9 @@ class DeleteMessage(View):
 
 class EditMessage(View):
     def post(self, request):
+        if not request.user.is_authenticated:
+            return HttpResponseRedirect('/')
+        request.user.profile.last_online_update()
         message = ConversationMessage.objects.get(id=request.POST["message_id"])
         if message.is_earlier_24() and message.user.id == request.user.id and request.POST["message"].strip() != "":
             message.text = request.POST["message"]
