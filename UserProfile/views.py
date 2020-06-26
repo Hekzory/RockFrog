@@ -86,6 +86,7 @@ class EditProfileView(View):
                 template = loader.get_template('UserProfile/editprofile.html')
                 form = ProfileForm(initial=initial_params)
                 context = {'form': form}
+                request.user.profile.last_online_update()
                 return HttpResponse(template.render(context, request))
             else:
                 template = loader.get_template('UserProfile/editprofile.html')

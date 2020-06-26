@@ -18,8 +18,8 @@
     <h3>Переписка с <a href="/profile/{{user_messaging_with.username}}" id="username">{{user_messaging_with}}</a></h3>
     {% endif %}
   </div>
-  <div class="p-2">
-    Был в сети <>
+  <div class="p-2 text-muted">
+    {{user_messaging_with.profile.online_status}}
   </div>
 </div>
 {% endblock %}
