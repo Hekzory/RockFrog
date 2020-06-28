@@ -1,6 +1,8 @@
 {% extends "communities/community_template.html" %}
 
 {% block main %}
+  {% load templatetags %}
+
   <script>
     $('#to_main').addClass('button0-active')
   </script>
@@ -18,16 +20,25 @@
                 <div id="postaddition2" style="display: flex; flex-wrap: wrap;"></div>
               </div>
             </div>
-            <div id="postoptions" class="plate" style="width: calc(25% - 5px); height: 125px; text-align: center; display: none;">
+            <div id="postoptions" class="plate" style="width: calc(25% - 5px); height: 115px; text-align: center; display: none;">
               <input id="postfileinput" name="files" type="file" multiple class="hidden-input">
               <input id="postfileinput2" onchange="readfile(this)" type="file" class="hidden-input">
-              <div class="text2-1">{% if request.user in group.subscribers.all %}Предложить запись{% else %}Новая запись{% endif %}</div>    
-              <div class="inline-wrapper">
-                <div id="postfilebutton" class="button3 yellow" style="width: calc(50% - 5px);" onclick="document.getElementById('postfileinput2').click()">Файл</div>    
-                <div class="button3 red" onclick="showcreate()" style="width: calc(50% - 5px);">Отмена</div>
+              <div class="solid">
+                <div class="text2-1">{% if request.user in group.subscribers.all %}Предложить пост{% else %}Создать пост{% endif %}</div>
+              </div>    
+              <!--<div class="inline-wrapper">
+                <div id="postfilebutton" class="button3" style="width: calc(50% - 5px);" onclick="document.getElementById('postfileinput2').click()">Файл</div>    
+                <div class="button3" onclick="showcreate()" style="width: calc(50% - 5px);">Отмена</div>
               </div>
-              <div class="button3 green" onclick="createpost('{% if request.user in group.subscribers.all and group.allowarticles == 2 %}Запись будет отправлена редакторам.{% else %}Запись опубликуется сейчас.{% endif %}')">
+              <div class="button0 green" onclick="createpost('{% if request.user in group.subscribers.all and group.allowarticles == 2 %}Запись будет отправлена редакторам.{% else %}Запись опубликуется сейчас.{% endif %}')">
                 {% if request.user in group.subscribers.all and group.allowarticles == 2 %}Предложить{% else %}Опубликовать{% endif %}
+              </div>-->
+              <div class="inline-wrapper">
+                 <div class="button0 green" style="width: 100%;" onclick="createpost('{% if request.user in group.subscribers.all and group.allowarticles == 2 %}Запись будет отправлена редакторам.{% else %}Запись опубликуется сейчас.{% endif %}')">
+                  {% if request.user in group.subscribers.all and group.allowarticles == 2 %}Предложить{% else %}Опубликовать{% endif %}
+                </div>
+                <i id="postfilebutton" class="material-icons icon-button yellow" onclick="document.getElementById('postfileinput2').click()">attach_file</i>
+                <i class="material-icons icon-button red" onclick="showcreate()" title="Отмена">close</i>
               </div>
             </div>
           </div>
@@ -40,10 +51,7 @@
       {% if requestarticles or author_request_articles %}
         <div class="inline-wrapper plate solid" style="width: calc(75% - 5px);">
           <div id="articles_button_1" class="button0 button0-active" onclick="showarticles(1)">Опубликованные посты</div> 
-          <div id="articles_button_2" class="button0" onclick="showarticles(2)">Предложенные посты</div> 
-          {% if author_request_articles %}   
-            <div id="articles_button_3" class="button0" onclick="showarticles(3)">Ваши предложенные посты</div> 
-          {% endif %}      
+          <div id="articles_button_2" class="button0" onclick="showarticles(2)">Предложенные посты</div>       
         </div>
         <br>   
       {% endif %}
@@ -145,7 +153,7 @@
     </div>
 
     <div id="author_request_articles" class="hidden">
-        {% if author_request_articles %}
+        {% if author_request_articles and request.user not in group.editors.all and request.user != group.admin %}
           {% for post in author_request_articles %}
             <div id='article{{ post.id }}' class="inline-wrapper" style="margin-bottom: 20px;">
               <div style="width: calc(75% - 5px);">
@@ -288,24 +296,86 @@
                 </div>
                 <div style="padding: 0px 10px;">
                   <div class="solid">
-                    <div class="text2">Комментарии: {{ post.comments.count }}</div>
-                    {% for mes in post.comments.all %}
-                      <hr>
-                      <div>
-                        <div class="text3">{{ mes.author.username }}</div>
-                        <div class="text2">{{ mes.text }}</div>
-                      </div>                  
-                    {% endfor %}
-                    <hr>
+                    <div style="display: flex;">
+                      <div class="text2">Комментарии </div>
+                      <div id="post{{ post.id }}commentcount" class="text2" id="post{{ post.id }}commentcount">{{ post.comments.count }}</div>        
+                    </div>
+                    <div style="display: flex;">
+                      <div id="post{{ post.id }}helper" class="comment-helper" onclick="showcomments('{{ post.id }}')">
+                        <i id="post{{ post.id }}icon-helper" class="material-icons icon-comment-helper">keyboard_arrow_down</i>
+                      </div>
+                      <div id="post{{ post.id }}comments" style="width: calc(100% - 25px);">
+                        <hr>
+                        {% for comment in post.comments|parent_comments %}
+                          <div id="comment{{ comment.id }}">                           
+                            <div style="display: flex;">
+                              <img class="comment-img" src="/media/{{ comment.author.profile.avatar }}" alt="">  
+                              <div style="width: 100%;">                                
+                                <div class="inline-wrapper" style="margin-bottom: -10px;">   
+                                  <div class="text3"><a class="link1" href="{% url 'UserProfile:userprofile' comment.author %}">{{ comment.author.username }}</a></div>                                  
+                                  <div class="text3" style="white-space: pre;">{{ comment.pubdate }}</div>
+                                </div> 
+                                <div class="inline-wrapper">
+                                  <div id="comment{{ comment.id }}text" class="text2" style="width: calc(100% - 50px);">{{ comment.text }}</div>
+                                  {% if request.user.is_authenticated %} 
+                                    {% if request.user == comment.author %}
+                                      <i class="material-icons icon-comment pointer" onclick="showeditcomment('{{ comment.id }}', '{{ post.id }}')">edit</i>
+                                      <i class="material-icons icon-comment pointer" onclick="deletecomment('{{ comment.id }}', '{{ post.id }}')">delete</i>
+                                    {% endif %}
+                                    <i class="material-icons mirrorX icon-comment pointer" onclick="answercomment('{{ comment.id }}', '{{ post.id }}', '{{ comment.author }}')" title="ответить">reply</i>
+                                  {% endif %}                                
+                                </div>
+                              </div>                  
+                            </div> 
+                            <hr>
+                          </div>  
+                          <div id="comment{{ comment.id }}children" style="margin-left: 40px;">
+                            {% for childcomment in comment.childrencomments.all %}
+                              <div id="comment{{ childcomment.id }}">                           
+                                <div style="display: flex;">
+                                  <img class="comment-img" src="/media/{{ childcomment.author.profile.avatar }}" alt="">  
+                                  <div style="width: 100%;">                                
+                                    <div class="inline-wrapper" style="margin-bottom: -10px;">   
+                                      <div class="text3"><a class="link1" href="{% url 'UserProfile:userprofile' childcomment.author %}">{{ childcomment.author.username }}</a> ответил <a class="link1" href="{% url 'UserProfile:userprofile' childcomment.replyto %}">{{ childcomment.replyto.username }}</a></div>                                  
+                                      <div class="text3" style="white-space: pre;">{{ childcomment.pubdate }}</div>
+                                    </div> 
+                                    <div class="inline-wrapper">
+                                      <div id="comment{{ childcomment.id }}text" class="text2" style="width: calc(100% - 50px);">{{ childcomment.text }}</div>
+                                      {% if request.user.is_authenticated %} 
+                                        {% if request.user == childcomment.author %}
+                                          <i class="material-icons icon-comment pointer" onclick="showeditcomment('{{ childcomment.id }}', '{{ post.id }}')">edit</i>
+                                          <i class="material-icons icon-comment pointer" onclick="deletecomment('{{ childcomment.id }}', '{{ post.id }}')">delete</i>
+                                        {% endif %}
+                                        <i class="material-icons mirrorX icon-comment pointer" onclick="answercomment('{{ childcomment.id }}', '{{ post.id }}', '{{ childcomment.author }}')" title="ответить">reply</i>
+                                      {% endif %}                                
+                                    </div>
+                                  </div>                  
+                                </div> 
+                                <hr>
+                              </div> 
+                              <div id="comment{{ childcomment.id }}children" style="margin-left: 40px;"></div>                          
+                            {% endfor %} 
+                          </div>
+                        {% endfor %}                         
+                      </div>
+                      <script>
+                        $('#post{{ post.id }}comments').children().slice(2).hide()
+                      </script>  
+                    </div>
                     <div class="inline-wrapper">
                       {% if request.user.is_authenticated %}
-                        <input class="input1" style="border: none;" maxlength="40" type="text" placeholder="Оставить комментарий...">
-                        <div class="button0" style="width: 100px; margin-left: 10px;">Отправить</div>
+                        <img class="small-img" src="/media/{{ request.user.profile.avatar }}" alt="" onError="this.remove()"> 
+                        <div style="width: 100%;">                          
+                          <textarea answering='' editing='' id="comment{{ post.id }}input" style="height: 30px;" class="textarea2" oninput="auto_grow(this);" onclick="auto_grow(this)" placeholder="Оставить комментарий..."></textarea>
+                          <div id="comment{{ post.id }}answer" class="text3 hidden pointer" onclick="closecomment('{{ post.id }}')"></div>   
+                        </div> 
+                        <div id="comment{{ post.id }}buttonsend" class="button0" style="width: 100px; margin-left: 10px;" onclick="createcomment('{{ post.id }}')">Отправить</div>
+                        <div id="comment{{ post.id }}buttonedit" class="button0 hidden" style="width: 100px; margin-left: 10px;" onclick="editcomment('{{ post.id }}')">Сохранить</div>
                       {% else %}
-                        <div class="text2">Авторизуйтесь, чтобы написать комментарий</div>
+                        <div class="text2 solid">Авторизуйтесь, чтобы написать комментарий</div>
                         <a class="button0" style="width: 100px; margin-left: 10px;" href="/auth/login">Войти</a>
                       {% endif %}
-                    </div>
+                    </div>                     
                   </div>
                 </div> 
               </div>
@@ -328,7 +398,7 @@
                 </div>    
 
                 <div class="inline-wrapper" style="margin: 17px auto 15px; padding: 10px 10px 5px 10px;{% if request.user in group.editors.all or request.user == group.admin %} width: 95%; {% else %} width: 80%; {% endif %} border-radius: 5px; border: 1px #CCC solid;">
-                  <div class="inline-wrapper"><i class="material-icons icon1">comment</i><div class="text2" style="margin-top: -5px;">{{ post.comments.count }}</div></div>
+                  <div class="inline-wrapper"><i class="material-icons icon1">comment</i><div id="post{{ post.id }}commenticon" class="text2" style="margin-top: -5px;">{{ post.comments.count }}</div></div>
                   <div class="inline-wrapper"><i class="material-icons icon1">attach_file</i><div class="text2" style="margin-top: -5px;">{{ post.files.count }}</div></div>
                   {% if request.user.is_authenticated %}
                     {% if request.user in post.likes.all %}

@@ -242,7 +242,7 @@ function delete_request_article(id) {
 
 function showcreate() {
 	if( $('#postoptions').css('display') == 'none' ) {
-		$('#postplate').css('min-height', '120px');		
+		$('#postplate').css('min-height', '110px');		
 		$('#postadditions').css('display', 'block');
 		$('#postoptions').css('display', 'block');
 		$('#postplate').css('width', 'calc(75% - 5px)');
@@ -667,6 +667,250 @@ function deleteErrorImage(element) {
 	delete_from_collection($(element).parent().attr('fileid'))
 }
 
+function createcomment(postid) {
+    var csrftoken = $('input[name="csrfmiddlewaretoken"]').val()
+    
+    $.ajax({
+        url : $("#cururl").attr("cururl") + "createcomment/" + postid + '/',
+        type : "POST",
+        data : {
+            'text': $('#comment' + postid + 'input').val(),
+            'reply': $('#comment' + postid + 'input').attr('answering'),
+            'csrfmiddlewaretoken': csrftoken
+        },
+
+        success : function(data) {
+        	// console.log(data)
+			if( data == 'empty' )
+            {
+                showwarning('Пустое поле')
+            }
+            else
+            {	
+            	data = JSON.parse(data)
+	            $('#comment' + postid + 'input').val('')
+	            $('#post' + postid + 'commenticon').text(parseInt($('#post' + postid + 'commenticon').text()) + 1)
+	            $('#post' + postid + 'commentcount').text(parseInt($('#post' + postid + 'commentcount').text()) + 1)
+	        	showcomments(postid)
+	        	closecomment(postid)
+	    		insertcomment(data['locationid'], data['avatar'], data['text'], data['author'], data['pubdate'], data['postid'], data['commentid'], data['parentname'])
+            }
+        },
+    })
+    
+}
+
+function editcomment(postid) {
+    var csrftoken = $('input[name="csrfmiddlewaretoken"]').val()
+
+    commentid = $('#comment' + postid + 'input').attr('editing')
+    
+    $.ajax({
+        url : "/groups/editcomment/" + commentid + '/',
+        type : "POST",
+        data : {
+            'text': $('#comment' + postid + 'input').val(),
+            'csrfmiddlewaretoken': csrftoken
+        },
+
+        success : function(data) {
+        	// console.log(data)
+			if( data == 'empty' )
+            {
+                showwarning('Пустое поле')
+            }
+            else
+            {	
+            	$('#comment' + commentid + 'text').text($('#comment' + postid + 'input').val())
+	            $('#comment' + postid + 'input').val('')      
+	            closecomment(postid)  	
+            }
+        },
+    })
+    
+}
+
+function answercomment(commentid, postid, name) {
+	$('#comment' + postid + 'input').attr('answering', commentid) 
+	$('#comment' + postid + 'answer').text('Ответ ' + name) 
+
+	$('#comment' + postid + 'answer').removeClass('hidden')
+	$('#comment' + postid + 'input').focus()
+}
+
+function closecomment(postid) {
+	$('#comment' + postid + 'input').attr('answering', '') 
+	$('#comment' + postid + 'input').attr('editing', '') 
+	$('#comment' + postid + 'answer').addClass('hidden')
+
+	$('#comment' + postid + 'buttonsend').removeClass('hidden')
+	$('#comment' + postid + 'buttonedit').addClass('hidden')
+	$('#comment' + postid + 'input').val('')
+}
+
+function closeanswercomment(postid) {
+	$('#comment' + postid + 'input').attr('answering', '')   
+	$('#comment' + postid + 'answer').addClass('hidden')
+
+
+}
+
+function showeditcomment(commentid, postid) {
+	$('#comment' + postid + 'input').attr('editing', commentid) 
+	$('#comment' + postid + 'answer').text('Редактировать') 
+	$('#comment' + postid + 'answer').removeClass('hidden')
+
+	$('#comment' + postid + 'input').val($('#comment' + commentid + 'text').text())
+
+	$('#comment' + postid + 'buttonsend').addClass('hidden')
+	$('#comment' + postid + 'buttonedit').removeClass('hidden')
+
+	$('#comment' + postid + 'input').focus()
+}
+
+function insertcomment(locationid, avatar_link, text, author, pubdate, postid, commentid, parentname) {
+
+	wrapper = $('<div>')
+	wrapper.attr('id', 'comment' + commentid)
+	wrapper.hide()
+
+	second_wrapper = $('<div>')
+	wrapper.append(second_wrapper)
+	second_wrapper.css('display', 'flex')
+
+	avatar = $('<img>')
+	avatar.addClass('comment-img')
+	avatar.attr({'src': avatar_link, 'alt': ''})
+	second_wrapper.append(avatar)
+
+	third_wrapper = $('<div>')
+	third_wrapper.css('width', '100%')
+	second_wrapper.append(third_wrapper)
+
+	fourth_wrapper = $('<div>')
+	fourth_wrapper.addClass('inline-wrapper')
+	fourth_wrapper.css('margin-bottom', '-10px')
+	third_wrapper.append(fourth_wrapper)	
+
+	author_text = $('<div>')
+	author_text.addClass('text3')
+	author_text.css({'overflow': 'auto', 'white-space': 'nowrap'})
+	fourth_wrapper.append(author_text)
+
+	author_link = $('<a>')
+	author_link.addClass('link1')
+	author_link.attr({'href': '/profile/' + author + '/'})
+	author_link.css({'display': 'inline'})
+	author_link.text(author)
+	author_text.append(author_link)
+	
+	if( parentname != '' )
+	{	
+		answered = $('<div>')
+		answered.addClass('text3')
+		answered.text('ответил')
+		answered.css({'display': 'inline'})
+		author_text.append(answered)
+
+		parent_link = $('<a>')
+		parent_link.addClass('link1')
+		parent_link.attr({'href': '/profile/' + parentname + '/'})
+		parent_link.css({'display': 'inline'})
+		parent_link.text(parentname)
+		author_text.append(parent_link)
+	}	
+
+	pubdate_text = $('<div>')
+	pubdate_text.addClass('text3')
+	pubdate_text.text('только что')
+	fourth_wrapper.append(pubdate_text)	
+
+	fifth_wrapper = $('<div>')
+	fifth_wrapper.addClass('inline-wrapper')
+	third_wrapper.append(fifth_wrapper)
+
+	comment_text = $('<div>')
+	comment_text.css('width', 'calc(100% - 50px)')
+	comment_text.addClass('text2')
+	comment_text.attr('id', 'comment' + commentid + 'text')
+	comment_text.text(text)
+	fifth_wrapper.append(comment_text)
+
+	edit_icon = $('<i>')
+	edit_icon.addClass('material-icons icon-comment pointer')
+	edit_icon.attr('onclick', 'showeditcomment(' + commentid + ',' + postid + ')')
+	edit_icon.text('edit')
+	fifth_wrapper.append(edit_icon)
+
+	delete_icon = $('<i>')
+	delete_icon.addClass('material-icons icon-comment pointer')
+	delete_icon.attr('onclick', 'deletecomment(' + commentid + ',' + postid + ')')	
+	delete_icon.text('delete')
+	fifth_wrapper.append(delete_icon)
+
+	reply_icon = $('<i>')
+	reply_icon.addClass('material-icons mirrorX icon-comment pointer')
+	reply_icon.attr('onclick', 'answercomment(' + commentid + ',' + postid + ', "себе")')
+	reply_icon.attr('title', 'ответить')
+	reply_icon.text('reply')
+	fifth_wrapper.append(reply_icon)
+
+	wrapper.append($('<hr>'))	
+
+	$('#' + locationid).append(wrapper)
+
+	children_wrapper = $('<div>')
+	children_wrapper.attr('id', 'comment' + commentid + 'children')
+	children_wrapper.css('margin-left', '40px')
+	$('#' + locationid).append(children_wrapper)
+
+	wrapper.show(200)
+}
+
+function deletecomment(commentid, postid) {
+    var csrftoken = $('input[name="csrfmiddlewaretoken"]').val()
+    
+    $.ajax({
+        url : "/groups/deletecomment/" + commentid + '/',
+        type : "POST",
+        data : {
+            'id': commentid,
+            'csrfmiddlewaretoken': csrftoken
+        },
+
+        success : function(data) {
+        	// console.log(data)
+			if( data == 'Ok' )
+            {	            	
+        	    $('#post' + postid + 'commenticon').text(parseInt($('#post' + postid + 'commenticon').text()) - 1 - $('#comment' + commentid + 'children').children().length / 2)
+	            $('#post' + postid + 'commentcount').text(parseInt($('#post' + postid + 'commentcount').text()) - 1 - $('#comment' + commentid + 'children').children().length / 2)
+
+	            $('#comment' + commentid + 'children').hide(200)
+	            $('#comment' + commentid).hide(200, function() { 
+	            	$('#comment' + commentid).remove()
+	            	$('#comment' + commentid + 'children').remove() 
+		      		if( $('#post' + postid + 'icon-helper').html() == 'keyboard_arrow_down' )
+		            {			            	
+		            	$('#post' + postid + 'comments').children().slice(0, 2).show(200)		            	
+		            }
+	        	})
+            }
+        },
+    })
+    
+}
+
+function showcomments(postid) {
+	$('#post' + postid + 'comments').children().show(200)
+	$('#post' + postid + 'helper').attr('onclick', 'hidecomments(' + postid + ')')
+	$('#post' + postid + 'icon-helper').html('keyboard_arrow_up')
+}
+
+function hidecomments(postid) {
+	$('#post' + postid + 'comments').children().slice(2).hide(200)
+	$('#post' + postid + 'helper').attr('onclick', 'showcomments(' + postid + ')')
+	$('#post' + postid + 'icon-helper').html('keyboard_arrow_down')
+}
 /*
 
 function removeElement(element) {

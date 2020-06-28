@@ -109,7 +109,8 @@ i, img, .button0, .button0-1, .button1, .button2, .button3 {
 	border-radius: 5px;
 	cursor: pointer;
 	transition: background-color 0.2s, color 0.2s;
-	margin-top: auto;
+
+	margin-bottom: auto;
 }
 
 .button0:hover {
@@ -220,6 +221,17 @@ i, img, .button0, .button0-1, .button1, .button2, .button3 {
 	padding: 2px 10px;
 }
 
+.textarea2 {
+	width: 100%;
+	font-size: 16px;
+	min-height: 38px;
+	overflow: hidden;
+	resize: none;
+	border-radius: 5px;
+	border: none;
+	padding: 6px 10px;
+}
+
 .group-img {
 	height: 185px;
 	width: auto;
@@ -255,6 +267,15 @@ i, img, .button0, .button0-1, .button1, .button2, .button3 {
 	margin: 5px;	
 }
 
+.comment-img {
+	object-fit: cover;
+  	width: 35px;
+  	height: 35px;
+	border-radius: 20px;	
+	margin: 5px;
+	margin-top: 12px;	
+}
+
 .image-decorator {
 	position: absolute;
 	width: calc(100% - 10px);
@@ -271,6 +292,21 @@ i, img, .button0, .button0-1, .button1, .button2, .button3 {
 .image-decorator:hover {
 	opacity: 0.7;
 	cursor: pointer;
+}
+
+.comment-helper {
+	width: 15px;
+	margin: 5px;
+	background-color: #ddd;
+	border-radius: 5px;
+	cursor: pointer;
+
+	transition: background-color 0.2s;
+	position: relative;
+}
+
+.comment-helper:hover {
+	background-color: #ccc;	
 }
 
 select {
@@ -303,6 +339,52 @@ option {
 
 	position: absolute;
 	z-index: 1;
+}
+
+.icon-comment-helper {
+	position: absolute;
+
+	color: grey;
+	font-size: 18px;
+	
+	left: -1px;
+	top: calc(50% - 9px);
+}
+
+.icon-comment {
+	color: grey;
+	font-size: 18px;
+	padding: 5px;
+	margin-top: 4px;
+	margin-right: 5px;
+	padding-right: 4px;
+	border-radius: 30px;
+	height: 30px;
+	transition: background-color 0.2s, color 0.2s;	
+}
+
+.icon-comment:hover {
+	background-color: #ccc;
+	color: #333;
+}
+
+.mirrorX { 
+	transform: scale(-1, 1); 
+}
+
+.icon-button {
+	color: grey;
+	border-radius: 5px;
+	padding: 7px 10px 5px;
+	margin: 2px 2px 0px;
+	font-size: 25px;
+	cursor: pointer;
+	transition: background-color 0.2s, color 0.2s;	
+}
+
+.icon-button:hover {
+	background-color: #ccc;
+	color: #333;
 }
 
 .icon-fileviewer {
