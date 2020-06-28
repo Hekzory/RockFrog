@@ -249,7 +249,7 @@ def deletecomment(request, commentid):
 				comment.save()
 				return HttpResponse('is_deleted')
 			else:
-				if comment.parent and comment.parent.childrencomments.count() == 1:
+				if comment.parent and comment.parent.is_deleted and comment.parent.childrencomments.count() == 1:
 					comment.parent.delete()
 				else:
 					comment.delete()
