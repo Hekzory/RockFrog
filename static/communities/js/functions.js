@@ -685,7 +685,7 @@ function createcomment(postid) {
             {
                 showwarning('Пустое поле')
             }
-            else
+            else if( data != 'long' )
             {	
             	data = JSON.parse(data)
 	            $('#comment' + postid + 'input').val('')
@@ -720,7 +720,7 @@ function editcomment(postid) {
             {
                 showwarning('Пустое поле')
             }
-            else
+            else if( data == 'Ok' )
             {	
             	$('#comment' + commentid + 'text').text($('#comment' + postid + 'input').val())
 	            $('#comment' + postid + 'input').val('')      
@@ -734,7 +734,7 @@ function editcomment(postid) {
 function answercomment(commentid, postid, name) {
 	closecomment(postid)
 	$('#comment' + postid + 'input').attr('answering', commentid) 
-	$('#comment' + postid + 'answer').text('Ответ ' + name) 
+	$('#comment' + postid + 'answertext').text('Ответить ' + name) 
 
 	$('#comment' + postid + 'answer').removeClass('hidden')
 	$('#comment' + postid + 'input').focus()
@@ -748,6 +748,7 @@ function closecomment(postid) {
 	$('#comment' + postid + 'buttonsend').removeClass('hidden')
 	$('#comment' + postid + 'buttonedit').addClass('hidden')
 	$('#comment' + postid + 'input').val('')
+	update_symbols('post' + postid + 'commentssymbols', 'comment' + postid + 'input', 750)
 	auto_grow(document.getElementById('comment' + postid + 'input'))
 }
 
@@ -758,10 +759,11 @@ function closeanswercomment(postid) {
 
 function showeditcomment(commentid, postid) {
 	$('#comment' + postid + 'input').attr('editing', commentid) 
-	$('#comment' + postid + 'answer').text('Редактировать') 
+	$('#comment' + postid + 'answertext').text('Редактировать') 
 	$('#comment' + postid + 'answer').removeClass('hidden')
 
 	$('#comment' + postid + 'input').val($('#comment' + commentid + 'text').text())
+	update_symbols('post' + postid + 'commentssymbols', 'comment' + postid + 'input', 750)
 
 	$('#comment' + postid + 'buttonsend').addClass('hidden')
 	$('#comment' + postid + 'buttonedit').removeClass('hidden')
@@ -786,7 +788,7 @@ function insertcomment(locationid, avatar_link, text, author, pubdate, postid, c
 	second_wrapper.append(avatar)
 
 	third_wrapper = $('<div>')
-	third_wrapper.css('width', '100%')
+	third_wrapper.css('width', 'calc(100% - 50px)')
 	second_wrapper.append(third_wrapper)
 
 	fourth_wrapper = $('<div>')
@@ -832,7 +834,7 @@ function insertcomment(locationid, avatar_link, text, author, pubdate, postid, c
 	third_wrapper.append(fifth_wrapper)
 
 	comment_text = $('<div>')
-	comment_text.css('width', 'calc(100% - 50px)')
+	comment_text.css({'width': 'calc(100% - 100px)', 'word-wrap': 'break-word'})
 	comment_text.addClass('text2')
 	comment_text.attr('id', 'comment' + commentid + 'text')
 	comment_text.text(text)
@@ -919,6 +921,10 @@ function hidecomments(postid) {
 	$('#post' + postid + 'comments').children().slice(2).hide(200)
 	$('#post' + postid + 'helper').attr('onclick', 'showcomments(' + postid + ')')
 	$('#post' + postid + 'icon-helper').html('keyboard_arrow_down')
+}
+
+function update_symbols(id_symbols, id_input, count) {
+    $('#' + id_symbols).text('Еще символов: ' + (count - $('#' + id_input).val().length))
 }
 /*
 

@@ -203,10 +203,12 @@ def createcomment(request, groupid, articleid):
 	if request.user.is_authenticated:
 		group = Group.objects.get(id=groupid)
 		article = GroupArticle.objects.get(id=articleid)
-		if not (request.user in group.banned.all() or (not group.public and request.user not in group.subscribers.all and request.user not in group.editors.all and request.user != group.admin)):
+		if not (request.user in group.banned.all() or (not group.public and request.user not in group.subscribers.all() and request.user not in group.editors.all() and request.user != group.admin)):
 			commenttext = request.POST.get('text')
 			if commenttext.replace(' ', '').rstrip() == '':
 				return HttpResponse('empty')
+			if len(commenttext) > 750:
+				return HttpResponse('long')
 			newcomment = GroupComment(author=request.user, text=commenttext, article=article)
 			newcomment.pubdate = datetime.now()
 			newcomment.save()
@@ -263,6 +265,8 @@ def editcomment(request, commentid):
 			commenttext = request.POST.get('text')
 			if commenttext.replace(' ', '').rstrip() == '':
 				return HttpResponse('empty')
+			if len(commenttext) > 750:
+				return HttpResponse('long')
 			comment.text = commenttext
 			comment.save()
 			return HttpResponse('Ok')

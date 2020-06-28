@@ -313,13 +313,13 @@
                             {% else %}                       
                               <div style="display: flex;">
                                 <img class="comment-img" src="/media/{{ comment.author.profile.avatar }}" alt="">  
-                                <div style="width: 100%;">                                
+                                <div style="width: calc(100% - 50px);">                                
                                   <div class="inline-wrapper" style="margin-bottom: -10px;">   
                                     <div class="text3"><a class="link1" href="{% url 'UserProfile:userprofile' comment.author %}">{{ comment.author.username }}</a></div>                                  
                                     <div class="text3" style="white-space: pre;">{{ comment.pubdate }}</div>
                                   </div> 
                                   <div class="inline-wrapper">
-                                    <div id="comment{{ comment.id }}text" class="text2" style="width: calc(100% - 50px);">{{ comment.text }}</div>
+                                    <div id="comment{{ comment.id }}text" class="text2" style="width: calc(100% - 100px); word-wrap:break-word;">{{ comment.text }}</div>
                                     {% if request.user.is_authenticated %} 
                                       {% if request.user == comment.author %}
                                         <i class="material-icons icon-comment pointer" onclick="showeditcomment('{{ comment.id }}', '{{ post.id }}')">edit</i>
@@ -338,13 +338,13 @@
                               <div id="comment{{ childcomment.id }}">                           
                                 <div style="display: flex;">
                                   <img class="comment-img" src="/media/{{ childcomment.author.profile.avatar }}" alt="">  
-                                  <div style="width: 100%;">                                
+                                  <div style="width: calc(100% - 50px);">                                
                                     <div class="inline-wrapper" style="margin-bottom: -10px;">   
                                       <div class="text3"><a class="link1" href="{% url 'UserProfile:userprofile' childcomment.author %}">{{ childcomment.author.username }}</a> ответил <a class="link1" href="{% url 'UserProfile:userprofile' childcomment.replyto %}">{{ childcomment.replyto.username }}</a></div>                                  
                                       <div class="text3" style="white-space: pre;">{{ childcomment.pubdate }}</div>
                                     </div> 
                                     <div class="inline-wrapper">
-                                      <div id="comment{{ childcomment.id }}text" class="text2" style="width: calc(100% - 50px);">{{ childcomment.text }}</div>
+                                      <div id="comment{{ childcomment.id }}text" class="text2" style="width: calc(100% - 100px); word-wrap: break-word;">{{ childcomment.text }}</div>
                                       {% if request.user.is_authenticated %} 
                                         {% if request.user == childcomment.author %}
                                           <i class="material-icons icon-comment pointer" onclick="showeditcomment('{{ childcomment.id }}', '{{ post.id }}')">edit</i>
@@ -365,13 +365,17 @@
                       <script>
                         $('#post{{ post.id }}comments').children().slice(2).hide()
                       </script>  
-                    </div>
+                    </div>                    
                     <div class="inline-wrapper">
                       {% if request.user.is_authenticated %}
                         <img class="small-img" src="/media/{{ request.user.profile.avatar }}" alt="" onError="this.remove()"> 
-                        <div style="width: 100%;">                          
-                          <textarea answering='' editing='' id="comment{{ post.id }}input" style="height: 30px;" class="textarea2" oninput="auto_grow(this);" onclick="auto_grow(this)" placeholder="Оставить комментарий..."></textarea>
-                          <div id="comment{{ post.id }}answer" class="text3 hidden pointer" onclick="closecomment('{{ post.id }}')"></div>   
+                        <div style="width: 100%;">
+                          <textarea maxlength="750" answering='' editing='' id="comment{{ post.id }}input" style="height: 30px;" class="textarea2" oninput="auto_grow(this); update_symbols('post{{ post.id }}commentssymbols', 'comment{{ post.id }}input', 750)" onclick="auto_grow(this)" placeholder="Оставить комментарий..."></textarea>
+                          <div id="comment{{ post.id }}answer" class="text3 hidden" style="overflow: auto; white-space: nowrap;">
+                            <div id="comment{{ post.id }}answertext" style="display: inline; margin-right: 10px;"></div>
+                            <div onclick="closecomment('{{ post.id }}')" class="link1 pointer" style="display: inline;">(отмена)</div>
+                          </div> 
+                          <div class="text3" id="post{{ post.id }}commentssymbols">Еще символов: 750</div>    
                         </div> 
                         <div id="comment{{ post.id }}buttonsend" class="button0" style="width: 100px; margin-left: 10px;" onclick="createcomment('{{ post.id }}')">Отправить</div>
                         <div id="comment{{ post.id }}buttonedit" class="button0 hidden" style="width: 100px; margin-left: 10px;" onclick="editcomment('{{ post.id }}')">Сохранить</div>
@@ -379,7 +383,7 @@
                         <div class="text2 solid">Авторизуйтесь, чтобы написать комментарий</div>
                         <a class="button0" style="width: 100px; margin-left: 10px;" href="/auth/login">Войти</a>
                       {% endif %}
-                    </div>                     
+                    </div>
                   </div>
                 </div> 
               </div>
