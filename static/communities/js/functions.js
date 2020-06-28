@@ -691,6 +691,7 @@ function createcomment(postid) {
 	            $('#comment' + postid + 'input').val('')
 	            $('#post' + postid + 'commenticon').text(parseInt($('#post' + postid + 'commenticon').text()) + 1)
 	            $('#post' + postid + 'commentcount').text(parseInt($('#post' + postid + 'commentcount').text()) + 1)
+	            auto_grow(document.getElementById('comment' + postid + 'input'))
 	        	showcomments(postid)
 	        	closecomment(postid)
 	    		insertcomment(data['locationid'], data['avatar'], data['text'], data['author'], data['pubdate'], data['postid'], data['commentid'], data['parentname'])
@@ -731,6 +732,7 @@ function editcomment(postid) {
 }
 
 function answercomment(commentid, postid, name) {
+	closecomment(postid)
 	$('#comment' + postid + 'input').attr('answering', commentid) 
 	$('#comment' + postid + 'answer').text('Ответ ' + name) 
 
@@ -746,13 +748,12 @@ function closecomment(postid) {
 	$('#comment' + postid + 'buttonsend').removeClass('hidden')
 	$('#comment' + postid + 'buttonedit').addClass('hidden')
 	$('#comment' + postid + 'input').val('')
+	auto_grow(document.getElementById('comment' + postid + 'input'))
 }
 
 function closeanswercomment(postid) {
 	$('#comment' + postid + 'input').attr('answering', '')   
 	$('#comment' + postid + 'answer').addClass('hidden')
-
-
 }
 
 function showeditcomment(commentid, postid) {
@@ -766,6 +767,7 @@ function showeditcomment(commentid, postid) {
 	$('#comment' + postid + 'buttonedit').removeClass('hidden')
 
 	$('#comment' + postid + 'input').focus()
+	auto_grow(document.getElementById('comment' + postid + 'input'))
 }
 
 function insertcomment(locationid, avatar_link, text, author, pubdate, postid, commentid, parentname) {
@@ -884,6 +886,7 @@ function deletecomment(commentid, postid) {
             {	            	
         	    $('#post' + postid + 'commenticon').text(parseInt($('#post' + postid + 'commenticon').text()) - 1 - $('#comment' + commentid + 'children').children().length / 2)
 	            $('#post' + postid + 'commentcount').text(parseInt($('#post' + postid + 'commentcount').text()) - 1 - $('#comment' + commentid + 'children').children().length / 2)
+				closecomment(postid)
 
 	            $('#comment' + commentid + 'children').hide(200)
 	            $('#comment' + commentid).hide(200, function() { 
@@ -894,6 +897,12 @@ function deletecomment(commentid, postid) {
 		            	$('#post' + postid + 'comments').children().slice(0, 2).show(200)		            	
 		            }
 	        	})
+            }
+            else if( data == 'is_deleted' )
+            {
+				closecomment(postid)
+
+	            $('#comment' + commentid).html('<div class="text2 solid">Комментарий удален</div><hr>')          	
             }
         },
     })

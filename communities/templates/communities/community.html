@@ -307,26 +307,30 @@
                       <div id="post{{ post.id }}comments" style="width: calc(100% - 25px);">
                         <hr>
                         {% for comment in post.comments|parent_comments %}
-                          <div id="comment{{ comment.id }}">                           
-                            <div style="display: flex;">
-                              <img class="comment-img" src="/media/{{ comment.author.profile.avatar }}" alt="">  
-                              <div style="width: 100%;">                                
-                                <div class="inline-wrapper" style="margin-bottom: -10px;">   
-                                  <div class="text3"><a class="link1" href="{% url 'UserProfile:userprofile' comment.author %}">{{ comment.author.username }}</a></div>                                  
-                                  <div class="text3" style="white-space: pre;">{{ comment.pubdate }}</div>
-                                </div> 
-                                <div class="inline-wrapper">
-                                  <div id="comment{{ comment.id }}text" class="text2" style="width: calc(100% - 50px);">{{ comment.text }}</div>
-                                  {% if request.user.is_authenticated %} 
-                                    {% if request.user == comment.author %}
-                                      <i class="material-icons icon-comment pointer" onclick="showeditcomment('{{ comment.id }}', '{{ post.id }}')">edit</i>
-                                      <i class="material-icons icon-comment pointer" onclick="deletecomment('{{ comment.id }}', '{{ post.id }}')">delete</i>
-                                    {% endif %}
-                                    <i class="material-icons mirrorX icon-comment pointer" onclick="answercomment('{{ comment.id }}', '{{ post.id }}', '{{ comment.author }}')" title="ответить">reply</i>
-                                  {% endif %}                                
-                                </div>
-                              </div>                  
-                            </div> 
+                          <div id="comment{{ comment.id }}">  
+                            {% if comment.is_deleted %}  
+                              <div class="text2 solid">Комментарий удален</div>
+                            {% else %}                       
+                              <div style="display: flex;">
+                                <img class="comment-img" src="/media/{{ comment.author.profile.avatar }}" alt="">  
+                                <div style="width: 100%;">                                
+                                  <div class="inline-wrapper" style="margin-bottom: -10px;">   
+                                    <div class="text3"><a class="link1" href="{% url 'UserProfile:userprofile' comment.author %}">{{ comment.author.username }}</a></div>                                  
+                                    <div class="text3" style="white-space: pre;">{{ comment.pubdate }}</div>
+                                  </div> 
+                                  <div class="inline-wrapper">
+                                    <div id="comment{{ comment.id }}text" class="text2" style="width: calc(100% - 50px);">{{ comment.text }}</div>
+                                    {% if request.user.is_authenticated %} 
+                                      {% if request.user == comment.author %}
+                                        <i class="material-icons icon-comment pointer" onclick="showeditcomment('{{ comment.id }}', '{{ post.id }}')">edit</i>
+                                        <i class="material-icons icon-comment pointer" onclick="deletecomment('{{ comment.id }}', '{{ post.id }}')">delete</i>
+                                      {% endif %}
+                                      <i class="material-icons mirrorX icon-comment pointer" onclick="answercomment('{{ comment.id }}', '{{ post.id }}', '{{ comment.author }}')" title="ответить">reply</i>
+                                    {% endif %}                                
+                                  </div>
+                                </div>                  
+                              </div> 
+                            {% endif %}
                             <hr>
                           </div>  
                           <div id="comment{{ comment.id }}children" style="margin-left: 40px;">

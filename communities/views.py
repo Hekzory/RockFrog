@@ -244,7 +244,15 @@ def deletecomment(request, commentid):
 	if GroupComment.objects.filter(id=commentid).exists():
 		comment = GroupComment.objects.get(id=commentid)
 		if request.user.is_authenticated and request.user == comment.author:
-			comment.delete()
+			if comment.childrencomments.all():
+				comment.is_deleted = True
+				comment.save()
+				return HttpResponse('is_deleted')
+			else:
+				if comment.parent and comment.parent.childrencomments.count() == 1:
+					comment.parent.delete()
+				else:
+					comment.delete()
 			return HttpResponse('Ok')
 	return HttpResponse('Error')	
 
