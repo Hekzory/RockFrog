@@ -46,7 +46,7 @@ class DialogPage(View):
             context["is_viewer_blacklisted"] = False
             context["is_viewed_blacklisted"] = False
             if user_messaging_with.profile.blacklist.filter(pk=request.user.pk).exists():
-                coуntext["is_viewer_blacklisted"] = True
+                context["is_viewer_blacklisted"] = True
             elif request.user.profile.blacklist.filter(pk=user_messaging_with.pk).exists():
                 context["is_viewed_blacklisted"] = True
             return render(request, 'personal_messages/base.html', context)
