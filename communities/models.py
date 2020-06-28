@@ -61,8 +61,11 @@ class GroupFile(models.Model):
 
 class GroupComment(models.Model):
 	author = models.ForeignKey(User, on_delete=models.PROTECT, related_name='usercomments')
+	parent = models.ForeignKey('self', null=True, on_delete=models.CASCADE, related_name='childrencomments')
+	replyto = models.ForeignKey(User, null=True, on_delete=models.PROTECT, related_name='answers')
 	article = models.ForeignKey(GroupArticle, on_delete=models.CASCADE, related_name='comments')
 	text = models.TextField()
+	is_deleted = models.BooleanField(default=False)
 	pubdate = models.DateTimeField('date published', default=datetime.now())
 
 	def __str__(self):

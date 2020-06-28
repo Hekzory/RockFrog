@@ -12,8 +12,12 @@ urlpatterns = [
     path('<str:groupslug>/information/', information, name='information'),
     path('<str:groupslug>/edit/', editgroup, name='editgroup'),
 
+    path('deletecomment/<int:commentid>/', deletecomment, name='deletecomment'),   
+    path('editcomment/<int:commentid>/', editcomment, name='editcomment'), 
+
     path('<int:groupid>/createarticle/', CreateArticle.as_view(), name='createarticle'),
     path('<int:groupid>/editarticle/<int:articleid>/', EditArticle.as_view(), name='editarticle'),
+    path('<int:groupid>/createcomment/<int:articleid>/', createcomment, name='createcomment'),
     path('<int:groupid>/collection/addtocollection/', AddToCollection.as_view(), name='addtocollection'),
     path('<int:groupid>/deletearticle/<int:articleid>/', DeleteArticle.as_view(), name='deletearticle'),
     path('<int:groupid>/moreedit/', edit, name='edit'),    

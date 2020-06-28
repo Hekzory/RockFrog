@@ -9,7 +9,7 @@ class ArticlesAdmin(admin.ModelAdmin):
     fields = ['group', 'text', 'allowed', 'pubdate', 'likes', 'author']
 
 class CommentsAdmin(admin.ModelAdmin):
-    fields = ['author', 'text', 'pubdate', 'article']
+    fields = ['author', 'parent', 'text', 'pubdate', 'article']
 
 class ArticleFilesAdmin(admin.ModelAdmin):
     fields = ['article', 'file', 'name']

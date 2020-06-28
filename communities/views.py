@@ -13,6 +13,7 @@ import os
 from datetime import datetime
 import re
 import os.path
+import json
 
 def home(request):
     groups = Group.objects.annotate(members=models.Count('subscribers') + models.Count('editors')).order_by('-members')
@@ -197,6 +198,75 @@ def creategroup(request):
 		return HttpResponse(group.slug)
 	else:
 		return HttpResponse(-1)
+
+def createcomment(request, groupid, articleid):
+	if request.user.is_authenticated:
+		group = Group.objects.get(id=groupid)
+		article = GroupArticle.objects.get(id=articleid)
+		if not (request.user in group.banned.all() or (not group.public and request.user not in group.subscribers.all and request.user not in group.editors.all and request.user != group.admin)):
+			commenttext = request.POST.get('text')
+			if commenttext.replace(' ', '').rstrip() == '':
+				return HttpResponse('empty')
+			newcomment = GroupComment(author=request.user, text=commenttext, article=article)
+			newcomment.pubdate = datetime.now()
+			newcomment.save()
+
+			data = {
+				'avatar': '/media/' + str(request.user.profile.avatar),
+				'text': commenttext,
+				'author': request.user.username,
+				'pubdate': str(newcomment.pubdate),
+				'postid': article.id,
+				'commentid': newcomment.id,
+				'locationid': 'post' + str(articleid) + 'comments',
+				'parentname': ''		
+			}
+
+			replycommentid = request.POST.get('reply')
+			if replycommentid != '' and GroupComment.objects.filter(id=int(replycommentid)).exists():				
+				replycomment = GroupComment.objects.get(id=int(replycommentid))
+				replyuser = replycomment.author
+				newcomment.replyto = replyuser
+				if not replycomment.parent:
+					newcomment.parent = replycomment
+					newcomment.save()
+				else:
+					newcomment.parent = replycomment.parent
+					newcomment.save()					
+
+				data['locationid'] = 'comment' + str(newcomment.parent.id) + 'children'
+				data['parentname'] = replyuser.username
+
+			return HttpResponse(json.dumps(data))
+
+
+def deletecomment(request, commentid):
+	if GroupComment.objects.filter(id=commentid).exists():
+		comment = GroupComment.objects.get(id=commentid)
+		if request.user.is_authenticated and request.user == comment.author:
+			if comment.childrencomments.all():
+				comment.is_deleted = True
+				comment.save()
+				return HttpResponse('is_deleted')
+			else:
+				if comment.parent and comment.parent.is_deleted and comment.parent.childrencomments.count() == 1:
+					comment.parent.delete()
+				else:
+					comment.delete()
+			return HttpResponse('Ok')
+	return HttpResponse('Error')	
+
+def editcomment(request, commentid):
+	if GroupComment.objects.filter(id=commentid).exists():
+		comment = GroupComment.objects.get(id=commentid)
+		if request.user.is_authenticated and request.user == comment.author:			
+			commenttext = request.POST.get('text')
+			if commenttext.replace(' ', '').rstrip() == '':
+				return HttpResponse('empty')
+			comment.text = commenttext
+			comment.save()
+			return HttpResponse('Ok')
+	return HttpResponse('Error')	
 
 def edit(request, groupid):
 	group = Group.objects.get(id=groupid)
