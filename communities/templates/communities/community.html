@@ -370,12 +370,21 @@
                       {% if request.user.is_authenticated %}
                         <img class="small-img" src="/media/{{ request.user.profile.avatar }}" alt="" onError="this.remove()"> 
                         <div style="width: 100%;">
-                          <textarea maxlength="750" answering='' editing='' id="comment{{ post.id }}input" style="height: 30px;" class="textarea2" oninput="auto_grow(this); update_symbols('post{{ post.id }}commentssymbols', 'comment{{ post.id }}input', 750)" onclick="auto_grow(this)" placeholder="Оставить комментарий..."></textarea>
-                          <div id="comment{{ post.id }}answer" class="text3 hidden" style="overflow: auto; white-space: nowrap;">
-                            <div id="comment{{ post.id }}answertext" style="display: inline; margin-right: 10px;"></div>
-                            <div onclick="closecomment('{{ post.id }}')" class="link1 pointer" style="display: inline;">(отмена)</div>
-                          </div> 
-                          <div class="text3" id="post{{ post.id }}commentssymbols">Еще символов: 750</div>    
+                          <div id="post{{ post.id }}inputgroup" class="mb-1">
+                            <textarea class="textarea2 form-control" maxlength="750" answering='' editing='' id="comment{{ post.id }}input" style="height: 30px;" oninput="auto_grow(this); update_symbols('post{{ post.id }}commentssymbols', 'comment{{ post.id }}input', 750)" onclick="auto_grow(this)" placeholder="Оставить комментарий..."></textarea>
+                            <div class="input-group-append hidden" id="post{{ post.id }}inputgroupappend">
+                              <button class="btn btn-outline-secondary" type="button" onclick="closecomment('{{ post.id }}')">
+                                <svg width="1em" height="1em" viewBox="3 4 10 10" class="bi bi-x" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" d="M11.854 4.146a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708-.708l7-7a.5.5 0 0 1 .708 0z"/>
+                                <path fill-rule="evenodd" d="M4.146 4.146a.5.5 0 0 0 0 .708l7 7a.5.5 0 0 0 .708-.708l-7-7a.5.5 0 0 0-.708 0z"/>
+                              </svg>
+                              </button>
+                            </div>
+                          </div>
+                          <div class="inline-wrapper-2">
+                            <div id="comment{{ post.id }}answertext" class="text3 inline-item hidden"></div>
+                            <div class="text3 inline-item" id="post{{ post.id }}commentssymbols">Еще символов: 750</div>  
+                          </div>                            
                         </div> 
                         <div id="comment{{ post.id }}buttonsend" class="button0" style="width: 100px; margin-left: 10px;" onclick="createcomment('{{ post.id }}')">Отправить</div>
                         <div id="comment{{ post.id }}buttonedit" class="button0 hidden" style="width: 100px; margin-left: 10px;" onclick="editcomment('{{ post.id }}')">Сохранить</div>

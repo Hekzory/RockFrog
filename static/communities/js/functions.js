@@ -734,7 +734,11 @@ function editcomment(postid) {
 function answercomment(commentid, postid, name) {
 	closecomment(postid)
 	$('#comment' + postid + 'input').attr('answering', commentid) 
-	$('#comment' + postid + 'answertext').text('Ответить ' + name) 
+
+	$('#comment' + postid + 'answertext').text('Ответить ' + name)
+	$('#comment' + postid + 'answertext').removeClass('hidden')
+	$('#post' + postid + 'inputgroupappend').removeClass('hidden')
+	$('#post' + postid + 'inputgroup').addClass('input-group')
 
 	$('#comment' + postid + 'answer').removeClass('hidden')
 	$('#comment' + postid + 'input').focus()
@@ -743,11 +747,15 @@ function answercomment(commentid, postid, name) {
 function closecomment(postid) {
 	$('#comment' + postid + 'input').attr('answering', '') 
 	$('#comment' + postid + 'input').attr('editing', '') 
-	$('#comment' + postid + 'answer').addClass('hidden')
+
+	$('#comment' + postid + 'answertext').addClass('hidden')
+	$('#post' + postid + 'inputgroupappend').addClass('hidden')
+	$('#post' + postid + 'inputgroup').removeClass('input-group')
 
 	$('#comment' + postid + 'buttonsend').removeClass('hidden')
 	$('#comment' + postid + 'buttonedit').addClass('hidden')
 	$('#comment' + postid + 'input').val('')
+
 	update_symbols('post' + postid + 'commentssymbols', 'comment' + postid + 'input', 750)
 	auto_grow(document.getElementById('comment' + postid + 'input'))
 }
@@ -759,16 +767,20 @@ function closeanswercomment(postid) {
 
 function showeditcomment(commentid, postid) {
 	$('#comment' + postid + 'input').attr('editing', commentid) 
-	$('#comment' + postid + 'answertext').text('Редактировать') 
-	$('#comment' + postid + 'answer').removeClass('hidden')
 
-	$('#comment' + postid + 'input').val($('#comment' + commentid + 'text').text())
-	update_symbols('post' + postid + 'commentssymbols', 'comment' + postid + 'input', 750)
+	$('#comment' + postid + 'answertext').text('Редактирование') 
+	$('#comment' + postid + 'answertext').removeClass('hidden')
+	$('#post' + postid + 'inputgroupappend').removeClass('hidden')
+	$('#post' + postid + 'inputgroup').addClass('input-group')
+
+
+	$('#comment' + postid + 'input').val($('#comment' + commentid + 'text').text())	
 
 	$('#comment' + postid + 'buttonsend').addClass('hidden')
 	$('#comment' + postid + 'buttonedit').removeClass('hidden')
 
 	$('#comment' + postid + 'input').focus()
+	update_symbols('post' + postid + 'commentssymbols', 'comment' + postid + 'input', 750)
 	auto_grow(document.getElementById('comment' + postid + 'input'))
 }
 
