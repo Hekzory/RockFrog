@@ -72,6 +72,7 @@ class EditProfileView(View):
         if not request.user.is_authenticated:
             return HttpResponseRedirect("/")
         else:
+            request.user.profile.last_online_update()
             bound_form = ProfileForm(request.POST, request.FILES)
             check = bound_form.is_valid()
             if check:
@@ -109,6 +110,7 @@ class EditPrivacyView(View):
         if not request.user.is_authenticated:
             return HttpResponseRedirect('/')
         else:
+            request.user.profile.last_online_update()
             bound_form = PrivacySettingsForm(request.POST)
             check = bound_form.is_valid()
             if check:
@@ -136,18 +138,22 @@ class EditSecurityView(View):
             return HttpResponse(template.render(context, request))
 
     def post(self, request):
-        bound_form = ChangePasswordForm(request.POST)
-        check = bound_form.is_valid()
-        if check:
-            result = bound_form.change_password(request.user)
-            new_form = ChangePasswordForm()
-            context = {'change_error': not result, 'form' : new_form}
-            template = loader.get_template('UserProfile/password_changed.html')
-            return HttpResponse(template.render(context, request))
+        if not request.user.is_authenticated:
+            return HttpResponseRedirect('/')
         else:
-            template = loader.get_template('UserProfile/edit_security.html')
-            context = {'form': bound_form}
-            return HttpResponse(template.render(context, request))
+            request.user.profile.last_online_update()
+            bound_form = ChangePasswordForm(request.POST)
+            check = bound_form.is_valid()
+            if check:
+                result = bound_form.change_password(request.user)
+                new_form = ChangePasswordForm()
+                context = {'change_error': not result, 'form' : new_form}
+                template = loader.get_template('UserProfile/password_changed.html')
+                return HttpResponse(template.render(context, request))
+            else:
+                template = loader.get_template('UserProfile/edit_security.html')
+                context = {'form': bound_form}
+                return HttpResponse(template.render(context, request))
 
 
 class BlockedUsersView(View):

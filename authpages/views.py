@@ -32,8 +32,10 @@ class LoginView(View):
             bound_form = LoginForm(request.POST)
 
             if bound_form.is_valid():
-                if(bound_form.DoAuth()):
-                    login(request, bound_form.DoAuth())
+                user = bound_form.DoAuth()
+                if user is not None:
+                    login(request, user)
+                    user.profile.last_online_update()
                     return HttpResponseRedirect("/")
                 else:
                     template = loader.get_template('authpages/login.html')

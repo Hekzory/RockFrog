@@ -13,6 +13,7 @@ class DialogPage(View):
     def get(self, request, user_id):
         context = dict()
         if request.user.is_authenticated:
+            request.user.profile.last_online_update()
             try:
                 user_messaging_with = User.objects.get(pk=user_id)
                 context['user_messaging_with'] = user_messaging_with
@@ -94,6 +95,9 @@ class DialogsListBase(View):
 
 class DeleteMessage(View):
     def post(self, request):
+        if not request.user.is_authenticated:
+            return HttpResponseRedirect('/')
+        request.user.profile.last_online_update()
         message = ConversationMessage.objects.get(id=request.POST["message_id"])
         if message.is_earlier_24() and message.user.id == request.user.id:
             message.delete()
@@ -103,6 +107,9 @@ class DeleteMessage(View):
 
 class EditMessage(View):
     def post(self, request):
+        if not request.user.is_authenticated:
+            return HttpResponseRedirect('/')
+        request.user.profile.last_online_update()
         message = ConversationMessage.objects.get(id=request.POST["message_id"])
         if message.is_earlier_24() and message.user.id == request.user.id and request.POST["message"].strip() != "":
             message.text = request.POST["message"]

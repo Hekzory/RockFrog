@@ -4,7 +4,7 @@ from django.contrib import admin
 from .models import Profile, PrivacySettings
 
 class ProfilesAdmin(admin.ModelAdmin):
-    fields = ['user', 'about', 'birth_date', 'avatar', 'blacklist', 'verified']
+    fields = ['user', 'about', 'birth_date', 'avatar', 'blacklist', 'verified', 'last_time_online']
     readonly_fields = ['user']
     empty_value_display = 'Не указано'
 

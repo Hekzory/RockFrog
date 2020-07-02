@@ -77,6 +77,7 @@
         </div>
         <div class="col-lg-4">
           <div class="py-5"></div>
+          <div class="py-1 d-flex justify-content-center h3 text-muted"><small>{{user.profile.online_status}}</small></div>
           <div class="list-group">
             <a href="/conversations/user/{{user.id}}" class="list-group-item list-group-item-action">Написать сообщение</a>
             {% if in_list %}
