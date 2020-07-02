@@ -13,6 +13,7 @@
 - Django channels
 - Redis
 - Websocket
+- Ajax
 
 Зависимости(pip3):
 
