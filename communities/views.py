@@ -59,35 +59,43 @@ def collection(request, groupslug):
 		return render(request, 'communities/nogroup.html')
 
 def unsubscribe(request, groupid):
-	group = Group.objects.get(id=groupid)
-	if request.user in group.subscribers.all():
-		group.subscribers.remove(request.user)
-	elif request.user in group.editors.all():
-		group.editors.remove(request.user)
-	group.save()
+	if request.user.is_authenticated:
+		group = Group.objects.get(id=groupid)
+		if request.user in group.subscribers.all():
+			group.subscribers.remove(request.user)
+		elif request.user in group.editors.all():
+			group.editors.remove(request.user)
+		group.save()
+		request.user.profile.last_online_update()
 	return HttpResponse()
 
 def subscribe(request, groupid):
-	group = Group.objects.get(id=groupid)
-	if request.user not in group.subscribers.all() and request.user not in group.editors.all() and request.user not in group.banned.all() and request.user != group.admin:
-		group.subscribers.add(request.user)
-	group.save()
+	if request.user.is_authenticated:
+		group = Group.objects.get(id=groupid)
+		if request.user not in group.subscribers.all() and request.user not in group.editors.all() and request.user not in group.banned.all() and request.user != group.admin:
+			group.subscribers.add(request.user)
+		group.save()
+		request.user.profile.last_online_update()
 	return HttpResponse()
 
 def like(request, groupid, articleid):
-	group = Group.objects.get(id=groupid)
-	article = group.articles.get(id=articleid)
-	if request.user not in article.likes.all():
-		article.likes.add(request.user)
-	article.save()
+	if request.user.is_authenticated:
+		group = Group.objects.get(id=groupid)
+		article = group.articles.get(id=articleid)
+		if request.user not in article.likes.all():
+			article.likes.add(request.user)
+		article.save()
+		request.user.profile.last_online_update()
 	return HttpResponse()
 
 def removelike(request, groupid, articleid):
-	group = Group.objects.get(id=groupid)
-	article = group.articles.get(id=articleid)
-	if request.user in article.likes.all():
-		article.likes.remove(request.user)
-	article.save()
+	if request.user.is_authenticated:
+		group = Group.objects.get(id=groupid)
+		article = group.articles.get(id=articleid)
+		if request.user in article.likes.all():
+			article.likes.remove(request.user)
+		article.save()
+		request.user.profile.last_online_update()
 	return HttpResponse()
 
 class CreateArticle(View):
@@ -112,6 +120,8 @@ class CreateArticle(View):
 					if file.content_type in ['image/png', 'image/jpeg', 'application/pdf', 'text/plain', 'application/msword'] and file.size <= 5000000:					
 						new_file = ArticleFile(article=new_article, name=file.name, file=file)
 						new_file.save()
+
+				request.user.profile.last_online_update()
 		slug = group.slug
 		return HttpResponseRedirect('/groups/' + str(slug) + '/')
 
@@ -123,11 +133,13 @@ class AddToCollection(View):
 
 	def post(self, request, groupid):
 		group = Group.objects.get(id=groupid)
-		for file in request.FILES.getlist('files'):
-			if file.content_type in ['image/png', 'image/jpeg', 'application/pdf', 'text/plain', 'application/msword'] and file.size <= 5000000:					
-				new_file = GroupFile(group=group, name=file.name, file=file)
-				new_file.save()
-			
+		if request.user.is_authenticated and (request.user in group.editors.all() or request.user == group.admin):			
+			for file in request.FILES.getlist('files'):
+				if file.content_type in ['image/png', 'image/jpeg', 'application/pdf', 'text/plain', 'application/msword'] and file.size <= 5000000:					
+					new_file = GroupFile(group=group, name=file.name, file=file)
+					new_file.save()
+
+			request.user.profile.last_online_update()	
 		slug = group.slug
 		return HttpResponseRedirect('/groups/' + str(slug) + '/collection/')
 
@@ -160,6 +172,8 @@ class EditArticle(View):
 						new_file = ArticleFile(article=article, name=file.name, file=file)
 						new_file.save()
 
+			request.user.profile.last_online_update()
+
 		return HttpResponseRedirect('/groups/' + str(slug) + '/')
 
 class DeleteArticle(View):
@@ -181,6 +195,8 @@ class DeleteArticle(View):
 					print('Notification Error')
 
 			article.delete()
+			request.user.profile.last_online_update()
+
 		slug = group.slug
 		return HttpResponseRedirect('/groups/' + str(slug) + '/')
 
@@ -194,6 +210,8 @@ def creategroup(request):
 		group.save()
 		group.slug = str(group.id)
 		group.save()
+
+		request.user.profile.last_online_update()
 		return HttpResponse(group.slug)
 	else:
 		return HttpResponse(-1)
@@ -201,6 +219,7 @@ def creategroup(request):
 def edit(request, groupid):
 	group = Group.objects.get(id=groupid)
 	if request.user.is_authenticated:
+		request.user.profile.last_online_update()
 		if request.user in group.editors.all() or request.user == group.admin:
 			if request.POST.get('type') == 'allowarticle':
 				article = GroupArticle.objects.get(id=request.POST.get('data'))
@@ -284,6 +303,7 @@ def edit(request, groupid):
 
 def moreedit(request, groupid):
 	if request.user.is_authenticated:
+		request.user.profile.last_online_update()
 		group = Group.objects.get(id=groupid)
 		slug = group.slug
 		if request.user in group.editors.all() or request.user == group.admin:
