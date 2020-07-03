@@ -257,6 +257,7 @@ def createcomment(request, groupid, articleid):
 				data['locationid'] = 'comment' + str(newcomment.parent.id) + 'children'
 				data['parentname'] = replyuser.username
 
+			request.user.profile.last_online_update()
 			return HttpResponse(json.dumps(data))
 
 
@@ -273,6 +274,7 @@ def deletecomment(request, commentid):
 					comment.parent.delete()
 				else:
 					comment.delete()
+			request.user.profile.last_online_update()
 			return HttpResponse('Ok')
 	return HttpResponse('Error')	
 
@@ -287,6 +289,8 @@ def editcomment(request, commentid):
 				return HttpResponse('long')
 			comment.text = commenttext
 			comment.save()
+			
+			request.user.profile.last_online_update()
 			return HttpResponse('Ok')
 	return HttpResponse('Error')	
 
