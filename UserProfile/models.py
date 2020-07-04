@@ -22,7 +22,7 @@ class Profile(models.Model):
     avatar = models.ImageField(upload_to=user_directorypath, default='/static/profile.jpg')
     blacklist = models.ManyToManyField(User, related_name='blacklists')
     verified = models.BooleanField(default=False)
-    last_time_online = models.DateTimeField(default=datetime.now())
+    last_time_online = models.DateTimeField(default=datetime.now)
 
     def __str__(self):
         return self.user.username
@@ -62,6 +62,13 @@ class PrivacySettings(models.Model):
     profile = models.OneToOneField(Profile, on_delete=models.CASCADE)
 
 
+class NotificationSettings(models.Model):
+    personal_message_notifications = models.BooleanField(default=True)
+    accepted_to_group_notifications = models.BooleanField(default=True)
+    post_published_notifications = models.BooleanField(default=True)
+    profile = models.OneToOneField(Profile, on_delete=models.CASCADE)
+
+
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
@@ -79,4 +86,8 @@ def create_privacy_settings(sender, instance, created, **kwargs):
         PrivacySettings.objects.create(profile=instance)
 
 
+@receiver(post_save, sender=Profile)
+def create_notification_settings(sender, instance, created, **kwargs):
+    if created:
+        NotificationSettings.objects.create(profile=instance)
 

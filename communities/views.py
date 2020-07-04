@@ -4,7 +4,7 @@ from django.db.models import F
 # from django.template import loader
 from django.views.generic import View
 from communities.models import *
-from notifications.models import *
+from notifications import models as notifications
 # from .forms import GroupEditForm
 from django.contrib.auth.models import User
 # from django.urls import reverse
@@ -184,16 +184,8 @@ class DeleteArticle(View):
 			article = GroupArticle.objects.get(id=articleid)
 
 			if request.user != article.author and not article.author is None:
-				try:
-					notification_text = "Ваш пост в " + group.groupname + " удален"
-					notification_name = "Пост удален"
-					notification_href = '/groups/' + group.slug + '/'
-					notification = Notification(not_text=notification_text, not_name=notification_name, not_link=notification_href, not_date=datetime.now())
-					notification.save()
-					notificationlist = Notificationlist.objects.get(user=article.author).notifications
-					notificationlist.add(notification)
-				except:
-					print('Notification Error')
+				if article.author.profile.notificationsettings.post_published_notifications:
+					notifications.create_notification_post_published(group, article.author, 'post_deleted')
 
 			article.delete()
 			request.user.profile.last_online_update()
@@ -306,32 +298,16 @@ def edit(request, groupid):
 				article.save()
 
 				if not article.author is None:
-					try:
-						notification_text = "Ваш пост в " + group.groupname + " опубликован"
-						notification_name = "Пост опубликован"
-						notification_href = '/groups/' + group.slug + '/'
-						notification = Notification(not_text=notification_text, not_name=notification_name, not_link=notification_href, not_date=datetime.now())
-						notification.save()
-						notificationlist = Notificationlist.objects.get(user=article.author).notifications
-						notificationlist.add(notification)
-					except:
-						print('Notification Error')
+					if article.author.profile.notificationsettings.post_published_notifications:
+						notifications.create_notification_post_published(group, article.author, 'post_accepted')
 
 				return HttpResponse('Ok')
 			elif request.POST.get('type') == 'deletearticle':
 				article = GroupArticle.objects.get(id=request.POST.get('data'))
 
-				if request.user != article.author:
-					try:
-						notification_text = "Ваш пост в " + group.groupname + " отклонен"
-						notification_name = "Пост отклонен"
-						notification_href = '/groups/' + group.slug + '/'
-						notification = Notification(not_text=notification_text, not_name=notification_name, not_link=notification_href, not_date=datetime.now())
-						notification.save()
-						notificationlist = Notificationlist.objects.get(user=article.author).notifications
-						notificationlist.add(notification)
-					except:
-						print('Notification Error')
+				if not article.author is None:
+					if article.author.profile.notificationsettings.post_published_notifications:
+						notifications.create_notification_post_published(group, article.author, 'post_rejected')
 
 				article.delete()
 				return HttpResponse('Ok')
@@ -401,21 +377,17 @@ def moreedit(request, groupid):
 				group.subrequests.remove(user)
 				group.subscribers.add(user)
 
-				try:
-					notification_text = "Вас приняли в сообщество " + group.groupname
-					notification_name = "Заявка принята"
-					notification_href = '/groups/' + group.slug + '/'
-					notification = Notification(not_text=notification_text, not_name=notification_name, not_link=notification_href, not_date=datetime.now())
-					notification.save()
-					notificationlist = Notificationlist.objects.get(user=user).notifications
-					notificationlist.add(notification)
-				except:
-					pass
+				if user.profile.notificationsettings.accepted_to_group_notifications:
+					notifications.create_notification_accepted_to_group(group, user, 'request_accepted')
 
 				return HttpResponse('allowed')
 			elif request.POST.get('type') == 'rejectsub':
 				user = User.objects.filter(id=request.POST.get('userid'))[0]
 				group.subrequests.remove(user)
+
+				if user.profile.notificationsettings.accepted_to_group_notifications:
+					notifications.create_notification_accepted_to_group(group, user, 'request_rejected')
+
 				return HttpResponse('rejected')	
 			elif request.POST.get('type') == 'allowarticles':				
 				group.allowarticles = request.POST.get('data')
@@ -479,7 +451,7 @@ def moreedit(request, groupid):
 					return HttpResponse('error')
 
 				return HttpResponse('/groups/' + group.slug + '/edit/')
-			elif request.POST.get('type') == 'banuser':
+			elif request.POST.get('type') == 'banuser':				
 				user = User.objects.get(id=request.POST.get('userid'))
 				try:
 					group.subscribers.remove(user)
@@ -490,26 +462,36 @@ def moreedit(request, groupid):
 				except:
 					pass
 				group.banned.add(user)
+				#if user.profile.notificationsettings.accepted_to_group_notifications:
+				#	notifications.create_notification_accepted_to_group(group, user, 'banned')
 				return HttpResponse(user.username)	
 			elif request.POST.get('type') == 'cancelban':
 				user = User.objects.filter(id=request.POST.get('userid'))[0]
 				group.banned.remove(user)
+				#if user.profile.notificationsettings.accepted_to_group_notifications:
+				#	notifications.create_notification_accepted_to_group(group, user, 'restored')
 				return HttpResponse('restored')
 			elif request.POST.get('type') == 'toeditor':
 				user = User.objects.filter(id=request.POST.get('data'))[0]
 				group.subscribers.remove(user)
 				group.editors.add(user)
+				#if user.profile.notificationsettings.accepted_to_group_notifications:
+				#	notifications.create_notification_accepted_to_group(group, user, 'promoted')
 				return HttpResponse('Ok')
 			elif request.POST.get('type') == 'touser':
 				user = User.objects.filter(id=request.POST.get('data'))[0]
 				group.editors.remove(user)
 				group.subscribers.add(user)
+				#if user.profile.notificationsettings.accepted_to_group_notifications:
+				#	notifications.create_notification_accepted_to_group(group, user, 'demoted')				
 				return HttpResponse('Ok')
 			elif request.POST.get('type') == 'toadmin':
 				user = User.objects.filter(id=request.POST.get('data'))[0]
 				group.editors.remove(user)
 				group.admin = user
 				group.save()
+				#if user.profile.notificationsettings.accepted_to_group_notifications:
+				#	notifications.create_notification_accepted_to_group(group, user, 'to_admin')
 				return HttpResponse('Ok')
 			elif request.POST.get('type') == 'editname':
 				if request.POST.get('data').strip() != '' and len(request.POST.get('data')) <= 48:

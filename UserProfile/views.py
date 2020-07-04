@@ -127,6 +127,40 @@ class EditPrivacyView(View):
                 return HttpResponse(template.render(context, request))
 
 
+class EditNotificationsView(View):
+    def get(self, request):
+        if not request.user.is_authenticated:
+            return HttpResponseRedirect('/')
+        else:
+            context = dict()
+            context['user'] = request.user
+            context['personal_message_notifications'] = request.user.profile.notificationsettings.personal_message_notifications
+            context['accepted_to_group_notifications'] = request.user.profile.notificationsettings.accepted_to_group_notifications
+            context['post_published_notifications'] = request.user.profile.notificationsettings.post_published_notifications
+            template = loader.get_template('UserProfile/edit_notifications.html')
+            return HttpResponse(template.render(context, request))
+
+    def post(self, request):
+        if not request.user.is_authenticated:
+            return JsonResponse({'status': 'NotAuthenticated'})
+        type = request.POST['type']
+        current_state = request.POST['current_state'] == 'true'
+        if type == 'personal_message_notifications':
+            request.user.profile.notificationsettings.personal_message_notifications = current_state
+            request.user.profile.notificationsettings.save()
+            return JsonResponse({'status': 'ok'})
+        elif type == 'accepted_to_group_notifications':
+            request.user.profile.notificationsettings.accepted_to_group_notifications = current_state
+            request.user.profile.notificationsettings.save()
+            return JsonResponse({'status': 'ok'})
+        elif type == 'post_published_notifications':
+            request.user.profile.notificationsettings.post_published_notifications = current_state
+            request.user.profile.notificationsettings.save()
+            return JsonResponse({'status': 'ok'})
+
+
+
+
 class EditSecurityView(View):
     def get(self, request):
         if not request.user.is_authenticated:

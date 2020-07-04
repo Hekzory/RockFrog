@@ -9,9 +9,6 @@ class NotificationConsumer(WebsocketConsumer):
         if self.user.is_authenticated:
             self.username = self.user.username
             self.room_group_name = "notifications_"+self.username
-
-            print(self.user.username+" connected in notifications")
-
             async_to_sync(self.channel_layer.group_add)(
                 self.room_group_name,
                 self.channel_name
@@ -20,10 +17,11 @@ class NotificationConsumer(WebsocketConsumer):
             self.accept()
 
     def disconnect(self, close_code):
-        async_to_sync(self.channel_layer.group_discard)(
-            self.room_group_name,
-            self.channel_name
-        )
+        if self.user.is_authenticated and self.room_group_name is not None:
+            async_to_sync(self.channel_layer.group_discard)(
+                self.room_group_name,
+                self.channel_name
+            )
 
     def receive(self, text_data):
         pass
@@ -32,7 +30,6 @@ class NotificationConsumer(WebsocketConsumer):
         message = event['message']
         header = event['header']
         href = event['href']
-        print("Got interesting message: "+message)
         self.send(text_data=json.dumps({
             'message': message,
             'href': href,

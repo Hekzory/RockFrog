@@ -66,8 +66,9 @@ class PMConsumer(WebsocketConsumer):
                         current_conversation.update_last_view_user1()
                     else:
                         current_conversation.update_last_view_user2()
-                    #  Создаём уведомление о сообщении
-                    notifications.create_notification_on_pm(user, user_messaging_with)
+                    #  Создаём уведомление о сообщении, если пользователь хочет получать уведомления
+                    if user_messaging_with.profile.notificationsettings.personal_message_notifications:
+                        notifications.create_notification_on_pm(user, user_messaging_with)
                     # Обновляем список диалогов обоим пользователям, создавая событие в WebSocket'ах
                     channel_layer_temp = get_channel_layer()
                     async_to_sync(channel_layer_temp.group_send)("dialog_list_" + user.username, {"type": "update_dialogs"})
