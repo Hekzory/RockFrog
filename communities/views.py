@@ -15,14 +15,30 @@ import re
 import os.path
 import json
 
+def can_see_group(group, user):
+	if user in group.banned.all():
+		return False			
+	if group.public:
+		return True
+	if user in group.subscribers.all() or user in group.editors.all() or user == group.admin:
+		return True
+	return False
+
 def home(request):
     groups = Group.objects.annotate(members=models.Count('subscribers') + models.Count('editors')).order_by('-members')
     context = {'groups': groups}
     return render(request, 'communities/base.html', context)
 
 def community(request, groupslug):
-	if Group.objects.filter(slug=groupslug).exists():
+	if Group.objects.filter(slug=groupslug).exists():		
 		group = Group.objects.get(slug=groupslug)
+
+		if not can_see_group(group, request.user):
+			context = {
+				'group': group,
+			}
+			return render(request, 'communities/closedgroup.html', context)
+
 		articles = group.articles.filter(allowed=True).order_by('-pubdate')
 		articles_count = articles.count()
 		requestarticles = group.articles.filter(allowed=False).order_by('-pubdate')
@@ -39,11 +55,18 @@ def community(request, groupslug):
 		}
 		return render(request, 'communities/community.html', context)
 	else:
-		return render(request, 'communities/nogroup.html')
+		return render(request, 'communities/nogroup.html', status=404)
 
 def information(request, groupslug):
 	if Group.objects.filter(slug=groupslug).exists():
 		group = Group.objects.get(slug=groupslug)
+
+		if not can_see_group(group, request.user):
+			context = {
+				'group': group,
+			}
+			return render(request, 'communities/closedgroup.html', context)
+
 		articles_count = group.articles.filter(allowed=True).count()
 		context = {'group': group, 'articles_count': articles_count}
 		return render(request, 'communities/information.html', context)
@@ -53,6 +76,13 @@ def information(request, groupslug):
 def collection(request, groupslug):
 	if Group.objects.filter(slug=groupslug).exists():
 		group = Group.objects.get(slug=groupslug)
+
+		if not can_see_group(group, request.user):
+			context = {
+				'group': group,
+			}
+			return render(request, 'communities/closedgroup.html', context)
+
 		articles_count = group.articles.filter(allowed=True).count()
 		context = {'group': group, 'articles_count': articles_count}
 		return render(request, 'communities/collection.html', context)
