@@ -30,18 +30,16 @@ class DialogPage(View):
                 if conversation.user1.id == user_messaging_with.id or conversation.user2.id == user_messaging_with.id:
                     current_conversation = conversation
             if current_conversation == None:
-                # Если переписки не существует, отображаем окно без сообщений. После отправки первого сообщения
-                # Создастся объект переписки, не раньше.
-                context['messages'] = []
-                context['conversation_id'] = 0
+                # Если переписки не существует, отображаем окно без сообщений. После просмотра
+                # Создастся объект переписки
+                current_conversation = create_conversation(request.user, user_messaging_with)
+            # Обновляем время последнего просмотра переписки для нужного пользователя
+            if current_conversation.user1.id == request.user.id:
+                current_conversation.update_last_view_user1()
             else:
-                # Если переписка существует, обновляем время последнего просмотра переписки для нужного пользователя
-                if current_conversation.user1.id == request.user.id:
-                    current_conversation.update_last_view_user1()
-                else:
-                    current_conversation.update_last_view_user2()
-                context['messages'] = current_conversation.get_messages_sorted_by_date()
-                context['conversation_id'] = current_conversation.pk
+                current_conversation.update_last_view_user2()
+            context['messages'] = current_conversation.get_messages_sorted_by_date()
+            context['conversation_id'] = current_conversation.pk
             # Проверка на наличие в чёрных списках
             context["is_viewer_blacklisted"] = False
             context["is_viewed_blacklisted"] = False

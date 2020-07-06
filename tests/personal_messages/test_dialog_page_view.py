@@ -56,3 +56,4 @@ class DialogPageViewTestCase(TestCase):
         self.first_user.profile.blacklist.remove(self.second_user)
         self.second_user.profile.blacklist.remove(self.first_user)
 
+

@@ -80,20 +80,19 @@ def create_user_ConversationList(sender, instance, created=None, **kwargs):
     else:
         instance.conversationlist.save()
 
-
-def get_conversation_and_create_if_not(user_starter, user_target):
+def get_conversation_or_none(user_starter, user_target):
     current_conversation = None
     for conversation in user_starter.conversationlist.conversations.all():
         if conversation.user1.id == user_target.id or conversation.user2.id == user_target.id:
             current_conversation = conversation
-    if current_conversation is None:
-        new_conversation = Conversation(user1=user_starter, user2=user_target)
-        new_conversation.save()
-        user_starter.conversationlist.conversations.add(new_conversation)
-        user_target.conversationlist.conversations.add(new_conversation)
-        user_starter.conversationlist.save()
-        user_target.conversationlist.save()
-        current_conversation = new_conversation
-    return current_conversation
+    return conversation
 
+def create_conversation(user_starter, user_target):
+    new_conversation = Conversation(user1=user_starter, user2=user_target)
+    new_conversation.save()
+    user_starter.conversationlist.conversations.add(new_conversation)
+    user_target.conversationlist.conversations.add(new_conversation)
+    user_starter.conversationlist.save()
+    user_target.conversationlist.save()
+    return new_conversation
 # Create your models here.
