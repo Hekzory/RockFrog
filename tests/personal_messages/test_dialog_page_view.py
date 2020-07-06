@@ -2,6 +2,7 @@ from django.test import TestCase
 from django.contrib.auth.models import User
 from django.test import Client
 
+
 class DialogPageViewTestCase(TestCase):
     def setUp(self):
         self.first_user = User.objects.create_user('tester', 'tester@test.com', 'testpassword')
