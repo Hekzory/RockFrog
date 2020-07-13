@@ -163,7 +163,7 @@ function sendsubrequest() {
 
         success : function(data) {
         	location.reload(true);
-        	console.log(data);
+        	// console.log(data);
         	document.getElementById('sub_button').innerHTML = 'Отозвать заявку';
         	document.getElementById('sub_button').setAttribute('onclick', 'cancelsubrequest()');        	
         },
@@ -177,13 +177,13 @@ function cancelsubrequest() {
         url : $("#cururl").attr("cururl") + "edit/moreedit/",
         type : "POST",
         data : {
-        	'type': 'sendsubrequest',
+        	'type': 'cancelsubrequest',
         	'csrfmiddlewaretoken': csrftoken
         },
 
         success : function(data) {
         	location.reload(true);
-        	console.log(data);
+        	// console.log(data);
         	document.getElementById('sub_button').innerHTML = 'Подать заявку';
         	document.getElementById('sub_button').setAttribute('onclick', 'sendsubrequest()');        	
         },

@@ -15,15 +15,6 @@ import re
 import os.path
 import json
 
-def can_see_group(group, user):
-	if user in group.banned.all():
-		return False			
-	if group.public:
-		return True
-	if user in group.subscribers.all() or user in group.editors.all() or user == group.admin:
-		return True
-	return False
-
 def home(request):
     groups = Group.objects.annotate(members=models.Count('subscribers') + models.Count('editors')).order_by('-members')
     context = {'groups': groups}
@@ -33,7 +24,7 @@ def community(request, groupslug):
 	if Group.objects.filter(slug=groupslug).exists():		
 		group = Group.objects.get(slug=groupslug)
 
-		if not can_see_group(group, request.user):
+		if not group.can_see_group(request.user):
 			context = {
 				'group': group,
 			}
@@ -61,7 +52,7 @@ def information(request, groupslug):
 	if Group.objects.filter(slug=groupslug).exists():
 		group = Group.objects.get(slug=groupslug)
 
-		if not can_see_group(group, request.user):
+		if not group.can_see_group(request.user):
 			context = {
 				'group': group,
 			}
@@ -77,7 +68,7 @@ def collection(request, groupslug):
 	if Group.objects.filter(slug=groupslug).exists():
 		group = Group.objects.get(slug=groupslug)
 
-		if not can_see_group(group, request.user):
+		if not group.can_see_group(request.user):
 			context = {
 				'group': group,
 			}
@@ -92,41 +83,53 @@ def collection(request, groupslug):
 def unsubscribe(request, groupid):
 	if request.user.is_authenticated:
 		group = Group.objects.get(id=groupid)
+		group.unsubscribe(request.user)
+		'''
 		if request.user in group.subscribers.all():
 			group.subscribers.remove(request.user)
 		elif request.user in group.editors.all():
 			group.editors.remove(request.user)
 		group.save()
 		request.user.profile.last_online_update()
+		'''
 	return HttpResponse()
 
 def subscribe(request, groupid):
 	if request.user.is_authenticated:
 		group = Group.objects.get(id=groupid)
+		group.subscribe(request.user)
+		'''
 		if request.user not in group.subscribers.all() and request.user not in group.editors.all() and request.user not in group.banned.all() and request.user != group.admin:
 			group.subscribers.add(request.user)
 		group.save()
 		request.user.profile.last_online_update()
+		'''
 	return HttpResponse()
 
 def like(request, groupid, articleid):
 	if request.user.is_authenticated:
 		group = Group.objects.get(id=groupid)
 		article = group.articles.get(id=articleid)
+		article.like(request.user)
+		'''
 		if request.user not in article.likes.all():
 			article.likes.add(request.user)
 		article.save()
 		request.user.profile.last_online_update()
+		'''
 	return HttpResponse()
 
 def removelike(request, groupid, articleid):
 	if request.user.is_authenticated:
 		group = Group.objects.get(id=groupid)
 		article = group.articles.get(id=articleid)
+		article.removelike(request.user)
+		'''
 		if request.user in article.likes.all():
 			article.likes.remove(request.user)
 		article.save()
 		request.user.profile.last_online_update()
+		'''
 	return HttpResponse()
 
 class CreateArticle(View):
@@ -288,11 +291,12 @@ def createcomment(request, groupid, articleid):
 				data['parentname'] = replyuser.username
 
 			return HttpResponse(json.dumps(data))
+	return HttpResponse('Error')	 
 
 
 def deletecomment(request, commentid):
 	if GroupComment.objects.filter(id=commentid).exists():
-		comment = GroupComment.objects.get(id=commentid)
+		comment = GroupComment.objects.get(id=commentid)		
 		if request.user.is_authenticated and request.user == comment.author:
 			if comment.childrencomments.all():
 				comment.is_deleted = True
@@ -419,11 +423,12 @@ def moreedit(request, groupid):
 					group.subrequests.clear()
 				group.save()
 				return HttpResponse('opened / closed')
-			elif request.POST.get('type') == 'delete' and request.user == group.admin:
+			elif request.POST.get('type') == 'delete':
 				group.delete()
 				return HttpResponse('deleted')
 			elif request.POST.get('type') == 'allowsub':
 				user = User.objects.filter(id=request.POST.get('userid'))[0]
+
 				group.subrequests.remove(user)
 				group.subscribers.add(user)
 
@@ -447,7 +452,7 @@ def moreedit(request, groupid):
 				group.allowarticles = request.POST.get('data')
 				group.save()
 				return HttpResponse('Ok')
-			elif request.POST.get('type') == 'deletegroupimage':
+			elif request.POST.get('type') == 'deletegroupimage':				
 				try:				
 					os.remove('media/' + group.image.name)
 				except:
@@ -548,12 +553,19 @@ def moreedit(request, groupid):
 				group.save()
 				return HttpResponse('/groups/' + group.slug + '/edit/')
 		elif request.POST.get('type') == 'sendsubrequest':
+			group.send_subrequest(request.user)
+			return HttpResponse('sent')
+		elif request.POST.get('type') == 'cancelsubrequest':
+			group.cancel_subrequest(request.user)
+			return HttpResponse('cancelled')
+			'''
 			if request.user in group.subrequests.all():
 				group.subrequests.remove(request.user)
 				return HttpResponse('cancelled')
 			else:
 				group.subrequests.add(request.user)
 				return HttpResponse('sent')
+			'''
 	return HttpResponse('error')
 
 def editgroup(request, groupslug):
