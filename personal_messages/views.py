@@ -30,24 +30,22 @@ class DialogPage(View):
                 if conversation.user1.id == user_messaging_with.id or conversation.user2.id == user_messaging_with.id:
                     current_conversation = conversation
             if current_conversation == None:
-                # Если переписки не существует, отображаем окно без сообщений. После отправки первого сообщения
-                # Создастся объект переписки, не раньше.
-                context['messages'] = []
-                context['conversation_id'] = 0
+                # Если переписки не существует, отображаем окно без сообщений. После просмотра
+                # Создастся объект переписки
+                current_conversation = create_conversation(request.user, user_messaging_with)
+            # Обновляем время последнего просмотра переписки для нужного пользователя
+            if current_conversation.user1.id == request.user.id:
+                current_conversation.update_last_view_user1()
             else:
-                # Если переписка существует, обновляем время последнего просмотра переписки для нужного пользователя
-                if current_conversation.user1.id == request.user.id:
-                    current_conversation.update_last_view_user1()
-                else:
-                    current_conversation.update_last_view_user2()
-                context['messages'] = current_conversation.get_messages_sorted_by_date()
-                context['conversation_id'] = current_conversation.pk
+                current_conversation.update_last_view_user2()
+            context['messages'] = current_conversation.get_messages_sorted_by_date()
+            context['conversation_id'] = current_conversation.pk
             # Проверка на наличие в чёрных списках
             context["is_viewer_blacklisted"] = False
             context["is_viewed_blacklisted"] = False
             if user_messaging_with.profile.blacklist.filter(pk=request.user.pk).exists():
                 context["is_viewer_blacklisted"] = True
-            elif request.user.profile.blacklist.filter(pk=user_messaging_with.pk).exists():
+            if request.user.profile.blacklist.filter(pk=user_messaging_with.pk).exists():
                 context["is_viewed_blacklisted"] = True
             return render(request, 'personal_messages/base.html', context)
         else:
@@ -98,7 +96,12 @@ class DeleteMessage(View):
         if not request.user.is_authenticated:
             return HttpResponseRedirect('/')
         request.user.profile.last_online_update()
-        message = ConversationMessage.objects.get(id=request.POST["message_id"])
+        try:
+            message = ConversationMessage.objects.get(id=request.POST["message_id"])
+        except ConversationMessage.DoesNotExist:
+            return JsonResponse({"response": "DoesNotExist"})
+        except ValueError:
+            return JsonResponse({"response": "IdNotADigit"})
         if message.is_earlier_24() and message.user.id == request.user.id:
             message.delete()
             return JsonResponse({"response":"ok"})
@@ -110,7 +113,12 @@ class EditMessage(View):
         if not request.user.is_authenticated:
             return HttpResponseRedirect('/')
         request.user.profile.last_online_update()
-        message = ConversationMessage.objects.get(id=request.POST["message_id"])
+        try:
+            message = ConversationMessage.objects.get(id=int(request.POST["message_id"]))
+        except ConversationMessage.DoesNotExist:
+            return JsonResponse({"response": "DoesNotExist"})
+        except ValueError:
+            return JsonResponse({"response": "IdNotADigit"})
         if message.is_earlier_24() and message.user.id == request.user.id and request.POST["message"].strip() != "":
             message.text = request.POST["message"]
             message.save()

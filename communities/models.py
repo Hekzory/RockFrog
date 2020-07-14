@@ -17,7 +17,7 @@ class Group(models.Model):
 	description = models.TextField(blank=True)
 	public = models.BooleanField(default=True)
 	allowarticles = models.IntegerField(default=2)
-	pubdate = models.DateTimeField('date published', default=datetime.now())
+	pubdate = models.DateTimeField('date published', default=datetime.now)
 	admin = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='groups_admins')
 	editors = models.ManyToManyField(User, blank=True, related_name='groups_editors')
 	subscribers = models.ManyToManyField(User, blank=True, related_name='groups_subs')
@@ -27,10 +27,46 @@ class Group(models.Model):
 	def __str__(self):
 		return self.groupname
 
+	def can_see_group(self, user):
+		if user in self.banned.all():
+			return False			
+		if self.public:
+			return True
+		if user in self.subscribers.all() or user in self.editors.all() or user == self.admin:
+			return True
+		return False
+
+	def subscribe(self, user):
+		user.profile.last_online_update()	
+		if self.can_see_group(user) and user not in self.subscribers.all() and user not in self.editors.all() and user != self.admin:
+			self.subscribers.add(user)
+			self.save()
+
+	def unsubscribe(self, user):
+		user.profile.last_online_update()	
+		if user in self.editors.all():
+			self.editors.remove(user)
+			self.save()
+		elif user in self.subscribers.all():
+			self.subscribers.remove(user)
+			self.save()
+
+	def send_subrequest(self, user):
+		user.profile.last_online_update()	
+		if not self.public and user not in self.subscribers.all() and user not in self.editors.all() and user != self.admin and user not in self.banned.all():
+			self.subrequests.add(user)
+			self.save()
+
+	def cancel_subrequest(self, user):
+		user.profile.last_online_update()	
+		if user in self.subrequests.all():
+			self.subrequests.remove(user)
+			self.save()
+
 class GroupArticle(models.Model):
 	allowed = models.BooleanField(default=True)
 	text = models.TextField()	
-	pubdate = models.DateTimeField('date published', default=datetime.now())      
+	pubdate = models.DateTimeField('date published', default=datetime.now)      
 	group = models.ForeignKey(Group, on_delete=models.CASCADE, related_name='articles') 
 	likes = models.ManyToManyField(User, blank=True, related_name='likes')
 	author = models.ForeignKey(User, on_delete=models.PROTECT, null=True, blank=True, related_name='articles_author', default=None)
@@ -42,6 +78,20 @@ class GroupArticle(models.Model):
 	    if self.author is None:
 	        self.author = self.group.admin
 	    super(GroupArticle, self).save(*args, **kwargs)
+
+	def like(self, user):
+		user.profile.last_online_update()	
+		if self.group.can_see_group(user) and self.allowed:
+			if user not in self.likes.all():
+				self.likes.add(user)
+			self.save()
+
+	def removelike(self, user):
+		user.profile.last_online_update()	
+		if self.group.can_see_group(user) and self.allowed:
+			if user in self.likes.all():
+				self.likes.remove(user)
+			self.save()
 
 class ArticleFile(models.Model):
 	name = models.CharField(max_length=40)
@@ -66,7 +116,7 @@ class GroupComment(models.Model):
 	article = models.ForeignKey(GroupArticle, on_delete=models.CASCADE, related_name='comments')
 	text = models.TextField()
 	is_deleted = models.BooleanField(default=False)
-	pubdate = models.DateTimeField('date published', default=datetime.now())
+	pubdate = models.DateTimeField('date published', default=datetime.now)
 
 	def __str__(self):
 		return self.author.username
