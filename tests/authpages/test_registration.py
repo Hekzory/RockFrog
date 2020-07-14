@@ -14,7 +14,11 @@ class RegistrationViewTestCase(TestCase):
         self.second_client.force_login(self.second_user)
         self.unauthorized_client = Client()
 
-    def test_if_redirect_for_already_authorized(self):
+    def test_if_redirect_for_already_authorized_get(self):
+        response = self.first_client.get('/auth/register/')
+        self.assertEqual(response.status_code, 302)
+
+    def test_if_redirect_for_already_authorized_post(self):
         response = self.first_client.get('/auth/register/')
         self.assertEqual(response.status_code, 302)
 
@@ -97,3 +101,9 @@ class RegistrationViewTestCase(TestCase):
         unauthorized_client_temp.post('/auth/register/', {'login': 'tester123', 'email': 'tester3345@test.com',  'password': 'abcdekпро123456', 'confirmpass': 'abcdekпро123456'})
         user = auth.get_user(unauthorized_client_temp)
         self.assertEqual(user.is_authenticated, False)
+
+    def test_if_unsuccessful_registration_have_right_response_code_and_template(self):
+        unauthorized_client_temp = Client()
+        response = unauthorized_client_temp.post('/auth/register/', {'login': 'tester123', 'email': 'tester3345@test.com',  'password': 'abcdekпро123456', 'confirmpass': 'abcdekпро123456'})
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "authpages/register.html")
