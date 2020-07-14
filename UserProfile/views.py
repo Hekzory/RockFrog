@@ -148,7 +148,10 @@ class EditSecurityView(View):
                 result = bound_form.change_password(request.user)
                 new_form = ChangePasswordForm()
                 context = {'change_error': not result, 'form' : new_form}
-                template = loader.get_template('UserProfile/password_changed.html')
+                if context['change_error']:
+                    template = loader.get_template('UserProfile/edit_security.html')
+                else:
+                    template = loader.get_template('UserProfile/password_changed.html')
                 return HttpResponse(template.render(context, request))
             else:
                 template = loader.get_template('UserProfile/edit_security.html')
@@ -169,9 +172,12 @@ class BlockedUsersView(View):
 class BlockUserView(View):
     def post(self, request):
         if not request.user.is_authenticated:
-            return JsonResponse({'status' : 'NotAuthenticated'})
+            return JsonResponse({'status': 'NotAuthenticated'})
         else:
-            user_id = request.POST['user_id']
+            try:
+                user_id = int(request.POST['user_id'])
+            except ValueError:
+                return JsonResponse({'status': 'User_id is not a number'})
             if user_id == request.user.id:
                 return JsonResponse({'status': 'CantBlockYourself'})
             if User.objects.filter(id=user_id).first() is None:
@@ -186,9 +192,12 @@ class BlockUserView(View):
 class UnblockUserView(View):
     def post(self, request):
         if not request.user.is_authenticated:
-            return JsonResponse({'status' : 'NotAuthenticated'})
+            return JsonResponse({'status': 'NotAuthenticated'})
         else:
-            user_id = request.POST['user_id']
+            try:
+                user_id = int(request.POST['user_id'])
+            except ValueError:
+                return JsonResponse({'status': 'User_id is not a number'})
             if User.objects.filter(id=user_id).first() is None:
                 return JsonResponse({'status': 'UserNotFound'})
             blacklist = request.user.profile.blacklist

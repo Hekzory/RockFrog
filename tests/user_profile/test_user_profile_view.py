@@ -11,6 +11,11 @@ class UserProfileViewTestCase(TestCase):
         self.second_user = User.objects.create_user('tester2', 'tester2@test.com', 'test2password')
         self.second_client = Client()
         self.second_client.force_login(self.second_user)
+        self.verified_user = User.objects.create_user('verified_tester', 'ver@test.com', 'verpassword')
+        self.verified_client = Client()
+        self.second_client.force_login(self.verified_user)
+        self.verified_user.profile.verified = True
+        self.verified_user.profile.save()
 
     def test_if_viewed_user_not_found(self):
         response = self.first_client.get('/profile/adhshba'+'/')
@@ -30,9 +35,11 @@ class UserProfileViewTestCase(TestCase):
 
     def test_if_authenticated_and_in_blacklist(self):
         self.second_user.profile.blacklist.add(self.first_user)
+        self.second_user.profile.save()
         response = self.first_client.get('/profile/' + str(self.second_user)+'/')
         self.assertTemplateUsed(response, 'UserProfile/blocked_forbidden.html')
         self.second_user.profile.blacklist.remove(self.first_user)
+        self.second_user.profile.save()
 
     def test_if_unregistered_and_allowed_to_view(self):
         unauthorized_client = Client()
@@ -48,4 +55,10 @@ class UserProfileViewTestCase(TestCase):
         response = unauthorized_client.get('/profile/' + str(self.first_user)+'/')
         self.assertTemplateUsed(response, 'UserProfile/unregistered_forbidden.html')
 
+    def test_verified_user(self):
+        response = self.client.get('/profile/' + str(self.verified_user)+'/')
+        self.assertContains(response, 'check_circle_outline')
 
+    def test_unverified_user(self):
+        response = self.verified_client.get('/profile/' + str(self.first_user) + '/')
+        self.assertNotContains(response, 'check_circle_outline')
