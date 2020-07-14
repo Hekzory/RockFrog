@@ -56,5 +56,3 @@ class DialogPageViewTestCase(TestCase):
         self.assertEqual(response.context['is_viewer_blacklisted'], True)
         self.first_user.profile.blacklist.remove(self.second_user)
         self.second_user.profile.blacklist.remove(self.first_user)
-
-
