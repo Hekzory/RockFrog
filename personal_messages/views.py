@@ -96,7 +96,12 @@ class DeleteMessage(View):
         if not request.user.is_authenticated:
             return HttpResponseRedirect('/')
         request.user.profile.last_online_update()
-        message = ConversationMessage.objects.get(id=request.POST["message_id"])
+        try:
+            message = ConversationMessage.objects.get(id=request.POST["message_id"])
+        except ConversationMessage.DoesNotExist:
+            return JsonResponse({"response": "DoesNotExist"})
+        except ValueError:
+            return JsonResponse({"response": "IdNotADigit"})
         if message.is_earlier_24() and message.user.id == request.user.id:
             message.delete()
             return JsonResponse({"response":"ok"})
@@ -108,7 +113,12 @@ class EditMessage(View):
         if not request.user.is_authenticated:
             return HttpResponseRedirect('/')
         request.user.profile.last_online_update()
-        message = ConversationMessage.objects.get(id=request.POST["message_id"])
+        try:
+            message = ConversationMessage.objects.get(id=int(request.POST["message_id"]))
+        except ConversationMessage.DoesNotExist:
+            return JsonResponse({"response": "DoesNotExist"})
+        except ValueError:
+            return JsonResponse({"response": "IdNotADigit"})
         if message.is_earlier_24() and message.user.id == request.user.id and request.POST["message"].strip() != "":
             message.text = request.POST["message"]
             message.save()

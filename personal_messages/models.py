@@ -41,13 +41,13 @@ class Conversation(models.Model):
         return "Conversation between "+str(self.user1)+" and "+str(self.user2)
 
     def get_last_message(self):
-        if len(self.messages.all()) != 0:
+        if not self.is_empty():
             return self.messages.all().latest('date_time').text
         else:
             return "Возникла ошибка, пожалуйста, сообщите о ней администратору"
 
     def get_last_message_author(self):
-        if len(self.messages.all()) != 0:
+        if not self.is_empty():
             return self.messages.all().latest('date_time').user.username
         else:
             return "Возникла ошибка, пожалуйста, сообщите о ней администратору"
@@ -59,7 +59,7 @@ class Conversation(models.Model):
         if len(self.messages.all()) != 0:
             return self.messages.all().latest('date_time').date_time
         else:
-            return ""
+            return None
 
     def get_messages_sorted_by_date(self):
         if len(self.messages.all()) != 0:

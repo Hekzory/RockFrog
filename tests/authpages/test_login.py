@@ -13,7 +13,11 @@ class LoginViewTestCase(TestCase):
         self.second_client.force_login(self.second_user)
         self.unauthorized_client = Client()
 
-    def test_if_redirect_for_already_authorized(self):
+    def test_if_redirect_for_already_authorized_get(self):
+        response = self.first_client.get('/auth/login/')
+        self.assertEqual(response.status_code, 302)
+
+    def test_if_redirect_for_already_authorized_post(self):
         response = self.first_client.get('/auth/login/')
         self.assertEqual(response.status_code, 302)
 
@@ -45,3 +49,9 @@ class LoginViewTestCase(TestCase):
         user = auth.get_user(unauthorized_client_temp)
         self.assertEqual(user.is_authenticated, False)
         self.assertEqual(response.status_code, 200)
+
+    def test_if_unsuccessful_login_have_right_response_code_and_template(self):
+        unauthorized_client_temp = Client()
+        response = unauthorized_client_temp.post('/auth/login/', {'login': 'tester4423234', 'password': 'testpassword'})
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "authpages/login.html")
