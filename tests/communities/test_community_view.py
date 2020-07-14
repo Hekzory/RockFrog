@@ -5,7 +5,7 @@ from django.test import Client
 
 class CommunityViewTestCase(TestCase):
     def setUp(self):
-        self.user = User.objects.create_user('user', 'tester@test.com', 'testpassword')
+        self.user = User.objects.create_user('superduperuser', 'tester@test.com', 'testpassword')
         self.user_client = Client()
         self.user_client.force_login(self.user)
 
@@ -22,16 +22,16 @@ class CommunityViewTestCase(TestCase):
         self.admin_client.force_login(self.admin_user)
 
         self.group = Group(groupname='group', admin=self.admin_user, pubdate = datetime.now()) 
-        self.group.slug = str(self.group.id)         
+        self.group.slug = str(self.group.id)    
         self.group.save() 
+        self.group.subscribers.add(self.subscriber)  
+        self.group.save()  
 
     def test_if_200_status_code_for_normal_situation(self):
         response = self.user_client.get('/groups/' + self.group.slug + '/')
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)       
 
-    def test_for_template_for_subscriber_in_closed_group(self):
-        self.group.subscribers.add(self.subscriber)
-        self.group.save()
+    def test_for_template_for_subscriber_in_closed_group(self):        
         self.group.public = False
         self.group.save()
         response = self.subscriber_client.get('/groups/' + self.group.slug + '/')
@@ -56,3 +56,13 @@ class CommunityViewTestCase(TestCase):
         self.group.save()
         response = self.banned_client.get('/groups/' + self.group.slug + '/')
         self.assertTemplateUsed(response, 'communities/closedgroup.html')
+
+    def test_for_subrequest(self):
+        self.group.subrequests.add(self.user)
+        self.group.public = False
+        self.group.save()
+        response = self.admin_client.get('/groups/' + self.group.slug + '/')
+        self.group.subrequests.remove(self.user)
+        self.group.public = True
+        self.group.save()
+        self.assertContains(response, 'superduperuser')    
