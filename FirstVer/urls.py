@@ -28,4 +28,5 @@ urlpatterns = [
     path('notifications/', include('notifications.urls')),
     path('conversations/', include('personal_messages.urls')),
     path('groups/', include('communities.urls')),
+    path('inventory/', include('inventory.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -1,0 +1,80 @@
+{% extends "base_twocolumn.html" %}
+{% load static %}
+
+{% block title %} Инвентарь {% endblock %}
+{% block title_h1 %} Инвентарь {% endblock %}
+{% block content1 %}
+{% csrf_token %}
+<div class="container">
+  <div class="container" style="justify-content: space-around; display: inline-flex; flex-flow: row wrap;  width: 100%; height: 100%; background-color: #cecece; border-radius: 3px; padding: 10px !important;">
+    <div class="col-4" style="background-color: white; width: 23.5%; flex: 1 1 auto; padding: 1%; margin: 0.5%; border-radius: 1px;">
+      <img src="/static/placeholder-square.jpg" style="width: 100%; height: 100%;">
+    </div>
+    <div class="col-4" style="background-color: white; width: 23.5%; flex: 1 1 auto; padding: 1%; margin: 0.5%; border-radius: 1px;">
+      <img src="/static/placeholder-square.jpg" style="width: 100%; height: 100%;">
+    </div>
+    <div class="col-4" style="background-color: white; width: 23.5%; flex: 1 1 auto; padding: 1%; margin: 0.5%; border-radius: 1px;">
+      <img src="/static/placeholder-square.jpg" style="width: 100%; height: 100%;">
+    </div>
+    <div class="col-4" style="background-color: white; width: 23.5%; flex: 1 1 auto; padding: 1%; margin: 0.5%; border-radius: 1px;">
+      <img src="/static/placeholder-square.jpg" style="width: 100%; height: 100%;">
+    </div>
+    <div class="col-4" style="background-color: white; width: 23.5%; flex: 1 1 auto; padding: 1%; margin: 0.5%; border-radius: 1px;">
+      <img src="/static/placeholder-square.jpg" style="width: 100%; height: 100%;">
+    </div>
+    <div class="col-4" style="background-color: white; width: 23.5%; flex: 1 1 auto; padding: 1%; margin: 0.5%; border-radius: 1px;">
+      <img src="/static/placeholder-square.jpg" style="width: 100%; height: 100%;">
+    </div>
+    <div class="col-4" style="background-color: white; width: 23.5%; flex: 1 1 auto; padding: 1%; margin: 0.5%; border-radius: 1px;">
+      <img src="/static/placeholder-square.jpg" style="width: 100%; height: 100%;">
+    </div>
+    <div class="col-4" style="background-color: white; width: 23.5%; flex: 1 1 auto; padding: 1%; margin: 0.5%; border-radius: 1px;">
+      <img src="/static/placeholder-square.jpg" style="width: 100%; height: 100%;">
+    </div>
+    <div class="col-4" style="background-color: white; width: 23.5%; flex: 1 1 auto; padding: 1%; margin: 0.5%; border-radius: 1px;">
+      <img src="/static/placeholder-square.jpg" style="width: 100%; height: 100%;">
+    </div>
+    <div class="col-4" style="background-color: white; width: 23.5%; flex: 1 1 auto; padding: 1%; margin: 0.5%; border-radius: 1px;">
+      <img src="/static/placeholder-square.jpg" style="width: 100%; height: 100%;">
+    </div>
+    <div class="col-4" style="background-color: white; width: 23.5%; flex: 1 1 auto; padding: 1%; margin: 0.5%; border-radius: 1px;">
+    </div>
+    <div class="col-4" style="background-color: white; width: 23.5%; flex: 1 1 auto; padding: 1%; margin: 0.5%; border-radius: 1px;">
+    </div>
+    <div class="col-4" style="background-color: white; width: 23.5%; flex: 1 1 auto; padding: 1%; margin: 0.5%; border-radius: 1px;">
+    </div>
+    <div class="col-4" style="background-color: white; width: 23.5%; flex: 1 1 auto; padding: 1%; margin: 0.5%; border-radius: 1px;">
+    </div>
+    <div class="col-4" style="background-color: white; width: 23.5%; flex: 1 1 auto; padding: 1%; margin: 0.5%; border-radius: 1px;">
+    </div>
+    <div class="col-4" style="background-color: white; width: 23.5%; flex: 1 1 auto; padding: 1%; margin: 0.5%; border-radius: 1px;">
+      <img src="/static/placeholder-square.jpg" style="width: 100%; height: 100%;">
+    </div>
+  </div>
+  <hr>
+    <a href="#" class="mb-3 float-right btn btn-light">-></a>
+  <a href="#" class="mb-3 float-right btn btn-light"><-</a>
+
+</div>
+{% endblock %}
+{% block content2 %}
+{% csrf_token %}
+<div class="container">
+  <div class="card my-3" style="width: 18rem;">
+  <div class="card-body">
+    <h5 class="card-title">Добро пожаловать в интвентарь!</h5>
+    <p class="card-text">Это место, в котором хранятся все ваши вещи, включая карточки и кейсы.</p>
+  </div>
+  </div>
+  <div class="card my-3" style="width: 18rem;">
+  <div class="card-body">
+    <h5 class="card-title">Фильтры</h5>
+    <p class="card-text">Возможность показать отдельные категории</p>
+  </div>
+  <ul class="list-group list-group-flush">
+    <li class="list-group-item btn text-left" onclick="$('#cards_filter').prop('checked', !$('#cards_filter').prop('checked'))">Карточки <input class="float-right" type="checkbox" id="cards_filter"></li>
+    <li class="list-group-item btn text-left" onclick="$('#lootboxes_filter').prop('checked', !$('#lootboxes_filter').prop('checked'))">Кейсы <input class="float-right" type="checkbox" id="lootboxes_filter"></li>
+  </ul>
+  </div>
+</div>
+{% endblock %}
