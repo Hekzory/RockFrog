@@ -44,6 +44,7 @@ INSTALLED_APPS = [
 	'authpages',
     'communities',
     'notifications',
+    'coins',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

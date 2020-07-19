@@ -6,7 +6,6 @@ from datetime import datetime, date, timezone, timedelta
 import locale
 
 
-
 def user_directorypath(instance, filename):
     return 'user{0}/{1}'.format(instance.user.id, filename)
 

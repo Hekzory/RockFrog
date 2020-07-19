@@ -1,0 +1,38 @@
+{% extends "base_twocolumn.html" %}
+{% block title %} Управление балансом {% endblock %}
+{% block title_h1 %} Управление балансом {% endblock %}
+
+{% block content1 %}
+{% csrf_token %}
+
+    <div class="card text-center">
+      <div class="card-body">
+        <h5 class="card-title">Ваш баланс: {{coins}}</h5>
+      </div>
+    </div>
+
+{% endblock %}
+
+{% block content2 %}
+
+<div class="card my-5" style="width: 18rem;">
+  <div class="card-body">
+    <h5 class="card-title">Последние транзакции</h5>
+    <table class="table">
+      <tbody>
+       {% for transaction in transaction_list %}
+        <tr>
+            {% if transaction.amount >= 0 %}
+            <td>+{{transaction.amount}}</td>
+            {% else %}
+            <td>{{transaction.amount}}</td>
+            {% endif %}
+            <td>{{transaction.time_created}}</td>
+        </tr>
+       {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% endblock %}

@@ -5,6 +5,7 @@ from django.db.models.signals import post_save
 import datetime
 from django.utils import timezone
 
+
 class ConversationMessage(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     text = models.TextField()
