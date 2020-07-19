@@ -3,65 +3,33 @@
 
 {% block title %} Инвентарь {% endblock %}
 {% block title_h1 %} Инвентарь {% endblock %}
+{% block links %} <script src="/static/js/inventory_manage.js"></script> {% endblock %}
 {% block content1 %}
 {% csrf_token %}
 <div class="container">
   <div class="container" style="justify-content: space-around; display: inline-flex; flex-flow: row wrap;  width: 100%; height: 100%; background-color: #cecece; border-radius: 3px; padding: 10px !important;">
-    <div class="col-4" style="background-color: white; width: 23.5%; flex: 1 1 auto; padding: 1%; margin: 0.5%; border-radius: 1px;">
-      <img src="/static/placeholder-square.jpg" style="width: 100%; height: 100%;">
-    </div>
-    <div class="col-4" style="background-color: white; width: 23.5%; flex: 1 1 auto; padding: 1%; margin: 0.5%; border-radius: 1px;">
-      <img src="/static/placeholder-square.jpg" style="width: 100%; height: 100%;">
-    </div>
-    <div class="col-4" style="background-color: white; width: 23.5%; flex: 1 1 auto; padding: 1%; margin: 0.5%; border-radius: 1px;">
-      <img src="/static/placeholder-square.jpg" style="width: 100%; height: 100%;">
-    </div>
-    <div class="col-4" style="background-color: white; width: 23.5%; flex: 1 1 auto; padding: 1%; margin: 0.5%; border-radius: 1px;">
-      <img src="/static/placeholder-square.jpg" style="width: 100%; height: 100%;">
-    </div>
-    <div class="col-4" style="background-color: white; width: 23.5%; flex: 1 1 auto; padding: 1%; margin: 0.5%; border-radius: 1px;">
-      <img src="/static/placeholder-square.jpg" style="width: 100%; height: 100%;">
-    </div>
-    <div class="col-4" style="background-color: white; width: 23.5%; flex: 1 1 auto; padding: 1%; margin: 0.5%; border-radius: 1px;">
-      <img src="/static/placeholder-square.jpg" style="width: 100%; height: 100%;">
-    </div>
-    <div class="col-4" style="background-color: white; width: 23.5%; flex: 1 1 auto; padding: 1%; margin: 0.5%; border-radius: 1px;">
-      <img src="/static/placeholder-square.jpg" style="width: 100%; height: 100%;">
-    </div>
-    <div class="col-4" style="background-color: white; width: 23.5%; flex: 1 1 auto; padding: 1%; margin: 0.5%; border-radius: 1px;">
-      <img src="/static/placeholder-square.jpg" style="width: 100%; height: 100%;">
-    </div>
-    <div class="col-4" style="background-color: white; width: 23.5%; flex: 1 1 auto; padding: 1%; margin: 0.5%; border-radius: 1px;">
-      <img src="/static/placeholder-square.jpg" style="width: 100%; height: 100%;">
-    </div>
-    <div class="col-4" style="background-color: white; width: 23.5%; flex: 1 1 auto; padding: 1%; margin: 0.5%; border-radius: 1px;">
-      <img src="/static/placeholder-square.jpg" style="width: 100%; height: 100%;">
-    </div>
-    <div class="col-4" style="background-color: white; width: 23.5%; flex: 1 1 auto; padding: 1%; margin: 0.5%; border-radius: 1px;">
-    </div>
-    <div class="col-4" style="background-color: white; width: 23.5%; flex: 1 1 auto; padding: 1%; margin: 0.5%; border-radius: 1px;">
-    </div>
-    <div class="col-4" style="background-color: white; width: 23.5%; flex: 1 1 auto; padding: 1%; margin: 0.5%; border-radius: 1px;">
-    </div>
-    <div class="col-4" style="background-color: white; width: 23.5%; flex: 1 1 auto; padding: 1%; margin: 0.5%; border-radius: 1px;">
-    </div>
-    <div class="col-4" style="background-color: white; width: 23.5%; flex: 1 1 auto; padding: 1%; margin: 0.5%; border-radius: 1px;">
-    </div>
-    <div class="col-4" style="background-color: white; width: 23.5%; flex: 1 1 auto; padding: 1%; margin: 0.5%; border-radius: 1px;">
-      <img src="/static/placeholder-square.jpg" style="width: 100%; height: 100%;">
-    </div>
+    {% for item in inventory_items %}
+      <div onclick="showitem({{ item.id }}, '{{item.type}}')" id="item-{{ item.id }}" class="col-4" style="cursor: pointer; background-color: white; width: 23.5%; flex: 1 1 auto; padding: 1%; margin: 0.5%; border-radius: 1px;">
+        <img src="/static/placeholder-square.jpg" style="width: 100%; height: 100%;">
+      </div>
+    {% endfor %}
+    {% for item in extra_empty_slots %}
+        <div class="col-4" style="background-color: white; width: 23.5%; flex: 1 1 auto; padding: 1%; margin: 0.5%; border-radius: 1px;"></div>
+    {% endfor %}
   </div>
+  {% if more_than_one_page %}
   <hr>
     <a href="#" class="mb-3 float-right btn btn-light">-></a>
   <a href="#" class="mb-3 float-right btn btn-light"><-</a>
+  {% endif %}
 
 </div>
 {% endblock %}
 {% block content2 %}
 {% csrf_token %}
 <div class="container">
-  <div class="card my-3" style="width: 18rem;">
-  <div class="card-body">
+  <div class="card my-3" id="item-card" style="width: 18rem;">
+  <div class="card-body" id="item-body">
     <h5 class="card-title">Добро пожаловать в интвентарь!</h5>
     <p class="card-text">Это место, в котором хранятся все ваши вещи, включая карточки и кейсы.</p>
   </div>
