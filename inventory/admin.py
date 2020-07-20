@@ -12,7 +12,8 @@ admin.site.register(Inventory, InventoryAdmin)
 
 # Register your models here.
 class InventoryCardAdmin(admin.ModelAdmin):
-    fields = ['inventory', 'name', 'description', 'rarity']
+    fields = ['inventory', 'name', 'description', 'rarity', 'level', 'maxlevel', 'collected_cards',
+              'increase_points_per_level_amount']
 
 
 admin.site.register(CardItem, InventoryCardAdmin)

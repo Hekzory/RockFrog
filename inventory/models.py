@@ -25,3 +25,16 @@ class CardItem(InventoryItem):
     description = models.TextField(default="Standart card description")
     rarity = models.TextField(default="common")
     type = models.TextField(default="card")
+    level = models.IntegerField(default=0)
+    maxlevel = models.IntegerField(default=10)
+    collected_cards = models.IntegerField(default=0)
+    increase_points_per_level_amount = models.IntegerField(default=2)
+
+    def add_cards(self, amount):
+        t_amount = amount
+        while (self.collected_cards+t_amount > (self.level+1)*self.increase_points_per_level_amount) and self.level < self.maxlevel:
+            self.level += 1
+            self.collected_cards = 0
+            t_amount -= self.level*self.increase_points_per_level_amount
+        self.collected_cards = t_amount
+        self.save()

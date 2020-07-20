@@ -48,4 +48,7 @@ class GetItemView(View):
         if item.inventory.user.id != request.user.id:
             return JsonResponse({"response": "NotYourItem"})
         if request.POST["type"] == "card":
-            return JsonResponse({"response": "ok", "item_name": item.name, "item_description": item.description, "item_rarity": item.rarity})
+            return JsonResponse({"response": "ok", "item_name": item.name, "item_description": item.description,
+                                 "item_rarity": item.rarity, "item_level": item.level, "item_maxlevel": item.maxlevel,
+                                 "item_collected_cards": item.collected_cards,
+                                 "points_per_level": item.increase_points_per_level_amount})
