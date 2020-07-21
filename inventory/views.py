@@ -5,6 +5,7 @@ from django.shortcuts import render
 from django.template import loader
 from FirstVer.settings import TEMPLATES
 from .models import CardItem
+from django.utils.datastructures import MultiValueDictKeyError
 
 
 # Create your views here.
@@ -43,6 +44,9 @@ class GetItemView(View):
                 return JsonResponse({"response": "NoSuchItem"})
             except ValueError:
                 return JsonResponse({"response": "IdNotANumber"})
+            except MultiValueDictKeyError:
+                return JsonResponse({"response": "IdNotANumber"})
+
         else:
             return JsonResponse({"response": "UnknownType"})
         if item.inventory.user.id != request.user.id:
@@ -52,3 +56,22 @@ class GetItemView(View):
                                  "item_rarity": item.rarity, "item_level": item.level, "item_maxlevel": item.maxlevel,
                                  "item_collected_cards": item.collected_cards,
                                  "points_per_level": item.increase_points_per_level_amount})
+
+
+class IncreaseCardLevelView(View):
+    def post(self, request):
+        if not request.user.is_authenticated:
+            return JsonResponse({"response": "NotAuthenticated"})
+        try:
+            item = CardItem.objects.get(id=int(request.POST["item_id"]))
+        except CardItem.DoesNotExist:
+            return JsonResponse({"response": "NoSuchItem"})
+        except ValueError:
+            return JsonResponse({"response": "IdNotANumber"})
+        if item.inventory.user.id != request.user.id:
+            return JsonResponse({"response": "NotYourItem"})
+        res = item.increase_level()
+        return JsonResponse({"response": "ok", "item_name": item.name, "item_description": item.description,
+                             "item_rarity": item.rarity, "item_level": item.level, "item_maxlevel": item.maxlevel,
+                             "item_collected_cards": item.collected_cards,
+                             "points_per_level": item.increase_points_per_level_amount})

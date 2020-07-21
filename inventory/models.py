@@ -38,3 +38,12 @@ class CardItem(InventoryItem):
             t_amount -= self.level*self.increase_points_per_level_amount
         self.collected_cards = t_amount
         self.save()
+
+    def increase_level(self):
+        if (self.collected_cards > (self.level+1)*self.increase_points_per_level_amount) and self.level < self.maxlevel:
+            self.level += 1
+            self.collected_cards -= self.level*self.increase_points_per_level_amount
+            self.save()
+            return self.maxlevel
+        else:
+            return None

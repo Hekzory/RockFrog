@@ -10,8 +10,13 @@ function showitem(item_id, type) {
         },
 
         success : function(data) {
-			console.log("Got info about item");
-			if (data["response"] == "ok") {
+			show_item(data, item_id);
+        },
+    });
+}
+
+function show_item(data, item_id) {
+        if (data["response"] == "ok") {
 			    console.log("Response is ok");
 			    var header_html = "<h5 class='card-title'>"+data["item_name"]+"</h5>";
 			    var description_html = "<p class='card-text'>"+data["item_description"]+"</p>";
@@ -48,9 +53,28 @@ function showitem(item_id, type) {
                       </div>
                     </li>`;
                 }
-                var content = main_section+add_info_start+add_info_rarity+add_info_progress+add_info_end;
+                if ((collected_cards >= (add_info_level+1)*points_per_level) && add_info_level < add_info_maxlevel) {
+                    var add_info_upgrade_level_button = '<li class="list-group-item text-center"><div onclick="upgrade_item('+item_id+');" class="btn btn-primary">Повысить уровень</div></li>';
+                    var content = main_section+add_info_start+add_info_rarity+add_info_progress+add_info_upgrade_level_button+add_info_end;
+                } else {
+                    var content = main_section+add_info_start+add_info_rarity+add_info_progress+add_info_end;
+                }
                 $("#item-card").html(content);
-			}
+		}
+}
+
+function upgrade_item(item_id) {
+    var csrftoken = $('input[name="csrfmiddlewaretoken"]').val();
+    $.ajax({
+        url : "/inventory/increase_item_level/",
+        type : "POST",
+        data : {
+            'item_id' : item_id,
+        	'csrfmiddlewaretoken': csrftoken,
+        },
+
+        success : function(data) {
+			show_item(data, item_id);
         },
     });
 }

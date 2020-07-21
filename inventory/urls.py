@@ -6,4 +6,5 @@ app_name = 'inventory'
 urlpatterns = [
     path('', MyInventoryView.as_view(), name='index'),
     path('get_item/', GetItemView.as_view(), name='index'),
+    path('increase_item_level/', IncreaseCardLevelView.as_view(), name='index'),
 ]
