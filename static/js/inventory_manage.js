@@ -17,7 +17,13 @@ function showitem(item_id, type) {
 
 function show_item(data, item_id) {
         if (data["response"] == "ok") {
-			    console.log("Response is ok");
+                window.currentItem = {
+                  name: data['item_name'],
+                  level: data['item_level'],
+                  maxlevel: data['item_maxlevel'],
+                  collected_cards: data["item_collected_cards"],
+                  points_per_level: data['points_per_level']
+                };
 			    var header_html = "<h5 class='card-title'>"+data["item_name"]+"</h5>";
 			    var description_html = "<p class='card-text'>"+data["item_description"]+"</p>";
 			    var content = header_html+description_html;
@@ -30,6 +36,7 @@ function show_item(data, item_id) {
                 var add_info_maxlevel = data["item_maxlevel"];
                 var collected_cards = data["item_collected_cards"];
                 var points_per_level = data['points_per_level'];
+                var add_info_upgrades_info = '<li class="list-group-item text-center"><div onclick="levels_info_item('+item_id+');" class="btn btn-success">Характеристики</div></li>';
                 if (add_info_level != add_info_maxlevel) {
                     var add_info_progress = `<li class="list-group-item text-center"><div class="text-center mb-3"><b>Прогресс:</b> `+collected_cards+`/`+((add_info_level+1)*points_per_level)+`</div>
                         <div class="row">
@@ -55,9 +62,9 @@ function show_item(data, item_id) {
                 }
                 if ((collected_cards >= (add_info_level+1)*points_per_level) && add_info_level < add_info_maxlevel) {
                     var add_info_upgrade_level_button = '<li class="list-group-item text-center"><div onclick="upgrade_item('+item_id+');" class="btn btn-primary">Повысить уровень</div></li>';
-                    var content = main_section+add_info_start+add_info_rarity+add_info_progress+add_info_upgrade_level_button+add_info_end;
+                    var content = main_section+add_info_start+add_info_rarity+add_info_progress+add_info_upgrade_level_button+add_info_upgrades_info+add_info_end;
                 } else {
-                    var content = main_section+add_info_start+add_info_rarity+add_info_progress+add_info_end;
+                    var content = main_section+add_info_start+add_info_rarity+add_info_progress+add_info_upgrades_info+add_info_end;
                 }
                 $("#item-card").html(content);
 		}
@@ -77,4 +84,17 @@ function upgrade_item(item_id) {
 			show_item(data, item_id);
         },
     });
+}
+
+function levels_info_item(item_id) {
+    console.log(item_id);
+    $('#level-info-modal-title').text(window.currentItem.name+" - Характеристики");
+    $('#level-info-modal-progress').width((window.currentItem.collected_cards/((window.currentItem.level+1)*window.currentItem.points_per_level)*100)+"%");
+    $('#level-info-modal-level').text(window.currentItem.level);
+    if (window.currentItem.level == window.currentItem.maxlevel) {
+        $('#level-info-modal-nextlevel').text('MAX');
+    } else {
+        $('#level-info-modal-nextlevel').text(window.currentItem.level+1);
+    }
+    $('#level-info-modal').modal();
 }
