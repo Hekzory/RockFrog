@@ -13,7 +13,7 @@ from asgiref.sync import async_to_sync
 class Notification(models.Model):
     not_text = models.TextField()
     not_name = models.CharField(max_length=100)
-    not_date = models.DateTimeField('date published', default=datetime.now())
+    not_date = models.DateTimeField('date published', default=datetime.now)
     not_link = models.CharField(max_length=200)
     not_checked = models.BooleanField(default=True)
     def __str__(self):

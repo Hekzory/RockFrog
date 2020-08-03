@@ -41,6 +41,7 @@ INSTALLED_APPS = [
 	'UserProfile',
 	'mainapp',
 	'news',
+    'news_feed',
 	'authpages',
     'communities',
     'notifications',

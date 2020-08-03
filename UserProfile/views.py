@@ -4,6 +4,7 @@ from django.template import loader
 from django.contrib.auth.models import User
 from django.views.generic import View
 from .forms import *
+from news_feed.models import *
 # Create your views here.
 
 
@@ -239,3 +240,40 @@ class UnblockUserView(View):
             if blacklist.filter(pk=blocked_user.pk).exists():
                 blacklist.remove(blocked_user)
             return JsonResponse({'status': 'ok'})
+
+
+def update_rating_lite(request):
+    user = request.user
+    user.profile.rating = 0
+
+    for article in user.personal_articles.all():
+        user.profile.rating += article.rating
+
+    for article in user.personal_in_community_articles.all():
+        user.profile.rating += article.rating
+
+    for comment in user.comments.all():
+        user.profile.rating += comment.rating / 2
+
+    user.profile.save()
+    return HttpResponseRedirect('/profile/')
+
+
+def update_rating(request):
+    user = request.user
+    user.profile.rating = 0
+
+    for article in user.personal_articles.all():
+        article.update_rating()
+        user.profile.rating += article.rating
+
+    for article in user.personal_in_community_articles.all():
+        article.update_rating()
+        user.profile.rating += article.rating
+
+    for comment in user.comments.all():
+        comment.update_rating()
+        user.profile.rating += comment.rating / 2
+
+    user.profile.save()
+    return HttpResponseRedirect('/profile/')

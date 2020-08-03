@@ -88,6 +88,13 @@
                  <a id="blacklist_button" onclick="block_user({{user.id}})" class="list-group-item list-group-item-action">Добавить в чёрный список</a>
             {% endif %}
           </div>
+          <br>
+          <div class="list-group">
+            <div class="list-group-item list-group-item-action" style="display: flex; justify-content: space-between;">
+              <div>Рейтинг</div>
+              <div>{{ user.profile.rating }}</div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

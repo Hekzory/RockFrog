@@ -8,6 +8,7 @@ from django.dispatch import receiver
 from django.utils.html import strip_tags
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
+import os
 
 
 class Group(models.Model):
@@ -24,8 +25,13 @@ class Group(models.Model):
 	subrequests = models.ManyToManyField(User, blank=True, related_name='groups_requests')
 	banned = models.ManyToManyField(User, blank=True, related_name='groups_banned')
 
+	rating = models.FloatField(null=True, blank=True, default=0)
+
 	def __str__(self):
 		return self.groupname
+
+	def has_power(self, user):
+		return user in self.editors.all() or user == self.admin
 
 	def can_see_group(self, user):
 		if user in self.banned.all():
@@ -100,6 +106,10 @@ class ArticleFile(models.Model):
 
 	def __str__(self):
 		return self.name
+
+	def extension(self):
+		name, extension = os.path.splitext(self.file.name)
+		return extension[1:]
 
 class GroupFile(models.Model):
 	name = models.CharField(max_length=40)

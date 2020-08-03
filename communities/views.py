@@ -4,6 +4,7 @@ from django.db.models import F
 # from django.template import loader
 from django.views.generic import View
 from communities.models import *
+from news_feed.models import *
 from notifications import models as notifications
 # from .forms import GroupEditForm
 from django.contrib.auth.models import User
@@ -14,6 +15,7 @@ from datetime import datetime
 import re
 import os.path
 import json
+from itertools import chain
 
 def home(request):
     groups = Group.objects.annotate(members=models.Count('subscribers') + models.Count('editors')).order_by('-members')
@@ -30,17 +32,23 @@ def community(request, groupslug):
 			}
 			return render(request, 'communities/closedgroup.html', context)
 
-		articles = group.articles.filter(allowed=True).order_by('-pubdate')
-		articles_count = articles.count()
-		requestarticles = group.articles.filter(allowed=False).order_by('-pubdate')
-		if request.user.is_authenticated and group.articles.filter(allowed=False, author=request.user):
-			author_request_articles = group.articles.filter(allowed=False, author=request.user).order_by('-pubdate')
+		personal_in_community_articles = PersonalInCommunityArticle.objects.filter(allowed=True)
+		community_articles = CommunityArticle.objects.filter(allowed=True)
+		articles = sorted(chain(personal_in_community_articles, community_articles), key=lambda instance: instance.pubdate, reverse=True)
+
+		personal_in_community_request_articles = PersonalInCommunityArticle.objects.filter(allowed=False)
+		community_request_articles = CommunityArticle.objects.filter(allowed=False)
+		request_articles = sorted(chain(personal_in_community_request_articles, community_request_articles), key=lambda instance: instance.pubdate)
+
+		articles_count = len(articles)
+		if request.user.is_authenticated and group.personal_in_community_articles.filter(allowed=False, author=request.user):
+			author_request_articles = group.personal_in_community_articles.filter(allowed=False, author=request.user).order_by('-pubdate')
 		else:
 			author_request_articles = []
 		context = {
 			'group': group,
 			'articles': articles,
-			'requestarticles': requestarticles,
+			'request_articles': request_articles,
 			'articles_count': articles_count,
 			'author_request_articles': author_request_articles
 		}
@@ -132,6 +140,31 @@ def removelike(request, groupid, articleid):
 		'''
 	return HttpResponse()
 
+def createarticle(request, groupid):
+	group = Group.objects.get(id=groupid)
+	if request.user in group.editors.all() or request.user == group.admin or group.allowarticles == 1 or group.allowarticles == 2:
+		if request.POST.get("text", ''):
+			if request.POST.get("personal"):
+				new_article = PersonalInCommunityArticle(group=group, author=request.user, text=request.POST.get("text"))	
+			else:
+				new_article = CommunityArticle(group=group, text=request.POST.get("text"))	
+
+			if group.allowarticles == 2 and not (request.user in group.editors.all() or request.user == group.admin):	
+				new_article.allowed = False	
+			new_article.save()
+
+			for file in request.FILES.getlist('files'):
+				if file.content_type in ['image/png', 'image/jpeg', 'application/pdf', 'text/plain', 'application/msword'] and file.size <= 5000000:					
+					new_file = BasicArticleFile(name=file.name, file=file)
+					new_file.save()
+					new_article.files.files.add(new_file)
+					new_article.files.save()
+
+			request.user.profile.last_online_update()
+	slug = group.slug
+	return HttpResponseRedirect('/groups/' + str(slug) + '/')
+
+'''
 class CreateArticle(View):
 	def get(self, request, groupid):
 		group = Group.objects.get(id=groupid)
@@ -158,6 +191,7 @@ class CreateArticle(View):
 				request.user.profile.last_online_update()
 		slug = group.slug
 		return HttpResponseRedirect('/groups/' + str(slug) + '/')
+'''
 
 class AddToCollection(View):
 	def get(self, request, groupid):
@@ -209,18 +243,26 @@ class EditArticle(View):
 			request.user.profile.last_online_update()
 
 		return HttpResponseRedirect('/groups/' + str(slug) + '/')
-
+'''
 class DeleteArticle(View):
 	def get(self, request, groupid, articleid):
 		group = Group.objects.get(id=groupid)
 		if request.user in group.editors.all() or request.user == group.admin:
-			article = GroupArticle.objects.get(id=articleid)
 
-			if request.user != article.author and not article.author is None:
-				if article.author.profile.notificationsettings.post_published_notifications:
+			if PersonalArticle.objects.filter(id=articleid).exists():
+				article = PersonalArticle.objects.get(id=articleid)
+				if request.user != article.author and article.author.profile.notificationsettings.post_published_notifications:
+					notifications.create_notification_post_published(group, article.author, 'post_deleted')		
+				article.delete()
+			elif PersonalInCommunityArticle.objects.filter(id=articleid).exists():
+				article = PersonalInCommunityArticle.objects.get(id=articleid)
+				if request.user != article.author and article.author.profile.notificationsettings.post_published_notifications:
 					notifications.create_notification_post_published(group, article.author, 'post_deleted')
+				article.delete()
+			elif CommunityArticle.objects.filter(id=articleid).exists():
+				article = CommunityArticle.objects.get(id=articleid)
+				article.delete()			
 
-			article.delete()
 			request.user.profile.last_online_update()
 
 		slug = group.slug
@@ -229,6 +271,7 @@ class DeleteArticle(View):
 	def post(self, request, groupid, articleid):	
 		slug = group.slug
 		return HttpResponseRedirect('/groups/' + str(slug) + '/')
+'''
 
 def creategroup(request):
 	if request.user.is_authenticated:
@@ -241,7 +284,7 @@ def creategroup(request):
 		return HttpResponse(group.slug)
 	else:
 		return HttpResponse(-1)
-
+'''
 def createcomment(request, groupid, articleid):
 	if request.user.is_authenticated:
 		group = Group.objects.get(id=groupid)
@@ -319,6 +362,7 @@ def editcomment(request, commentid):
 			request.user.profile.last_online_update()
 			return HttpResponse('Ok')
 	return HttpResponse('Error')	
+'''
 
 def edit(request, groupid):
 	group = Group.objects.get(id=groupid)
@@ -326,24 +370,24 @@ def edit(request, groupid):
 		request.user.profile.last_online_update()
 		if request.user in group.editors.all() or request.user == group.admin:
 			if request.POST.get('type') == 'allowarticle':
-				article = GroupArticle.objects.get(id=request.POST.get('data'))
-				article.allowed = True
-				article.pubdate = datetime.now()
-				article.save()
+				article = BasicArticle.objects.get(id=request.POST.get('data')).get_child()
+				if article.__class__.__name__ != "PersonalArticle" and article.group == group:
+					article.allowed = True
+					article.save()
 
-				if not article.author is None:
-					if article.author.profile.notificationsettings.post_published_notifications:
-						notifications.create_notification_post_published(group, article.author, 'post_accepted')
+					if article.__class__.__name__ == "PersonalInCommunityArticle":
+						if article.author.profile.notificationsettings.post_published_notifications:
+							notifications.create_notification_post_published(group, article.author, 'post_accepted')
 
 				return HttpResponse('Ok')
 			elif request.POST.get('type') == 'deletearticle':
-				article = GroupArticle.objects.get(id=request.POST.get('data'))
-
-				if not article.author is None:
-					if article.author.profile.notificationsettings.post_published_notifications:
-						notifications.create_notification_post_published(group, article.author, 'post_rejected')
-
-				article.delete()
+				article = BasicArticle.objects.get(id=request.POST.get('data')).get_child()
+				if article.__class__.__name__ != "PersonalArticle" and article.group == group:
+					if article.__class__.__name__ == "PersonalInCommunityArticle":
+						if article.author.profile.notificationsettings.post_published_notifications:
+							notifications.create_notification_post_published(group, article.author, 'post_accepted')
+					article.delete()
+					
 				return HttpResponse('Ok')
 			elif request.POST.get('type') == 'getpost':
 				article = GroupArticle.objects.get(id=request.POST.get('data'))
@@ -374,10 +418,28 @@ def edit(request, groupid):
 					pass
 
 				return HttpResponse('Ok')
+
 		if request.POST.get('type') == 'delete_request_article':
 			article = GroupArticle.objects.get(id=request.POST.get('data'))
 			article.delete()
 			return HttpResponse('Ok')
+		elif request.POST.get('type') == 'plus' or request.POST.get('type') == 'plusplus':			
+			basic_article = BasicArticle.objects.get(id=request.POST.get('articleid'))
+			if basic_article:
+				basic_article.plus(request.user)
+		elif request.POST.get('type') == 'remove_plus':
+			basic_article = BasicArticle.objects.get(id=request.POST.get('articleid'))
+			if basic_article:
+				basic_article.remove_plus(request.user)
+		elif request.POST.get('type') == 'minus' or request.POST.get('type') == 'minusminus':
+			basic_article = BasicArticle.objects.get(id=request.POST.get('articleid'))
+			if basic_article:
+				basic_article.minus(request.user)
+		elif request.POST.get('type') == 'remove_minus':
+			basic_article = BasicArticle.objects.get(id=request.POST.get('articleid'))
+			if basic_article:
+				basic_article.remove_minus(request.user)
+
 	if request.POST.get('type') == 'delete_from_collection' and not os.path.isfile(request.POST.get('file')):		
 		# print(request.POST.get('file'))	
 		try:

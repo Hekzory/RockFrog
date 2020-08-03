@@ -86,6 +86,14 @@
             <a href="{% url 'UserProfile:edit_privacy' %}" class="list-group-item list-group-item-action">Приватность</a>
             <a href="{% url 'UserProfile:blockedusers' %}" class="list-group-item list-group-item-action">Чёрный список</a>
           </div>
+          <br>
+          <div class="list-group">
+            <div class="list-group-item list-group-item-action" style="display: flex; justify-content: space-between;">
+              <div>Рейтинг</div>
+              <div>{{ request.user.profile.rating }}</div>
+            </div>
+            <a href="{% url 'UserProfile:update_rating' %}" class="list-group-item list-group-item-action">Обновить рейтинг</a>
+          </div>
         </div>
       </div>
 

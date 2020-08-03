@@ -1,0 +1,14 @@
+<div id="fileviewer" style="display: none; text-align: center; width: calc(100% - 80px); position: fixed; top: 10%; height: 80%; left: 50%; margin-left: calc(-50% + 40px); z-index: 1021">
+  <a id="fileviewerlink" href="" download=""></a>
+  <div class="inline-wrapper" style="height: calc(100% - 47px);">
+    <i id="fileviewer_left" class="material-icons icon-fileviewer" onclick="swipefile('left')">keyboard_arrow_left</i>        
+    <img class="vert-img" id="fileviewerimage" style="margin: auto;" src="" alt="">
+    <i id="fileviewer_right" class="material-icons icon-fileviewer" onclick="swipefile('right')">keyboard_arrow_right</i>
+  </div>
+  <div class="plate" style="width: 300px; margin: auto; margin-top: 5px;">
+    <div class="inline-wrapper">
+      <div id="postfilebutton" class="button3 green" style="width: calc(50% - 5px); text-align: center;" onclick="document.getElementById('fileviewerlink').click()">Скачать</div>   
+      <div id="postfilebutton" class="button3 red" style="width: calc(50% - 5px); text-align: center;" onclick="showfile()">Закрыть</div> 
+    </div>
+  </div>
+</div>
