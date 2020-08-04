@@ -17,3 +17,11 @@ class InventoryCardAdmin(admin.ModelAdmin):
 
 
 admin.site.register(CardItem, InventoryCardAdmin)
+
+# Register your models here.
+class AvatarInventoryCardAdmin(admin.ModelAdmin):
+    fields = ['inventory', 'name', 'description', 'rarity', 'level', 'maxlevel', 'collected_cards',
+              'increase_points_per_level_amount']
+
+
+admin.site.register(AvatarCardItem, AvatarInventoryCardAdmin)

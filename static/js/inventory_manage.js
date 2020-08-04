@@ -22,7 +22,8 @@ function show_item(data, item_id) {
                   level: data['item_level'],
                   maxlevel: data['item_maxlevel'],
                   collected_cards: data["item_collected_cards"],
-                  points_per_level: data['points_per_level']
+                  points_per_level: data['points_per_level'],
+                  next_level_desc: data['next_level_description']
                 };
 			    var header_html = "<h5 class='card-title'>"+data["item_name"]+"</h5>";
 			    var description_html = "<p class='card-text'>"+data["item_description"]+"</p>";
@@ -96,5 +97,6 @@ function levels_info_item(item_id) {
     } else {
         $('#level-info-modal-nextlevel').text(window.currentItem.level+1);
     }
+    $('#level-info-modal-next-upgrade').text(window.currentItem.next_level_desc);
     $('#level-info-modal').modal();
 }
