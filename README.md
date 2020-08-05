@@ -18,6 +18,7 @@
 Зависимости(pip3):
 
 django
+django-model-utils
 channels
 channels-redis
 pillow
