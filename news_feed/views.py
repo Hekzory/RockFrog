@@ -6,6 +6,8 @@ from django.db.models import Q
 from datetime import timedelta
 import json
 import datetime
+# from django.utils.datastructures import MultiValueDictKeyError
+# from model_utils.managers import InheritanceManager
 
 global news_feed_url
 news_feed_url = '/'
@@ -239,11 +241,11 @@ def manage_articles(request):
 
 	elif request.POST.get('action') == 'edit_article': 
 		articleid = request.POST.get('articleid')
-
+		
 		if not BasicArticle.objects.filter(id=articleid).exists():
 			return HttpResponse('Error')
 		else:
-			article = BasicArticle.objects.get(id=articleid).get_child()
+			article = BasicArticle.objects.get_subclass(id=articleid)
 
 		if not article.can_edit_article(request.user):
 			return False
@@ -272,7 +274,18 @@ def manage_articles(request):
 
 	elif request.POST.get('action') == 'delete_article': 
 		articleid = request.POST.get('articleid')
+		article = BasicArticle.objects.get_subclass(id=articleid)
 
+		if article.class_name() == 'PersonalArticle' and request.user == article.author:
+			article.delete()
+		elif article.class_name() == 'PersonalInCommunityArticle' and article.group.has_power(request.user):
+			if request.user != article.author and article.author.profile.notificationsettings.post_published_notifications:
+				notifications.create_notification_post_published(article.group, article.author, 'post_deleted')
+			article.delete()
+		elif article.class_name() == 'CommunityArticle' and article.group.has_power(request.user):
+			article.delete()
+
+		'''
 		if PersonalArticle.objects.filter(id=articleid).exists():
 			article = PersonalArticle.objects.get(id=articleid)
 			if request.user == article.author:	
@@ -289,7 +302,7 @@ def manage_articles(request):
 			group = article.group
 			if group.has_power(request.user):
 				article.delete()			
-
+		'''
 		return HttpResponse('Ok')
 
 

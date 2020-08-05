@@ -6,6 +6,8 @@ from communities.models import *
 from django.db.models import Q
 import os
 from django.db.models.signals import post_delete
+from model_utils.managers import InheritanceManager
+
 
 def get_total_hours(date):
 	return int(date.timestamp()) // (3600)
@@ -115,6 +117,11 @@ class BasicArticle(models.Model):
 
 	rating = models.FloatField(null=True, blank=True, default=0)
 
+	objects = InheritanceManager()
+
+	def class_name(self):
+		return self.__class__.__name__
+
 	def can_plus_article(self, user):
 		if self.__class__.__name__ != 'CommunityArticle':
 			return user.is_authenticated and self.can_see_article(user) and self.author != user
@@ -171,22 +178,26 @@ class BasicArticle(models.Model):
 		return self.allow_comments and self.can_see_article(user)
 
 	def get_child(self):
+		'''
 		if PersonalArticle.objects.filter(id=self.id).exists():
 			return PersonalArticle.objects.get(id=self.id)
 		if CommunityArticle.objects.filter(id=self.id).exists():
 			return CommunityArticle.objects.get(id=self.id)
 		if PersonalInCommunityArticle.objects.filter(id=self.id).exists():
 			return PersonalInCommunityArticle.objects.get(id=self.id)
-		return None
+		'''
+		return BasicArticle.objects.get_subclass(id=self.id)
 
 	def get_child_type(self):
+		'''
 		if PersonalArticle.objects.filter(id=self.id).exists():
 			return 'PersonalArticle'
 		if CommunityArticle.objects.filter(id=self.id).exists():
 			return 'CommunityArticle'
 		if PersonalInCommunityArticle.objects.filter(id=self.id).exists():
 			return 'PersonalInCommunityArticle'
-		return None
+		'''
+		return BasicArticle.objects.get_subclass(id=self.id).class_name()
 
 	def plus(self, user):
 		if user not in self.pluses.all():
