@@ -27,3 +27,7 @@ def can_comment(article, user):
 def update_counter(value):
     counter = value + 1
     return counter
+
+@register.filter
+def class_name(value):
+    return value.__class__.__name__

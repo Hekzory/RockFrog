@@ -12,6 +12,7 @@ html {
 	outline: none;
 	list-style-type: none;	
 	height: auto;
+	word-wrap: break-word;
 }
 
 a {

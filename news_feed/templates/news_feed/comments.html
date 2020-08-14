@@ -39,7 +39,7 @@
                 <div class="inline-wrapper">
                   <div id="comment{{ comment.id }}text" class="text2" style="width: calc(100% - 100px); word-wrap:break-word;">{{ comment.text }}</div>
                   <div style="display: flex; text-align: center; margin-top: 10px; margin-bottom: -10px;">
-                    <div style="display: flex; margin: auto;">
+                    <div style="display: flex; height: 30px;">
                       <div class="text3" id="plus_c{{comment.id}}" style="margin-top: -4px; margin-right: 6px;">{{ comment.pluses.count }}</div>
                       {% if request.user.is_authenticated %}
                         {% can_plus_comment comment request.user as can_plus_val %}
@@ -97,7 +97,7 @@
                   <div class="inline-wrapper">
                     <div id="comment{{ childcomment.id }}text" class="text2" style="width: calc(100% - 100px); word-wrap: break-word;">{{ childcomment.text }}</div>
                     <div style="display: flex; text-align: center; margin-top: 10px; margin-bottom: -10px;">
-                      <div style="display: flex; margin: auto;">
+                      <div style="display: flex; height: 30px;">
                         <div class="text3" id="plus_c{{childcomment.id}}" style="margin-top: -4px; margin-right: 6px;">{{ childcomment.pluses.count }}</div>
                         {% if request.user.is_authenticated %}
                           {% can_plus_comment childcomment request.user as can_plus_val %}

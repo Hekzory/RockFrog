@@ -71,51 +71,32 @@ def generate_popular_articles(user):
 
 def generate_new_articles(user):
 	if not user.is_authenticated or user.profile.newsfeedsettings.showviewed:
-		personal_articles = PersonalArticle.objects.all()
-		personal_in_community_articles = PersonalInCommunityArticle.objects.filter(allowed=True)
-		community_articles = CommunityArticle.objects.filter(allowed=True)
+		articles = BasicArticle.objects.filter(allowed=True).order_by('-pubdate').select_subclasses()
 	else:
-		personal_articles = PersonalArticle.objects.filter(~Q(views__in=[user]))
-		personal_in_community_articles = PersonalInCommunityArticle.objects.filter(Q(allowed=True) & ~Q(views__in=[user]))
-		community_articles = CommunityArticle.objects.filter(Q(allowed=True) & ~Q(views__in=[user]))
-
-	articles = sorted(chain(personal_in_community_articles, community_articles, personal_articles), key=lambda instance: instance.pubdate, reverse=True)
+		articles = BasicArticle.objects.filter(Q(allowed=True) & ~Q(views__in=[user])).order_by('-pubdate').select_subclasses()
 	return articles
 
 def generate_plused_articles(user):
-	personal_articles = PersonalArticle.objects.filter(pluses__in=[user])
-	personal_in_community_articles = PersonalInCommunityArticle.objects.filter(allowed=True, pluses__in=[user])
-	community_articles = CommunityArticle.objects.filter(allowed=True, pluses__in=[user])
-
-	articles = sorted(chain(personal_in_community_articles, community_articles, personal_articles), key=lambda instance: instance.pubdate, reverse=True)
-	return articles
+	return BasicArticle.objects.filter(Q(allowed=True) & ~Q(pluses__in=[user])).order_by('-pubdate').select_subclasses()
 
 def generate_minused_articles(user):
-	personal_articles = PersonalArticle.objects.filter(minuses__in=[user])
-	personal_in_community_articles = PersonalInCommunityArticle.objects.filter(allowed=True, minuses__in=[user])
-	community_articles = CommunityArticle.objects.filter(allowed=True, minuses__in=[user])
-
-	articles = sorted(chain(personal_in_community_articles, community_articles, personal_articles), key=lambda instance: instance.pubdate, reverse=True)
-	return articles
+	return BasicArticle.objects.filter(Q(allowed=True) & ~Q(minuses__in=[user])).order_by('-pubdate').select_subclasses()
 
 def generate_viewed_articles(user):
-	personal_articles = PersonalArticle.objects.filter(views__in=[user])
-	personal_in_community_articles = PersonalInCommunityArticle.objects.filter(allowed=True, views__in=[user])
-	community_articles = CommunityArticle.objects.filter(allowed=True, views__in=[user])
-
-	articles = sorted(chain(personal_in_community_articles, community_articles, personal_articles), key=lambda instance: instance.pubdate, reverse=True)
-	return articles
+	return BasicArticle.objects.filter(Q(allowed=True) & ~Q(views__in=[user])).order_by('-pubdate').select_subclasses()
 
 def generate_self_articles(user):
-	personal_articles = PersonalArticle.objects.filter(author=user)
-	personal_in_community_articles = PersonalInCommunityArticle.objects.filter(author=user, allowed=True)
-
-	articles = sorted(chain(personal_articles, personal_in_community_articles), key=lambda instance: instance.pubdate, reverse=True)
-	return articles
+	return BasicArticle.objects.filter(author=user).select_subclasses()
 
 def view_article(request, articleid):
-	context = {'articles': articles}
-	return render(request, 'news_feed/article.html', context)	
+	if BasicArticle.objects.filter(id=articleid).exists():
+		article = BasicArticle.objects.get(id=articleid).get_child()
+		context = {
+			'post': article,
+		}
+		return render(request, 'news_feed/article.html', context)
+	else:
+		return render(request, 'news_feed/article_404.html')
 
 def manage_settings(request):
 	if not request.user.is_authenticated:
@@ -154,11 +135,11 @@ def manage_articles(request):
 	elif request.POST.get('action') == 'plus_minus':
 		if BasicArticle.objects.filter(id=request.POST.get('articleid')):
 			article = BasicArticle.objects.get(id=request.POST.get('articleid')).get_child()
-			if article.__class__.__name__ != 'PersonalArticle' and not article.group.can_see_group(request.user):
+			if not article.can_plus_or_comment(request.user):
 				return HttpResponse('Error')
 		else:
 			return HttpResponse('Error')
-
+		'''
 		if article.can_plus_article(request.user):
 			if request.POST.get('type') == 'plus' or request.POST.get('type') == 'plusplus':			
 				basic_article = BasicArticle.objects.get(id=request.POST.get('articleid'))
@@ -176,6 +157,17 @@ def manage_articles(request):
 				basic_article = BasicArticle.objects.get(id=request.POST.get('articleid'))
 				if basic_article:
 					basic_article.remove_minus(request.user)
+		'''
+
+		if article.can_plus_article(request.user):
+			if request.POST.get('type') == 'plus' or request.POST.get('type') == 'plusplus':			
+				article.plus(request.user)
+			elif request.POST.get('type') == 'remove_plus':
+				article.remove_plus(request.user)
+			elif request.POST.get('type') == 'minus' or request.POST.get('type') == 'minusminus':
+				article.minus(request.user)
+			elif request.POST.get('type') == 'remove_minus':
+				article.remove_minus(request.user)
 
 		return HttpResponse('Ok')
 
@@ -276,6 +268,10 @@ def manage_articles(request):
 		articleid = request.POST.get('articleid')
 		article = BasicArticle.objects.get_subclass(id=articleid)
 
+		if article.has_rights(request.user):
+			article.delete()
+
+		'''
 		if article.class_name() == 'PersonalArticle' and request.user == article.author:
 			article.delete()
 		elif article.class_name() == 'PersonalInCommunityArticle' and article.group.has_power(request.user):
@@ -283,25 +279,7 @@ def manage_articles(request):
 				notifications.create_notification_post_published(article.group, article.author, 'post_deleted')
 			article.delete()
 		elif article.class_name() == 'CommunityArticle' and article.group.has_power(request.user):
-			article.delete()
-
-		'''
-		if PersonalArticle.objects.filter(id=articleid).exists():
-			article = PersonalArticle.objects.get(id=articleid)
-			if request.user == article.author:	
-				article.delete()
-		elif PersonalInCommunityArticle.objects.filter(id=articleid).exists():
-			article = PersonalInCommunityArticle.objects.get(id=articleid)
-			group = article.group
-			if group.has_power(request.user):
-				if request.user != article.author and article.author.profile.notificationsettings.post_published_notifications:
-					notifications.create_notification_post_published(group, article.author, 'post_deleted')
-				article.delete()
-		elif CommunityArticle.objects.filter(id=articleid).exists():
-			article = CommunityArticle.objects.get(id=articleid)
-			group = article.group
-			if group.has_power(request.user):
-				article.delete()			
+			article.delete()		
 		'''
 		return HttpResponse('Ok')
 

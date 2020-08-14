@@ -19,7 +19,7 @@ class ArticleFilesListAdmin(admin.ModelAdmin):
     readonly_fields = ['id']
 
 class BasicArticlesAdmin(admin.ModelAdmin):
-    fields = ['id', 'text', 'pubdate', 'pluses', 'minuses', 'comments', 'files']
+    fields = ['id', 'author', 'text', 'pubdate', 'pluses', 'minuses', 'comments', 'files']
     readonly_fields = ['id']
 
 class PersonalArticlesAdmin(admin.ModelAdmin):

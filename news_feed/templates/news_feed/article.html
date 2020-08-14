@@ -1,0 +1,214 @@
+{% extends "base_general.html" %}
+
+{% load static %}
+{% load templatetags %}
+
+{% block links %}
+  <link rel="stylesheet" href="{% static 'communities/css/style.css' %}"/>
+  <script src="{% static 'js/create_article_form_functions.js' %}"></script>
+  <script src="{% static 'js/comments_functions.js' %}"></script>
+  <script src="{% static 'js/common_functions.js' %}"></script>
+  <script src="{% static 'communities/js/functions.js' %}"></script>
+  <meta charset="utf-8"/>
+{% endblock %}
+
+{% block header %}
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top" >
+  <div class="container">
+    <a class="navbar-brand">UndefinedCMS</a>
+    <button class="navbar-toggler" data-target="#my-nav" data-toggle="collapse">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div id="my-nav" class="collapse navbar-collapse justify-content-start">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link" href="/">Главная</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/news/">Новости</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/chat/">Чат</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/notifications/">Уведомления</a>
+        </li>    
+      </ul>
+    </div>
+    <div id="my-nav" class="collapse navbar-collapse justify-content-end">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          {% if request.user.is_authenticated %}
+          <a class="nav-link" href="/profile">Ваш профиль</a>
+          {% else %}
+          <a class="nav-link" href="/auth/login">Авторизация</a>
+          {% endif %}
+        </li>
+        {% if not request.user.is_authenticated %}
+        <li class="nav-item">
+          <a class="nav-link" href="/auth/register">Регистрация</a>
+        </li>
+        {% endif %}
+        {% if request.user.is_authenticated %}
+          {% if request.user.username == 'admin' %}
+            <li class="nav-item">
+              <a class="nav-link" href="/admin">Админ-панель</a>
+            </li>
+          {% endif %}
+        {% endif %}
+        {% if request.user.is_authenticated %}
+          <li class="nav-item">
+            <a class="nav-link" href="/auth/logout">Выйти</a>
+          </li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</nav>
+{% endblock %}
+
+{% block title %}{% if post.title %}{{ post.title }}{% else %}Запись{% endif %}{% endblock %}
+{% block hr_active %}{% endblock %}
+{% block title_h1 %}{% endblock %}
+
+{% block content %}
+  {% csrf_token %}
+  <div class="inline-wrapper">
+    <h1>{% if post.title %}{{ post.title }}{% else %}Запись{% endif %}</h1>
+    <a class="button1" href="/">На главную</a>
+  </div>
+  <br>
+
+  <div class="inline-wrapper">
+    <div style="width: calc(75% - 5px);">
+      <div class="plate">
+        <div class="inline-wrapper" style="height: 40px;">
+          <div class="inline-wrapper">
+            {% if post|class_name == 'PersonalInCommunityArticle' %}
+              <img class="small-img" src="/media/{{ post.author.profile.avatar }}" alt="" onError="this.remove()">   
+              <div style="margin-top: -5px"> 
+                <div style="display: flex; height: 40px;">           
+                  <div class="text2"><a class="link1" href="{% url 'UserProfile:userprofile' post.author %}">{{ post.author }}</a></div>
+                  {% if post.author.profile.verified %}
+                    <i class="material-icons icon3" title="Подтвержденный пользователь" style="margin-left: 5px;">done</i>
+                  {% endif %}                        
+                </div>
+                <div class="text3" style="margin-top: -15px;">в сообществе <a class="link1" href="{% url 'communities:community' post.group.slug %}">{{ post.group.groupname }}</a></div>
+              </div>  
+            {% elif post|class_name == 'PersonalArticle' %}
+              <img class="small-img" src="/media/{{ post.author.profile.avatar }}" alt="" onError="this.remove()">   
+              <div style="margin-top: -5px">            
+                <div style="display: flex; height: 40px;">           
+                  <div class="text2"><a class="link1" href="{% url 'UserProfile:userprofile' post.author %}">{{ post.author }}</a></div>
+                  {% if post.author.profile.verified %}
+                    <i class="material-icons icon3" title="Подтвержденный пользователь" style="margin-left: 10px;">done</i>
+                  {% endif %}                        
+                </div>
+                <div class="text3" style="margin-top: -15px;">автор</div> 
+              </div>                                
+            {% else %}
+              <img class="small-img" src="{{ post.group.image.url }}" alt="" onError="this.remove()"> 
+              <div style="margin-top: -5px"> 
+                <div style="display: flex; height: 40px;">                      
+                  <div class="text2"><a class="link1" href="{% url 'communities:community' post.group.slug %}">{{ post.group }}</a></div>
+                </div>
+                <div class="text3" style="margin-top: -15px;">сообщество</div> 
+              </div>       
+            {% endif %}
+          </div>
+          <div class="inline-wrapper" style="margin-top: 13px; margin-right: 10px;">
+            {% if post.group %}
+              {% if request.user == post.group.admin or request.user in post.group.editors.all %}
+                <i class="material-icons icon1 pointer" onclick="showedit('{{ post.id }}')" style="margin-right: 5px;">edit</i>
+                <i class="material-icons icon1 pointer" onclick="showwarning2('Удалить этот пост?', 'deletepost({{ post.id }})')">delete</i>
+              {% endif %}
+            {% else %}
+              {% if request.user == post.author %}                    
+                <i class="material-icons icon1 pointer" onclick="showedit('{{ post.id }}')" style="margin-right: 5px;">edit</i>
+                <i class="material-icons icon1 pointer" onclick="showwarning2('Удалить этот пост?', 'deletepost({{ post.id }})')">delete</i>
+              {% endif %}
+            {% endif %}
+            <div class="inline-wrapper">
+              <div id="viewscount{{ post.id }}" class="text3" style="margin-top: 0px;">{{ post.views.count }}</div>
+              {% if request.user.is_authenticated %}
+                {% if request.user in post.views.all %}
+                  <i id="visibility{{ post.id }}" class="material-icons icon1 pointer" onclick="mark_viewed('{{ post.id }}', false)" style="margin-right: 5px;" title="Просмотрено">visibility</i>
+                {% else %}
+                  <i id="visibility{{ post.id }}" class="material-icons icon1 pointer" onclick="mark_viewed('{{ post.id }}', true)" style="margin-right: 5px;" title="Не просмотрено">visibility_off</i>
+                {% endif %}
+              {% else %}
+                  <i class="material-icons icon1 pointer" style="margin-right: 5px;">visibility</i>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+        <hr>
+        <div class="text2">{{ post.text }}</div>
+        <div id="post{{ post.id }}addition1" style="flex-wrap: wrap; display: flex;">
+          {% with 1 as counter %}
+            {% for file in post.files.images %}
+              <div fileid="{{ file.id }}" style="position: relative;">
+                <div class="image-decorator" onclick="showfile('{{ file.file.url }}', '{{ file.name }}', '{{ counter }}', 'post{{ post.id }}addition1')">
+                  <i class="material-icons icon-image-decorator">remove_red_eye</i>
+                </div>
+                <img class="medium-img" src="{{ file.file.url }}" name="{{ file.name }}" onerror="this.parentElement.remove()">
+              </div>
+              {% update_counter counter as counter %}
+            {% endfor %}
+          {% endwith %}
+        </div>
+        <div id="post{{ post.id }}addition2" style="flex-wrap: wrap; display: flex;">
+          {% for file in post.files.not_images %}
+            <a href="{{ file.file.url }}" download="{{ file.name }}" fileid="{{ file.id }}">
+              <div class="button3 grey" style="text-align: center;">{{ file.name }}</div>
+            </a>
+          {% endfor %}
+        </div>
+        <a class="text3 link1" href="{% url 'news_feed:view_article' post.id %}" style="margin-bottom: -5px;">открыть в отдельной вкладке</a>
+      </div>
+      <div style="padding: 0px 10px;">
+        {% if post.allow_comments %}
+          {% include "news_feed/comments.html" %}
+        {% else %}
+          <div class="solid">
+            <div class="text2">Комментарии отключены</div>
+          </div>
+        {% endif %}
+      </div> 
+    </div>
+    <div class="solid" style="width: calc(25% - 5px); height: 110px; text-align: center;">    
+      <div style="display: flex; margin: 15px auto 15px; text-align: center; padding: 10px 10px 0px 10px; width: 70%; border-radius: 5px; border: 1px #CCC solid;">
+        <div style="display: flex; margin: auto;">
+          <div class="text2" id="plus{{post.id}}" style="margin-top: -4px; margin-right: 6px;">{{ post.pluses.count }}</div>
+          {% if request.user.is_authenticated %}
+            {% can_plus post request.user as can_plus_val %}
+            {% if not can_plus_val %}
+              <i class="material-icons icon3-1 grey-color-1" style="margin-right: 10px; margin-top: -3px;" title="Вы не можете оценивать собственный пост">thumb_up</i> 
+              <i class="material-icons icon3-1 grey-color-1" style="margin-top: 1px;" title="Вы не можете оценивать собственный пост">thumb_down</i> 
+            {% else %}
+              {% if request.user in post.pluses.all %}
+                <i class="material-icons icon3-1 pointer green-color" id="plusicon{{post.id}}" style="margin-right: 10px; margin-top: -3px;" onclick="plus_minus('{{ post.id }}', 'remove_plus')">thumb_up</i> 
+                <i class="material-icons icon3-1 pointer grey-color" id="minusicon{{post.id}}" style="margin-top: 1px;" onclick="plus_minus('{{ post.id }}', 'minusminus')">thumb_down</i> 
+              {% elif request.user in post.minuses.all %}
+                <i class="material-icons icon3-1 pointer  grey-color" id="plusicon{{post.id}}" style="margin-right: 10px; margin-top: -3px;" onclick="plus_minus('{{ post.id }}', 'plusplus')">thumb_up</i> 
+                <i class="material-icons icon3-1 pointer red-color" id="minusicon{{post.id}}" style="margin-top: 1px;" onclick="plus_minus('{{ post.id }}', 'remove_minus')">thumb_down</i> 
+              {% else %}
+                <i class="material-icons icon3-1 pointer grey-color" id="plusicon{{post.id}}" style="margin-right: 10px; margin-top: -3px;" onclick="plus_minus('{{ post.id }}', 'plus')">thumb_up</i> 
+                <i class="material-icons icon3-1 pointer grey-color" id="minusicon{{post.id}}" style="margin-top: 1px;" onclick="plus_minus('{{ post.id }}', 'minus')">thumb_down</i> 
+              {% endif %} 
+            {% endif %}
+          {% else %}
+            <i class="material-icons icon3-1 grey-color-1" style="margin-right: 10px; margin-top: -3px;">thumb_up</i> 
+            <i class="material-icons icon3-1 grey-color-1" style="margin-top: 1px;">thumb_down</i> 
+          {% endif %}
+          <div class="text2" id="minus{{post.id}}" style="margin-top: -4px; margin-left: 6px;">{{ post.minuses.count }}</div>   
+        </div>         
+      </div>            
+      <div class="text3">{{ post.pubdate }}</div>
+    </div>
+  </div>
+
+  {% include "news_feed/fileviewer.html" %}
+  {% include "news_feed/fileviewer.html" %}
+{% endblock %}

@@ -105,6 +105,8 @@ class BasicComment(models.Model):
 		return self.text
 
 class BasicArticle(models.Model):
+	allowed = models.BooleanField(default=True)
+	author = models.ForeignKey(User, on_delete=models.PROTECT, related_name='articles', null=True, blank=True)
 	title = models.TextField(max_length=40, null=True, blank=True)
 	text = models.TextField()	
 	pubdate = models.DateTimeField('date published', default=datetime.now)      
@@ -121,6 +123,12 @@ class BasicArticle(models.Model):
 
 	def class_name(self):
 		return self.__class__.__name__
+
+	def has_rights(self, user):
+		return False
+
+	def can_plus_or_comment(self, user):
+		return False
 
 	def can_plus_article(self, user):
 		if self.__class__.__name__ != 'CommunityArticle':
@@ -165,9 +173,7 @@ class BasicArticle(models.Model):
 		article.save()
 
 	def can_see_article(self, user):
-		if self.__class__.__name__ != 'PersonalArticle':
-			return self.group.can_see_group(user) and self.allowed
-		return user not in self.author.profile.blacklist.all()
+		return False
 
 	def can_edit_article(self, user):
 		if self.__class__.__name__ != 'PersonalArticle':
@@ -178,25 +184,9 @@ class BasicArticle(models.Model):
 		return self.allow_comments and self.can_see_article(user)
 
 	def get_child(self):
-		'''
-		if PersonalArticle.objects.filter(id=self.id).exists():
-			return PersonalArticle.objects.get(id=self.id)
-		if CommunityArticle.objects.filter(id=self.id).exists():
-			return CommunityArticle.objects.get(id=self.id)
-		if PersonalInCommunityArticle.objects.filter(id=self.id).exists():
-			return PersonalInCommunityArticle.objects.get(id=self.id)
-		'''
 		return BasicArticle.objects.get_subclass(id=self.id)
 
 	def get_child_type(self):
-		'''
-		if PersonalArticle.objects.filter(id=self.id).exists():
-			return 'PersonalArticle'
-		if CommunityArticle.objects.filter(id=self.id).exists():
-			return 'CommunityArticle'
-		if PersonalInCommunityArticle.objects.filter(id=self.id).exists():
-			return 'PersonalInCommunityArticle'
-		'''
 		return BasicArticle.objects.get_subclass(id=self.id).class_name()
 
 	def plus(self, user):
@@ -235,16 +225,39 @@ class BasicArticle(models.Model):
 		return self.text
 
 class PersonalArticle(BasicArticle):
-	author = models.ForeignKey(User, on_delete=models.PROTECT, related_name='personal_articles')
+	
+	def can_see_article(self, user):
+		return True
+
+	def has_rights(self, user):
+		return self.allowed and self.author == user
+
+	def can_plus_or_comment(self, user):
+		return self.allowed and user not in self.author.profile.blacklist.all()
 
 class CommunityArticle(BasicArticle):
 	group = models.ForeignKey(Group, on_delete=models.PROTECT, related_name='community_articles')
-	allowed = models.BooleanField(default=True)
+
+	def can_see_article(self, user):
+		return self.group.public	
+
+	def has_rights(self, user):
+		return self.group.has_power(user)
+
+	def can_plus_or_comment(self, user):
+		return self.allowed and self.group.can_see_group(user)
 
 class PersonalInCommunityArticle(BasicArticle):
-	author = models.ForeignKey(User, on_delete=models.PROTECT, related_name='personal_in_community_articles')
 	group = models.ForeignKey(Group, on_delete=models.PROTECT, related_name='personal_in_community_articles')
-	allowed = models.BooleanField(default=True)
+
+	def can_see_article(self, user):
+		return self.group.public	
+
+	def has_rights(self, user):
+		return self.group.has_power(user)	
+
+	def can_plus_or_comment(self, user):
+		return self.allowed and self.group.can_see_group(user)
 
 @receiver(post_save, sender=PersonalArticle)
 @receiver(post_save, sender=CommunityArticle)

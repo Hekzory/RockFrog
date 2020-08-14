@@ -129,7 +129,7 @@
         <a id="to_information" class="button0 {% if section == 'plused' %}button0-active{% endif %}" href="{% url 'news_feed:home' %}?section=plused">Плюсы {{ request.user.plused_articles.count }}</a>
         <a id="to_information" class="button0 {% if section == 'minused' %}button0-active{% endif %}" href="{% url 'news_feed:home' %}?section=minused">Минусы {{ request.user.minused_articles.count }}</a>
         <a id="to_information" class="button0 {% if section == 'viewed' %}button0-active{% endif %}" href="{% url 'news_feed:home' %}?section=viewed">Просмотрено {{ request.user.viewed_articles.count }}</a>
-        <a id="to_information" class="button0 {% if section == 'self_articles' %}button0-active{% endif %}" href="{% url 'news_feed:home' %}?section=self_articles">Ваше {{ request.user.personal_articles.count|add:request.user.personal_in_community_articles.count }}</a>
+        <a id="to_information" class="button0 {% if section == 'self_articles' %}button0-active{% endif %}" href="{% url 'news_feed:home' %}?section=self_articles">Ваше {{ request.user.articles.count }}</a>
       {% endif %}
     </div>
     
@@ -150,7 +150,7 @@
             <div class="plate">
               <div class="inline-wrapper" style="height: 40px;">
                 <div class="inline-wrapper">
-                  {% if post.author and post.group %}
+                  {% if post|class_name == 'PersonalInCommunityArticle' %}
                     <img class="small-img" src="/media/{{ post.author.profile.avatar }}" alt="" onError="this.remove()">   
                     <div style="margin-top: -5px"> 
                       <div style="display: flex; height: 40px;">           
@@ -161,7 +161,7 @@
                       </div>
                       <div class="text3" style="margin-top: -15px;">в сообществе <a class="link1" href="{% url 'communities:community' post.group.slug %}">{{ post.group.groupname }}</a></div>
                     </div>  
-                  {% elif post.author %}
+                  {% elif post|class_name == 'PersonalArticle' %}
                     <img class="small-img" src="/media/{{ post.author.profile.avatar }}" alt="" onError="this.remove()">   
                     <div style="margin-top: -5px">            
                       <div style="display: flex; height: 40px;">           
@@ -230,6 +230,7 @@
                   </a>
                 {% endfor %}
               </div>
+              <a class="text3 link1" href="{% url 'news_feed:view_article' post.id %}" style="margin-bottom: -5px;">открыть в отдельной вкладке</a>
             </div>
             <div style="padding: 0px 10px;">
               {% if post.allow_comments %}

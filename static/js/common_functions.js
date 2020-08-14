@@ -132,14 +132,14 @@ function showfile(url, name='file', current_number=1, source_id='mainimage') {
         $('#fileviewerlink').attr('href', url)
 
         if( current_number > 1 ) {
-            $('#fileviewer_left').attr({'onclick': 'swipefile("left", ' + (current_number - 1) + ', "' + source_id + '")'})
+            $('#fileviewer_left').attr({'onclick': 'swipefile("left", ' + (parseInt(current_number) - 1) + ', "' + source_id + '")'})
             $('#fileviewer_left').css({'visibility': 'visible'})
         } else {
             $('#fileviewer_left').css({'visibility': 'hidden'})
         }
 
         if( current_number < $('#' + source_id).children().length ) {
-            $('#fileviewer_right').attr({'onclick': 'swipefile("right", ' + (current_number + 1) + ', "' + source_id + '")'})
+            $('#fileviewer_right').attr({'onclick': 'swipefile("right", ' + (parseInt(current_number) + 1) + ', "' + source_id + '")'})
             $('#fileviewer_right').css({'visibility': 'visible'})
         } else {
             $('#fileviewer_right').css({'visibility': 'hidden'})
