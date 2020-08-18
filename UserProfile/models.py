@@ -6,7 +6,6 @@ from datetime import datetime, date, timezone, timedelta
 import locale
 
 
-
 def user_directorypath(instance, filename):
     return 'user{0}/{1}'.format(instance.user.id, filename)
 
@@ -72,7 +71,7 @@ class NotificationSettings(models.Model):
 
 
 class NewsFeedSettings(models.Model):
-    defaultsection = models.TextField(default="popular")
+    defaultsection = models.TextField(default="hot")
     showviewed = models.BooleanField(default=True)
     profile = models.OneToOneField(Profile, on_delete=models.CASCADE)
 

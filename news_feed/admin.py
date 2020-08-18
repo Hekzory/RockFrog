@@ -2,6 +2,10 @@ from django.contrib import admin
 
 from .models import *
 
+class NewsFeedArticlesListAdmin(admin.ModelAdmin):
+    fields = ['id', 'list_type', 'articles']
+    readonly_fields = ['id']
+
 class BasicCommentsAdmin(admin.ModelAdmin):
     fields = ['id', 'author', 'parent', 'replyto', 'text', 'pluses', 'minuses', 'pubdate']
     readonly_fields = ['id']
@@ -34,6 +38,7 @@ class CommunityArticlesAdmin(admin.ModelAdmin):
     fields = ['id', 'group', 'text', 'allowed', 'pubdate', 'pluses', 'minuses', 'comments', 'files']   
     readonly_fields = ['id'] 
 
+admin.site.register(NewsFeedArticlesList, NewsFeedArticlesListAdmin)
 admin.site.register(BasicComment, BasicCommentsAdmin)
 admin.site.register(BasicArticleFile, BasicArticleFilesAdmin)
 admin.site.register(CommentsList, CommentsListAdmin)

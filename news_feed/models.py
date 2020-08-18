@@ -1,4 +1,5 @@
 import datetime
+from datetime import timedelta
 from django.contrib.auth.models import User
 from django.db import models
 from django.utils import timezone
@@ -258,6 +259,18 @@ class PersonalInCommunityArticle(BasicArticle):
 
 	def can_plus_or_comment(self, user):
 		return self.allowed and self.group.can_see_group(user)
+
+class NewsFeedArticlesList(models.Model):
+	articles = models.ManyToManyField(BasicArticle, blank=True, null=True)
+	list_type = models.CharField(max_length=40, default='best')
+
+	def generate_articles(self, days, limit):	
+		minimum_date = datetime.now() - timedelta(days=days)
+		articles = BasicArticle.objects.filter(allowed=True, pubdate__gte=minimum_date)[:limit] 
+		self.articles.set(articles)
+
+	def __str__(self):
+		return self.list_type
 
 @receiver(post_save, sender=PersonalArticle)
 @receiver(post_save, sender=CommunityArticle)

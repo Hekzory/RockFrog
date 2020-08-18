@@ -119,8 +119,8 @@ i, img, .button0, .button0-1, .button1, .button2, .button3 {
 	border-radius: 5px;
 	cursor: pointer;
 	transition: background-color 0.2s, color 0.2s;
-
 	margin-bottom: auto;
+	white-space: nowrap;
 }
 
 .button0:hover {
@@ -138,6 +138,7 @@ i, img, .button0, .button0-1, .button1, .button2, .button3 {
 	cursor: pointer;
 	transition: 0.2s;
 	margin-top: auto;
+	white-space: nowrap;
 }
 
 .button0-1:hover {

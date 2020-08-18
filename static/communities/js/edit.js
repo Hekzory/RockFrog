@@ -246,7 +246,7 @@ function checkslug(slug) {
             }
             else if( data == 'wrong' )
             {
-                showwarning('Используйте только английские буквы')
+                showwarning('Используйте только латинские буквы')
             }
             else if( data == 'empty' )
             {

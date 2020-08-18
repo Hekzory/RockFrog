@@ -263,11 +263,7 @@ def update_rating(request):
     user = request.user
     user.profile.rating = 0
 
-    for article in user.personal_articles.all():
-        article.update_rating()
-        user.profile.rating += article.rating
-
-    for article in user.personal_in_community_articles.all():
+    for article in user.articles.select_subclasses(PersonalArticle, PersonalInCommunityArticle).all():
         article.update_rating()
         user.profile.rating += article.rating
 
