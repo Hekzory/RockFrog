@@ -1,0 +1,36 @@
+<div id="editblock" style="display: none; width: 60%; position: fixed; top: 15%; height: 70%; left: 20%; z-index: 1021 ">    
+  <form id="editform" enctype='multipart/form-data' action="{% url 'news_feed:manage_articles' %}" method='POST' style="height: 100%;">
+    {% csrf_token %}
+    <input name="return_url" type="text" value="{{ request.build_absolute_uri }}" class="hidden-input">
+    <input name="action" type="text" value="edit_article" class="hidden-input">
+    <input id="edit_articleid" name="articleid" type="text" class="hidden-input">
+    <div class="plate" style="height: 100%;">    
+      <div class="text1">Редактировать пост</div>
+      <div id="editplate" class="plate" style="width: 100%; height: calc(100% - 180px); overflow-x: hidden; overflow-y: scroll;">
+        <textarea id="editarea" class="textarea1" name="text" oninput="auto_grow(this)" onclick="auto_grow(this)" style="border: none; height: 28px; min-height: 28px;" placeholder="Редактировать текст..."></textarea>
+        <div id="editadditions">
+          <input id='editremovedfiles' type="text" class="hidden-input" name="removedfiles">
+          <div id="editaddition1" style="flex-wrap: wrap; display: flex;"></div>
+          <div id="editaddition2" style="display: flex; flex-wrap: wrap;"></div>
+        </div>
+      </div>
+      <div class="inline-wrapper" style="margin-left: 5px; margin-top: -5px;">
+        <div class="inline-wrapper">
+            <input id="edit_allow_comments" type="checkbox" style="margin-top: 8px; height: 20px;" name="allow_comments" checked>
+          <div class="text3">Комментарии</div>
+        </div>
+      </div>
+      <hr>
+      <div class="solid">
+        <div class="text3">Вы можете изменить текст и файлы поста</div> 
+      </div>
+      <div id="editoptions" class="inline-wrapper" style="width: 70%; margin: auto;">
+        <input id="editfileinput" name="files" type="file" multiple class="hidden-input">
+        <input id="editfileinput2" onchange="readfile2(this)" multiple type="file" class="hidden-input">  
+        <div id="editfilebutton" class="button3 yellow" style="width: calc(33% - 5px);" onclick="document.getElementById('editfileinput2').click()">Файл</div>    
+        <div class="button3 red" onclick="showedit()" style="width: calc(34% - 5px);">Отмена</div>
+        <div class="button3 green" style="width: calc(33% - 5px);" onclick="editpost()">Готово</div>
+      </div>
+    </div>
+  </form>  
+</div> 

@@ -12,6 +12,7 @@ html {
 	outline: none;
 	list-style-type: none;	
 	height: auto;
+	word-wrap: break-word;
 }
 
 a {
@@ -118,8 +119,8 @@ i, img, .button0, .button0-1, .button1, .button2, .button3 {
 	border-radius: 5px;
 	cursor: pointer;
 	transition: background-color 0.2s, color 0.2s;
-
 	margin-bottom: auto;
+	white-space: nowrap;
 }
 
 .button0:hover {
@@ -137,6 +138,7 @@ i, img, .button0, .button0-1, .button1, .button2, .button3 {
 	cursor: pointer;
 	transition: 0.2s;
 	margin-top: auto;
+	white-space: nowrap;
 }
 
 .button0-1:hover {
@@ -396,6 +398,22 @@ option {
 	color: #333;
 }
 
+.icon-button3 {
+	color: grey;
+	border-radius: 5px;
+	padding: 4px 6px 1px;
+	margin: 4px 2px 0px;
+	height: 31px;
+	font-size: 20px;
+	cursor: pointer;
+	transition: background-color 0.2s, color 0.2s;	
+}
+
+.icon-button3:hover {
+	background-color: #ccc;
+	color: #333;
+}
+
 .icon-fileviewer {
 	color: grey;
 	font-size: 60px;
@@ -553,7 +571,7 @@ option {
 }
 
 .grey:hover {
-	background-color:#CCC;
+	background-color: #CCC;
 	color: #FFF;
 }
 
@@ -565,6 +583,34 @@ option {
 .yellow:hover {
 	background-color: #FFCD42;
 	color: #FAFAFA;
+}
+
+.green-color {
+	color: #1FA363;
+}
+
+.green-color:hover {
+	color: #25C779;
+}
+
+.red-color {
+	color: #DF6969;
+}
+
+.red-color:hover {
+	color: #FC7777;
+}
+
+.grey-color {
+	color: #909090;
+}
+
+.grey-color:hover {
+	color: #A0A0A0;
+}
+
+.grey-color-1 {
+	color: #909090;
 }
 
 .active {

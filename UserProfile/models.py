@@ -19,9 +19,11 @@ class Profile(models.Model):
     phone = models.TextField(max_length=30, blank=True)
     interests = models.TextField(max_length=500, blank=True)
     avatar = models.ImageField(upload_to=user_directorypath, default='/static/profile.jpg')
-    blacklist = models.ManyToManyField(User, related_name='blacklists')
+    blacklist = models.ManyToManyField(User, related_name='blacklists', blank=True)
     verified = models.BooleanField(default=False)
     last_time_online = models.DateTimeField(default=datetime.now)
+
+    rating = models.FloatField(null=True, blank=True, default=0)
 
     def __str__(self):
         return self.user.username
@@ -68,6 +70,12 @@ class NotificationSettings(models.Model):
     profile = models.OneToOneField(Profile, on_delete=models.CASCADE)
 
 
+class NewsFeedSettings(models.Model):
+    defaultsection = models.TextField(default="hot")
+    showviewed = models.BooleanField(default=True)
+    profile = models.OneToOneField(Profile, on_delete=models.CASCADE)
+
+
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
@@ -91,4 +99,10 @@ def create_privacy_settings(sender, instance, created, **kwargs):
 def create_notification_settings(sender, instance, created, **kwargs):
     if created:
         NotificationSettings.objects.create(profile=instance)
+        
+
+@receiver(post_save, sender=Profile)
+def create_news_feed_settings(sender, instance, created, **kwargs):
+    if created:
+        NewsFeedSettings.objects.create(profile=instance)
 
