@@ -27,6 +27,7 @@ class NewsListView(View):
         }
         return HttpResponse(template.render(context, request))
 
+
 def news_post(request, news_id):
     #post = Post.objects.get(pk=news_id)
     post = get_object_or_404(Post, pk=news_id)

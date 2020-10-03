@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'communities',
     'inventory',
     'notifications',
+    'coins',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
