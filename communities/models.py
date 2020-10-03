@@ -1,6 +1,5 @@
 from datetime import datetime
 from django.contrib.auth.models import User
-from chat.models import Chat
 from django.db import models
 from django.utils import timezone
 from django.db.models.signals import post_save

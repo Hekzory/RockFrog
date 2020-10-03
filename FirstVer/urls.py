@@ -25,7 +25,6 @@ urlpatterns = [
     path('news/', include('news.urls')),
     path('auth/', include('authpages.urls')),
     path('profile/', include('UserProfile.urls')),
-    path('chat/', include('chat.urls')),
     path('coins/', include('coins.urls')),
     path('notifications/', include('notifications.urls')),
     path('conversations/', include('personal_messages.urls')),

@@ -1,9 +1,0 @@
-{% for obj in chat %}
-    {% if obj.user == request.user %}
-        <li class="text-left list-group-item">Вы написали: {{ obj.message }}</li>
-    {% else %}
-<li class="text-left list-group-item"><a href="/profile/{{ obj.user.username }}">{{ obj.user.username }}</a> написал: {{ obj.message }}</li>
-    {% endif %}
-{% empty %}
-    <li class="text-right list-group-item">No messages!</li>
-{% endfor %}

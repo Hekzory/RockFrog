@@ -37,7 +37,6 @@ ALLOWED_HOSTS = [
 INSTALLED_APPS = [
     'personal_messages',
 	'channels',
-	'chat',
 	'UserProfile',
 	'mainapp',
 	'news',
