@@ -70,48 +70,6 @@ class Group(models.Model):
 			self.subrequests.remove(user)
 			self.save()
 
-class GroupArticle(models.Model):
-	allowed = models.BooleanField(default=True)
-	text = models.TextField()	
-	pubdate = models.DateTimeField('date published', default=datetime.now)      
-	group = models.ForeignKey(Group, on_delete=models.CASCADE, related_name='articles') 
-	likes = models.ManyToManyField(User, blank=True, related_name='likes')
-	author = models.ForeignKey(User, on_delete=models.PROTECT, null=True, blank=True, related_name='articles_author', default=None)
-
-	def __str__(self):
-		return self.text
-
-	def save(self, *args, **kwargs):
-	    if self.author is None:
-	        self.author = self.group.admin
-	    super(GroupArticle, self).save(*args, **kwargs)
-
-	def like(self, user):
-		user.profile.last_online_update()	
-		if self.group.can_see_group(user) and self.allowed:
-			if user not in self.likes.all():
-				self.likes.add(user)
-			self.save()
-
-	def removelike(self, user):
-		user.profile.last_online_update()	
-		if self.group.can_see_group(user) and self.allowed:
-			if user in self.likes.all():
-				self.likes.remove(user)
-			self.save()
-
-class ArticleFile(models.Model):
-	name = models.CharField(max_length=40)
-	article = models.ForeignKey(GroupArticle, on_delete=models.CASCADE, related_name='files') 
-	file = models.FileField(upload_to='groups/articles_files', blank=True)
-
-	def __str__(self):
-		return self.name
-
-	def extension(self):
-		name, extension = os.path.splitext(self.file.name)
-		return extension[1:]
-
 class GroupFile(models.Model):
 	name = models.CharField(max_length=40)
 	group = models.ForeignKey(Group, on_delete=models.CASCADE, related_name='files') 
@@ -119,60 +77,3 @@ class GroupFile(models.Model):
 
 	def __str__(self):
 		return self.name
-
-class GroupComment(models.Model):
-	author = models.ForeignKey(User, on_delete=models.PROTECT, related_name='usercomments')
-	parent = models.ForeignKey('self', null=True, on_delete=models.CASCADE, related_name='childrencomments')
-	replyto = models.ForeignKey(User, null=True, on_delete=models.PROTECT, related_name='answers')
-	article = models.ForeignKey(GroupArticle, on_delete=models.CASCADE, related_name='comments')
-	text = models.TextField()
-	is_deleted = models.BooleanField(default=False)
-	pubdate = models.DateTimeField('date published', default=datetime.now)
-
-	def __str__(self):
-		return self.author.username
-
-'''class GroupList(models.Model):
-	user = models.OneToOneField(User, on_delete=models.CASCADE)
-	groups = models.ManyToManyField(Group)
-	def __str__(self):
-		return self.user.username
-
-@receiver(post_save, sender=User)
-def create_user_GroupList(sender, instance, created, **kwargs):
-	if created:
-		GroupList.objects.create(user=instance)
-
-@receiver(post_save, sender=User)
-def save_user_GroupList(sender, instance, **kwargs):
-	instance.grouplist.save()	 
-
-class SubscriberList(models.Model):
-	group = models.OneToOneField(Group, on_delete=models.CASCADE)
-	subscribers = models.ManyToManyField(User)
-	def __str__(self):
-		return self.group.groupname
-
-@receiver(post_save, sender=Group)
-def create_group_SubscriberList(sender, instance, created, **kwargs):
-    if created:
-        SubscriberList.objects.create(group=instance)
-
-@receiver(post_save, sender=Group)
-def save_group_SubscriberList(sender, instance, **kwargs):
-    instance.subscriberlist.save()	   
-
-class ArticleList(models.Model):
-	group = models.OneToOneField(Group, on_delete=models.CASCADE)
-	articles = models.ManyToManyField(Article)
-	def __str__(self):
-	    return self.group.groupname
-
-@receiver(post_save, sender=Group)
-def create_group_ArticleList(sender, instance, created, **kwargs):
-    if created:
-        ArticleList.objects.create(group=instance)
-
-@receiver(post_save, sender=Group)
-def save_group_ArticleList(sender, instance, **kwargs):
-    instance.articlelist.save()'''

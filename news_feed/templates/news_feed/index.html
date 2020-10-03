@@ -127,9 +127,7 @@
       <a id="to_collection" class="button0 {% if section == 'best' %}button0-active{% endif %}" href="{% url 'news_feed:home' %}?section=best">Лучшее</a>
       <a id="to_information" class="button0 {% if section == 'new' %}button0-active{% endif %}" href="{% url 'news_feed:home' %}?section=new">Новое</a>
       {% if request.user.is_authenticated %}
-        <a id="to_information" class="button0 {% if section == 'plused' %}button0-active{% endif %}" href="{% url 'news_feed:home' %}?section=plused">Плюсы {{ request.user.plused_articles.count }}</a>
-        <a id="to_information" class="button0 {% if section == 'minused' %}button0-active{% endif %}" href="{% url 'news_feed:home' %}?section=minused">Минусы {{ request.user.minused_articles.count }}</a>
-        <a id="to_information" class="button0 {% if section == 'viewed' %}button0-active{% endif %}" href="{% url 'news_feed:home' %}?section=viewed">Просмотрено {{ request.user.viewed_articles.count }}</a>
+        <a id="to_information" class="button0 {% if section == 'reacted' %}button0-active{% endif %}" href="{% url 'news_feed:home' %}?section=reacted">Реакции {{ request.user.minused_articles.count|add:request.user.plused_articles.count }}</a>
         <a id="to_information" class="button0 {% if section == 'self_articles' %}button0-active{% endif %}" href="{% url 'news_feed:home' %}?section=self_articles">Ваше {{ request.user.articles.count }}</a>
       {% endif %}
     </div>
@@ -137,8 +135,10 @@
     {% if request.user.is_authenticated %}
       <div class="inline-wrapper">
         <div class="inline-wrapper">
-          <i class="material-icons icon3 pointer" style="margin-top: 8px;" onclick="switch_show_viewed_settings()" title="Удалить">{% if user.profile.newsfeedsettings.showviewed %}done{% else %}clear{% endif %}</i>
-          <div class="text3">Показывать просмотренные</div>
+          {% if section == 'hot' or section == 'best' or section == 'new' or section == 'subscriptions' %}
+            <i class="material-icons icon3 pointer" style="margin-top: 8px;" onclick="switch_show_viewed_settings()" title="Удалить">{% if user.profile.newsfeedsettings.showviewed %}done{% else %}clear{% endif %}</i>
+            <div class="text3">Показывать просмотренные</div>
+          {% endif %}
         </div>
         <div class="text3 link1 pointer" onclick="set_default_section('{{ section }}')">Поставить этот раздел по умолчанию</div>
       </div>

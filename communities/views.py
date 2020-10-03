@@ -6,7 +6,6 @@ from django.views.generic import View
 from communities.models import *
 from news_feed.models import *
 from notifications import models as notifications
-# from .forms import GroupEditForm
 from django.contrib.auth.models import User
 # from django.urls import reverse
 from .forms import *
@@ -66,7 +65,7 @@ def information(request, groupslug):
 			}
 			return render(request, 'communities/closedgroup.html', context)
 
-		articles_count = group.articles.filter(allowed=True).count()
+		articles_count = group.community_articles.filter(allowed=True).count()
 		context = {'group': group, 'articles_count': articles_count}
 		return render(request, 'communities/information.html', context)
 	else:
@@ -82,7 +81,7 @@ def collection(request, groupslug):
 			}
 			return render(request, 'communities/closedgroup.html', context)
 
-		articles_count = group.articles.filter(allowed=True).count()
+		articles_count = group.community_articles.filter(allowed=True).count()
 		context = {'group': group, 'articles_count': articles_count}
 		return render(request, 'communities/collection.html', context)
 	else:

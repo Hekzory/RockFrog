@@ -29,10 +29,8 @@ def home(request):
 		articles = generate_hot_articles(request.user) 
 	elif section == "best":
 		articles = generate_best_articles(request.user) 
-	elif section == "plused" and request.user.is_authenticated:
-		articles = generate_plused_articles(request.user)
-	elif section == "minused" and request.user.is_authenticated:
-		articles = generate_minused_articles(request.user)  
+	elif section == "reacted" and request.user.is_authenticated:
+		articles = generate_reacted_articles(request.user)
 	elif section == "viewed" and request.user.is_authenticated:
 		articles = generate_viewed_articles(request.user) 
 	elif section == "self_articles" and request.user.is_authenticated:
@@ -49,10 +47,10 @@ def home(request):
 
 def generate_subscriptions_articles(user):
 	if user.profile.newsfeedsettings.showviewed:
-		personal_in_community_articles = PersonalInCommunityArticle.objects.filter(group__in=user.groups_subs.all(), allowed=True)
+		personal_in_community_articles = PersonalInCommunityArticle.objects.filter((Q(group__in=user.groups_subs.all()) | Q(group__in=user.groups_editors.all()) | Q(group__in=user.groups_admins.all())), allowed=True)
 		community_articles = CommunityArticle.objects.filter(Q(group__in=user.groups_subs.all(), allowed=True) | Q(group__in=user.groups_admins.all(), allowed=True))
 	else:
-		personal_in_community_articles = PersonalInCommunityArticle.objects.filter((Q(group__in=user.groups_subs.all()) | Q(group__in=user.groups_editors.all())) & ~Q(views__in=[user]) & Q(allowed=True))
+		personal_in_community_articles = PersonalInCommunityArticle.objects.filter((Q(group__in=user.groups_subs.all()) | Q(group__in=user.groups_editors.all()) | Q(group__in=user.groups_admins.all())) & ~Q(views__in=[user]) & Q(allowed=True))
 		community_articles = CommunityArticle.objects.filter((Q(group__in=user.groups_subs.all()) | Q(group__in=user.groups_admins.all()) | Q(group__in=user.groups_editors.all())) & ~Q(views__in=[user]) & Q(allowed=True))
 
 	articles = sorted(chain(personal_in_community_articles, community_articles), key=lambda instance: instance.pubdate, reverse=True)
@@ -61,17 +59,17 @@ def generate_subscriptions_articles(user):
 def generate_hot_articles(user):
 	news_feed = NewsFeedArticlesList.objects.get(list_type='hot')
 	if not user.is_authenticated or user.profile.newsfeedsettings.showviewed:
-		articles = news_feed.articles.filter(~Q(views__in=[user])).select_subclasses().order_by('-rating')
-	else:
 		articles = news_feed.articles.select_subclasses().order_by('-rating')
+	else:
+		articles = news_feed.articles.filter(~Q(views__in=[user])).select_subclasses().order_by('-rating')
 	return articles
 
 def generate_best_articles(user):
 	news_feed = NewsFeedArticlesList.objects.get(list_type='best')
 	if not user.is_authenticated or user.profile.newsfeedsettings.showviewed:
-		articles = news_feed.articles.filter(~Q(views__in=[user])).select_subclasses().order_by('-rating')
-	else:
 		articles = news_feed.articles.select_subclasses().order_by('-rating')
+	else:
+		articles = news_feed.articles.filter(~Q(views__in=[user])).select_subclasses().order_by('-rating')
 	return articles
 
 def generate_new_articles(user):
@@ -81,14 +79,11 @@ def generate_new_articles(user):
 		articles = BasicArticle.objects.filter(Q(allowed=True) & ~Q(views__in=[user])).order_by('-pubdate').select_subclasses()
 	return articles
 
-def generate_plused_articles(user):
-	return BasicArticle.objects.filter(Q(allowed=True) & ~Q(pluses__in=[user])).order_by('-pubdate').select_subclasses()
-
-def generate_minused_articles(user):
-	return BasicArticle.objects.filter(Q(allowed=True) & ~Q(minuses__in=[user])).order_by('-pubdate').select_subclasses()
-
-def generate_viewed_articles(user):
-	return BasicArticle.objects.filter(Q(allowed=True) & ~Q(views__in=[user])).order_by('-pubdate').select_subclasses()
+def generate_reacted_articles(user):
+	if user.is_authenticated:
+		return BasicArticle.objects.filter(Q(allowed=True) & (Q(pluses__in=[user]) | Q(minuses__in=[user]))).order_by('-pubdate').select_subclasses()
+	else:
+		return HttpResponseRedirect('/')
 
 def generate_self_articles(user):
 	return BasicArticle.objects.filter(author=user).select_subclasses()

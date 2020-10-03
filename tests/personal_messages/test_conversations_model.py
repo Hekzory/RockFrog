@@ -81,5 +81,5 @@ class DialogPageViewTestCase(TestCase):
         conversation.messages.add(message1)
         conversation.messages.add(message2)
         result = conversation.get_messages_sorted_by_date()
-        self.assertEqual(result[0].date_time < result[1].date_time, True)
+        self.assertEqual(result[0].date_time <= result[1].date_time, True)
         conversation.delete()
