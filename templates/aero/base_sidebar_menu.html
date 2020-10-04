@@ -1,0 +1,51 @@
+<div class="left-content">
+    <div class="sidebar">
+        <div class="sidebar-logo">
+            <img width="48" height="48" src="/static/aero/base/img/logo.png"/>
+        </div>
+        <div class="left-menu-element-list">
+            <a class="left-menu-link" href="/">
+                <ion-icon name="newspaper-sharp" class="left-menu-icon"></ion-icon>
+                <div class="left-menu-element">Лента</div>
+            </a>
+            <a class="left-menu-link" href="/groups/">
+                <ion-icon name="people-sharp" class="left-menu-icon"></ion-icon>
+                <div class="left-menu-element">Сообщества</div>
+            </a>
+            <a class="left-menu-link" href="/notifications/">
+                <ion-icon name="notifications-sharp" class="left-menu-icon"></ion-icon>
+                <div class="left-menu-element">Уведомления</div>
+            </a>
+            {% if current_app_name == "personal_messages" %}
+            <a class="left-menu-link active" href="/conversations/">
+                <ion-icon name="chatbubbles-sharp" class="left-menu-icon active"></ion-icon>
+                <div class="left-menu-element active">Сообщения</div>
+            </a>
+            {% else %}
+            <a class="left-menu-link" href="/conversations/">
+                <ion-icon name="chatbubbles-sharp" class="left-menu-icon"></ion-icon>
+                <div class="left-menu-element">Сообщения</div>
+            </a>
+            {% endif %}
+            {% if current_app_name == "profile" %}
+            <a class="left-menu-link active" href="/profile/">
+                <ion-icon name="person-sharp" class="left-menu-icon active"></ion-icon>
+                <div class="left-menu-element active">Профиль</div>
+            </a>
+            {% else %}
+            <a class="left-menu-link" href="/profile/">
+                <ion-icon name="person-sharp" class="left-menu-icon"></ion-icon>
+                <div class="left-menu-element">Профиль</div>
+            </a>
+            {% endif %}
+            <a class="left-menu-link" href="/inventory/">
+                <ion-icon name="cube-sharp" class="left-menu-icon"></ion-icon>
+                <div class="left-menu-element">Инвентарь</div>
+            </a>
+            <a class="left-menu-link" href="#">
+                <ion-icon name="help-buoy-sharp" class="left-menu-icon"></ion-icon>
+                <div class="left-menu-element">Помощь</div>
+            </a>
+        </div>
+    </div>
+</div>

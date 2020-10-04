@@ -12,6 +12,7 @@ import datetime
 class DialogPage(View):
     def get(self, request, user_id):
         context = dict()
+        context['current_app_name'] = "personal_messages"
         if request.user.is_authenticated:
             request.user.profile.last_online_update()
             try:
@@ -54,6 +55,17 @@ class DialogPage(View):
 class DialogsList(View):
     def get(self, request):
         context = dict()
+        context['current_app_name'] = "personal_messages"
+        if request.user.is_authenticated:
+            print(dir(request))
+            print(request.scope)
+            return render(request, 'personal_messages/aero/dialog_list.html', context)
+        else:
+            return HttpResponseRedirect('/auth/login')
+
+    #Код, работающий со старым дизайном сайта
+    def get_deprecated(self, request):
+        context = dict()
         if request.user.is_authenticated:
             context['conversationlist'] = request.user.conversationlist.conversations.all().order_by('last_interaction')[::-1]
             users_messaging_with = []
@@ -74,6 +86,7 @@ class DialogsList(View):
 class DialogsListBase(View):
     def get(self, request):
         context = dict()
+        context['current_app_name'] = "personal_messages"
         if request.user.is_authenticated:
             context['conversationlist'] = request.user.conversationlist.conversations.all().order_by('last_interaction')[::-1]
             users_messaging_with = []

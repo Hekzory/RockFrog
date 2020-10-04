@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from django.views.generic import View
 from .forms import *
 from news_feed.models import *
+from news_feed.views import generate_self_articles
 # Create your views here.
 
 
@@ -46,9 +47,19 @@ class YourProfileView(View):
         if not request.user.is_authenticated:
             return HttpResponseRedirect("/")
         else:
+            template = loader.get_template('UserProfile/aero/own_profile_main.html')
+            context = dict()
+            context['current_app_name'] = "profile"
+            context['posts'] = generate_self_articles(request.user)
+            return HttpResponse(template.render(context, request))
+
+    # Устаревшая версия, функционирующая со старым дизайном
+    def get_deprecated(self, request):
+        if not request.user.is_authenticated:
+            return HttpResponseRedirect("/")
+        else:
             template = loader.get_template('UserProfile/yourprofile.html')
-            form = ProfileForm()
-            context = {'form' : form}
+            context = dict()
             return HttpResponse(template.render(context, request))
 
 
@@ -66,6 +77,7 @@ class EditProfileView(View):
             initial_params['interests'] = request.user.profile.interests
             form = ProfileForm(initial=initial_params)
             context = {'form': form}
+            context['current_app_name'] = "profile"
             template = loader.get_template('UserProfile/editprofile.html')
             return HttpResponse(template.render(context, request))
 
@@ -88,6 +100,7 @@ class EditProfileView(View):
                 template = loader.get_template('UserProfile/editprofile.html')
                 form = ProfileForm(initial=initial_params)
                 context = {'form': form}
+                context['current_app_name'] = "profile"
                 return HttpResponse(template.render(context, request))
             else:
                 template = loader.get_template('UserProfile/editprofile.html')
@@ -105,6 +118,7 @@ class EditPrivacyView(View):
             template = loader.get_template('UserProfile/edit_privacy.html')
             form = PrivacySettingsForm(initial=initial_params)
             context = {'form': form}
+            context['current_app_name'] = "profile"
             return HttpResponse(template.render(context, request))
 
     def post(self, request):
@@ -121,10 +135,12 @@ class EditPrivacyView(View):
                 template = loader.get_template('UserProfile/edit_privacy.html')
                 form = PrivacySettingsForm(initial=initial_params)
                 context = {'form': form}
+                context['current_app_name'] = "profile"
                 return HttpResponse(template.render(context, request))
             else:
                 template = loader.get_template('UserProfile/edit_privacy.html')
                 context = {'form': bound_form}
+                context['current_app_name'] = "profile"
                 return HttpResponse(template.render(context, request))
 
 
@@ -138,6 +154,7 @@ class EditNotificationsView(View):
             context['personal_message_notifications'] = request.user.profile.notificationsettings.personal_message_notifications
             context['accepted_to_group_notifications'] = request.user.profile.notificationsettings.accepted_to_group_notifications
             context['post_published_notifications'] = request.user.profile.notificationsettings.post_published_notifications
+            context['current_app_name'] = "profile"
             template = loader.get_template('UserProfile/edit_notifications.html')
             return HttpResponse(template.render(context, request))
 
@@ -170,6 +187,7 @@ class EditSecurityView(View):
             template = loader.get_template('UserProfile/edit_security.html')
             form = ChangePasswordForm()
             context = {'form': form}
+            context['current_app_name'] = "profile"
             return HttpResponse(template.render(context, request))
 
     def post(self, request):
@@ -183,6 +201,7 @@ class EditSecurityView(View):
                 result = bound_form.change_password(request.user)
                 new_form = ChangePasswordForm()
                 context = {'change_error': not result, 'form' : new_form}
+                context['current_app_name'] = "profile"
                 if context['change_error']:
                     template = loader.get_template('UserProfile/edit_security.html')
                 else:
@@ -191,6 +210,7 @@ class EditSecurityView(View):
             else:
                 template = loader.get_template('UserProfile/edit_security.html')
                 context = {'form': bound_form}
+                context['current_app_name'] = "profile"
                 return HttpResponse(template.render(context, request))
 
 
@@ -201,6 +221,7 @@ class BlockedUsersView(View):
         else:
             template = loader.get_template('UserProfile/blacklist.html')
             context = {'blacklist': request.user.profile.blacklist.all()}
+            context['current_app_name'] = "profile"
             return HttpResponse(template.render(context, request))
 
 

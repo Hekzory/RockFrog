@@ -220,6 +220,9 @@ class BasicArticle(models.Model):
 			self.increase_rating()
 			self.save()
 
+	def get_rating(self):
+		return self.pluses.count()-self.minuses.count()
+
 	def __str__(self):
 		if self.title:
 			return self.title

@@ -1,0 +1,156 @@
+{% extends "aero/base_page.html" %}
+{% block main_content %}
+<div class="background-content">
+    <img class="background-img" src="/static/aero/profile/img/everest.jpg"/>
+</div>
+<div class="content-columns" id="content-columns">
+    <div class="content-column" id="col-1">
+        <div class="sticky-content">
+            <div class="content-box profile-box">
+                <img class="main-avatar" src="/media/{{ user.profile.avatar }}"/>
+                <div class="profile-name">
+                    @{{ user.username }}
+                </div>
+                <div class="profile-about">
+                    {{ user.profile.about }}
+                </div>
+                <div class="profile-stats">
+                    <div class="profile-stat">
+                        <div class="stat-header">
+                            Карма
+                        </div>
+                        <div class="stat-counter">
+                            undefined
+                        </div>
+                    </div>
+                    <div class="profile-stat center-borders">
+                        <div class="stat-header">
+                            Кредиты
+                        </div>
+                        <div class="stat-counter">
+                            {{ user.profile.coinmanagement.coins }}
+                        </div>
+                    </div>
+                    <div class="profile-stat">
+                        <div class="stat-header">
+                            Посты
+                        </div>
+                        <div class="stat-counter">
+                            {{ request.user.articles.count }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="settings-box">
+                <div class="setting-box active">
+                    <div class="setting-icon">
+                        <ion-icon name="eye-sharp"></ion-icon>
+                    </div>
+                    <div class="setting-header">
+                        Просмотр
+                    </div>
+                </div>
+                <div class="setting-box">
+                    <div class="setting-icon">
+                        <ion-icon name="person-sharp"></ion-icon>
+                    </div>
+                    <div class="setting-header">
+                        Изменить профиль
+                    </div>
+                </div>
+                <div class="setting-box">
+                    <div class="setting-icon">
+                        <ion-icon name="settings-sharp"></ion-icon>
+                    </div>
+                    <div class="setting-header">
+                        Настройки
+                    </div>
+                </div>
+                <div class="setting-box">
+                    <div class="setting-icon">
+                        <ion-icon name="star-sharp"></ion-icon>
+                    </div>
+                    <div class="setting-header">
+                        Избранное
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="content-column wide">
+        <div class="posts-box">
+            <div class="posts-header">
+                <div class="content-feeds">
+                    <div class="content-feed active">Мои посты</div>
+                    <div class="content-feed">Реакции</div>
+                </div>
+                <div class="feed-parameters">
+                    <ion-icon name="settings-sharp"></ion-icon>
+                </div>
+            </div>
+            <div class="posts-content">
+                {% for post in posts %}
+                <div class="post">
+                    <div class="post-header">
+                        <div class="title">
+                            undefined
+                        </div>
+                        <div class="author">
+                            <div class="name">
+                                {{ request.user }}
+                            </div>
+                            <div class="avatar">
+                                <img class="avatar-32" src="/media/{{ user.profile.avatar }}"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="post-content">
+                        {{ post.text }}
+                    </div>
+                    <div class="post-footer">
+                        <div class="rating-comments">
+                            <div class="rating">
+                                <ion-icon class="rating-btn" name="arrow-up-circle-sharp"></ion-icon>
+                                <div class="rating-count">{{ post.get_rating }}</div>
+                                <ion-icon class="rating-btn" name="arrow-down-circle-sharp"></ion-icon>
+                            </div>
+                            <div class="comments">
+                                <ion-icon class="comment-icon" name="chatbox-sharp"></ion-icon>
+                                <div class="comment-count">{{ post.comments.comments.count }}</div>
+                            </div>
+                        </div>
+                        <div class="date">
+                            {{ post.pubdate }}
+                        </div>
+                        <div class="read-more">
+                            <div class="read-more-btn">
+                                Читать далее
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <div class="content-column center-text">
+        <div class="sticky-content">
+            <div class="content-box">
+                <div class="content-header">
+                    <div class="header">
+                        Доска
+                    </div>
+                </div>
+                <div class="content">
+                    <div class="text-content">
+                        Пусто. Выберите предмет или достижение, и его увидят все пользователи!
+                    </div>
+                    <div class="button-content">
+                        <div class="button button-primary"> Выбрать</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
