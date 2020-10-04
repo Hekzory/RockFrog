@@ -559,6 +559,34 @@ input[type=text]:focus {
 }
 /* Основной контент - конец */
 
+/* Настройки профилей - начало */
+
+.category-table {
+    display: flex;
+    flex-direction: column;
+}
+
+.category-row {
+    padding-top: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #d0d3d6;
+    font-size: 18px;
+    text-decoration: none;
+    color: #353535;
+}
+
+.category-row.last {
+    border-bottom: 0px solid #d0d3d6;
+}
+
+.category-row.active {
+    color: #00ccea;
+
+}
+
+
+/* Настройки профилей - конец */
+
 /* Для экранов шириной больше 2560 пикселей - начало. Изменения только в области масштабирования, шрифтов и т.д.*/
 @media only screen and (min-width : 2560px) {
     
