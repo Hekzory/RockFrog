@@ -94,9 +94,9 @@ def view_article(request, articleid):
 		context = {
 			'post': article,
 		}
-		return render(request, 'news_feed/article.html', context)
+		return render(request, 'news_feed/aero/news_feed_article.html', context)
 	else:
-		return render(request, 'news_feed/article_404.html')
+		return render(request, 'news_feed/aero/news_feed_article_404.html')
 
 def manage_settings(request):
 	if not request.user.is_authenticated:
@@ -140,7 +140,7 @@ def manage_articles(request):
 		else:
 			return HttpResponse('Error')
 
-		if article.can_plus_article(request.user):
+		if article.can_plus_or_comment(request.user):
 			if request.POST.get('type') == 'plus' or request.POST.get('type') == 'plusplus':			
 				article.plus(request.user)
 			elif request.POST.get('type') == 'remove_plus':

@@ -1,4 +1,11 @@
 {% extends "aero/base_page.html" %}
+
+{% load static %}
+
+{% block links %}
+    <script src="{% static 'aero/posts/js/functions.js' %}"></script>
+{% endblock %}
+
 {% block main_content %}
 <div class="background-content">
     <img class="background-img" src="/static/aero/profile/img/everest.jpg"/>
@@ -90,45 +97,7 @@
             </div>
             <div class="posts-content">
                 {% for post in posts %}
-                <div class="post">
-                    <div class="post-header">
-                        <div class="title">
-                            undefined
-                        </div>
-                        <div class="author">
-                            <div class="name">
-                                {{ request.user }}
-                            </div>
-                            <div class="avatar">
-                                <img class="avatar-32" src="/media/{{ user.profile.avatar }}"/>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="post-content">
-                        {{ post.text }}
-                    </div>
-                    <div class="post-footer">
-                        <div class="rating-comments">
-                            <div class="rating">
-                                <ion-icon class="rating-btn" name="arrow-up-circle-sharp"></ion-icon>
-                                <div class="rating-count">{{ post.get_rating }}</div>
-                                <ion-icon class="rating-btn" name="arrow-down-circle-sharp"></ion-icon>
-                            </div>
-                            <div class="comments">
-                                <ion-icon class="comment-icon" name="chatbox-sharp"></ion-icon>
-                                <div class="comment-count">{{ post.comments.comments.count }}</div>
-                            </div>
-                        </div>
-                        <div class="date">
-                            {{ post.pubdate }}
-                        </div>
-                        <div class="read-more">
-                            <div class="read-more-btn">
-                                Читать далее
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                    {% include 'UserProfile/aero/profile_post.html' %}
                 {% endfor %}
             </div>
         </div>
@@ -146,7 +115,7 @@
                         Пусто. Выберите предмет или достижение, и его увидят все пользователи!
                     </div>
                     <div class="button-content">
-                        <div class="button button-primary"> Выбрать</div>
+                        <div class="button button-primary">Выбрать</div>
                     </div>
                 </div>
             </div>

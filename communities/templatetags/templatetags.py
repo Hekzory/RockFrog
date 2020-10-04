@@ -8,7 +8,7 @@ def parent_comments(comments):
 
 @register.simple_tag
 def can_plus(article, user):
-	return article.can_plus_article(user)
+	return article.can_plus_or_comment(user)
 
 @register.simple_tag
 def can_plus_comment(comment, user):
