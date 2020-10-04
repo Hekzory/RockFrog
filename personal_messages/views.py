@@ -57,8 +57,18 @@ class DialogsList(View):
         context = dict()
         context['current_app_name'] = "personal_messages"
         if request.user.is_authenticated:
-            print(dir(request))
-            print(request.scope)
+            conversation_list = request.user.conversationlist.conversations.all().order_by(
+                'last_interaction')[::-1]
+            users_messaging_with = []
+            unread_messages = []
+            for conversation in conversation_list:
+                if request.user.id == conversation.user1.id:
+                    unread_messages.append(conversation.messages.filter(date_time__gt=conversation.last_view_user1).count())
+                    users_messaging_with.append(conversation.user2)
+                elif request.user.id == conversation.user2.id:
+                    unread_messages.append(conversation.messages.filter(date_time__gt=conversation.last_view_user2).count())
+                    users_messaging_with.append(conversation.user1)
+            context['dialogs'] = zip(users_messaging_with, conversation_list, unread_messages)
             return render(request, 'personal_messages/aero/dialog_list.html', context)
         else:
             return HttpResponseRedirect('/auth/login')

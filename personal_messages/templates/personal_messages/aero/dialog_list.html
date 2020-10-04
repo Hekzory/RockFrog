@@ -1,1 +1,59 @@
 {% extends "aero/base_page.html" %}
+{% block main_content %}
+<div class="content-columns" id="content-columns">
+    <div class="wide-content-column">
+        <div class="content-box wide">
+            <div class="content-header">
+                <div class="header">
+                    Сообщения
+                </div>
+            </div>
+            <div class="content">
+                <div class="message-table">
+                    {% for dialog in dialogs %}
+                    <div class="message-row">
+                        <div class="message-avatar">
+                            <img src="/static/aero/profile/img/avatar.jpg" \>
+                        </div>
+                        <div class="message-info">
+                            <div class="message-info-upper">
+                                <div class="message-info-author">@{{ dialog.0 }}</div>
+                                <div class="message-info-date">{{ dialog.1.last_interaction }}</div>
+                            </div>
+                            <div class="message-info-lower">
+                                <div class="message-info-text">
+                                    {% if conversation.1.is_empty %}
+                                    Сообщения отсутствуют
+                                    {% else %}
+                                    {{dialog.1.get_last_message|truncatechars:100 }}
+                                    {% endif %}
+                                </div>
+                                {% if dialog.2 > 0 %}
+                                <div class="message-info-counter">{{dialog.2}}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="content-column center-text">
+        <div class="sticky-content">
+            <div class="content-box">
+                <div class="content-header">
+                    <div class="header">
+                        Фильтры
+                    </div>
+                </div>
+                <div class="content">
+                    <div class="text-content">
+                        Недоступно
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -24,7 +24,7 @@
             <div class="card-footer text-muted">
               <div class="d-flex flex-row justify-content-between align-items-center">
                 <div class="container d-none d-md-block">
-                <a class="p-6">Написано {{post.post_date|date:"d M Y в H:i"}} </a>
+                <a class="p-6">Написано {{post.post_date|date:"d.M.Y в H:i"}} </a>
                 </div>
                 <div class="container" style="text-align: right;">
                 {% if request.user.is_authenticated %}

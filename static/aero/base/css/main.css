@@ -204,6 +204,16 @@ input[type=text]:focus {
     position: sticky;
 }
 
+.wide-content-column {
+    flex-grow: 0;
+    flex-basis: 55%;
+    margin-left: 10px;
+    margin-right: 10px;
+    justify-content: center;
+    top: 8vh;
+    position: sticky;
+}
+
 .content-column.wide {
     flex-basis: 35%;
 }
@@ -236,6 +246,10 @@ input[type=text]:focus {
     -webkit-box-shadow: 0px 0px 9px 3px rgba(0,0,0,0.03);
     -moz-box-shadow: 0px 0px 9px 3px rgba(0,0,0,0.03);
     box-shadow: 0px 0px 9px 3px rgba(0,0,0,0.03);
+}
+
+.content-box.wide {
+    margin-top: 19px;
 }
 
 .main-avatar {
@@ -559,6 +573,87 @@ input[type=text]:focus {
 }
 /* Основной контент - конец */
 
+/* Стили для страницы личных сообщений */
+.message-table {
+    display: flex;
+    flex-direction: column;
+}
+
+.message-row {
+    height: 7.5vh;
+    //border-left: 1px solid #d0d3d6;
+    //border-right: 1px solid #d0d3d6;
+    margin-top: 15px;
+    margin-bottom: 15px;
+    display: flex;
+}
+
+.message-avatar {
+    flex-grow: 0;
+    flex-basis: 12.5%;
+    align-self: center;
+}
+
+.message-avatar > img {
+    height: 7vh;
+    width: 7vh;
+    align-self: center;
+    display: block;
+    border-radius: 50%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.message-info {
+    flex-grow: 0;
+    flex-basis: 87.5%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+}
+
+.message-info-upper {
+    margin-top: 15px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.message-info-author {
+    font-weight: 600;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.message-info-date {
+    color: #969696;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.message-info-lower {
+    margin-top: 10px;
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.message-info-text {
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.message-info-counter {
+    color: white;
+    background-color: #00c5e4;
+    font-weight: 600;
+    padding: 10px;
+    border-radius: 10px;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+/* Стили для страницы личных сообщений - конец */
+
 /* Для экранов шириной больше 2560 пикселей - начало. Изменения только в области масштабирования, шрифтов и т.д.*/
 @media only screen and (min-width : 2560px) {
     
@@ -660,72 +755,41 @@ input[type=text]:focus {
 /* Верхнее меню: конец */
 
 /* Основной контент */
-.right-content {
-    flex-grow: 6; 
-    flex-basis: 85.71%;
-}
-
-.background-content {
-    margin-bottom: -7vh;
-}
-
 .background-img {
     height: 25vh;
     max-width: 100%;
-    opacity: 0.7;
-    background-color: white;
 }
 
 .content-columns {
     top: 8vh;
-    position: sticky;
-    display: flex;
-    justify-content: center;
     width: 100%;
 }
 
 .content-column {
-    flex-grow: 0;
-    flex-basis: 17.5%;
     margin-left: 15px;
     margin-right: 15px;
-    justify-content: center;
     top: 8vh;
-    position: sticky;
-}
-
-.content-column.wide {
-    flex-basis: 35%;
 }
 
 .content-column.long {
     height: 80vh;
 }
 
-.content-column.center-text {
-    text-align: center;
-    
-}
-
 .sticky-content {
     top: 9vh;
-    position: sticky;
-}
-
-.profile-box {
-    text-align: center;
-    
 }
 
 .content-box {
-    border-radius: 20px;
-    background-color: white;
     margin-top: 15px;
     margin-bottom: 15px;
     min-height: 20vh;
     -webkit-box-shadow: 0px 0px 9px 3px rgba(0,0,0,0.03);
     -moz-box-shadow: 0px 0px 9px 3px rgba(0,0,0,0.03);
     box-shadow: 0px 0px 9px 3px rgba(0,0,0,0.03);
+}
+
+.content-box.wide {
+    margin-top: 27.5px;
 }
 
 .main-avatar {
@@ -736,10 +800,8 @@ input[type=text]:focus {
 }
 
 .profile-name {
-    font-weight: bold;
     font-size: 28px;
     margin: 5px;
-    
 }
 
 .profile-about {
@@ -748,115 +810,77 @@ input[type=text]:focus {
 }
 
 .profile-stats {
-   display: flex;
-   flex-direction: row;
    margin-top: 30px;
    font-size: 20px;
 }
 
 .profile-stat {
-   flex-grow: 1;
-   flex-basis: 33.33%;
    font-size: 26px;
    padding-bottom: 30px;
 }
 
 .stat-header {
     margin: 15px;
-
-    color: #969696;
 }
 
 .stat-counter {
     font-size: 26px;
 }
 
-.center-borders {
-    border-right: 1px solid #eaeaea;
-    border-left: 1px solid #eaeaea;
-    
-}
-
 .settings-box {
-    display: flex;
-    flex-direction: row;
     margin-top: 15px;
     margin-bottom: 15px;
     min-height: 16vh;
-    flex-wrap: wrap;
-    
 }
 
 .setting-box {
-    flex-grow: 1;
-    flex-shrink: 0;
-    flex-basis: 40%;
     border-radius: 10px;
     margin-top: 10px;
     margin-bottom: 10px;
     margin-left: 10px;
     margin-right: 10px;
-    //min-height: 4vh;
     font-size: 24px;
-    text-align: center;
-    border: 1px solid #d0d3d6;
 }
 
 .setting-box.active {
-    background-color: white;
-    color: #00c5e4;
     -webkit-box-shadow: 0px 0px 9px 3px rgba(0,0,0,0.03);
     -moz-box-shadow: 0px 0px 9px 3px rgba(0,0,0,0.03);
     box-shadow: 0px 0px 9px 3px rgba(0,0,0,0.03);
-    border-style: none;
 }
 
 .setting-icon {
     padding-top: 20px;
     padding-bottom: 5px;
     font-size: 84px;
-    color: #d0d3d6;
 }
 
-.setting-box.active > .setting-icon {
-    color: #00c5e4 !important;
-}
 
 .setting-header {
     padding-top: 10px;
     padding-bottom: 20px;
-    
-    
-    
 }
 
 .posts-box {
     border-radius: 20px;
-    background-color: white;
     margin-top: 15px;
     margin-bottom: 15px;
     min-height: 20vh;
     -webkit-box-shadow: 0px 0px 9px 3px rgba(0,0,0,0.03);
     -moz-box-shadow: 0px 0px 9px 3px rgba(0,0,0,0.03);
     box-shadow: 0px 0px 9px 3px rgba(0,0,0,0.03);
-    
 }
 
 .posts-header {
-    display: flex;
     padding-right: 20px;
     padding-left: 20px;
-    justify-content: space-between;
     font-size: 26px;
     margin-bottom: 20px;
     border-bottom: 1px solid #d0d3d6;
 }
 
 .content-header {
-    display: flex;
     padding-right: 20px;
     padding-left: 20px;
-    justify-content: space-around;
     font-size: 26px;
     margin-bottom: 20px;
     border-bottom: 1px solid #d0d3d6;
@@ -868,8 +892,6 @@ input[type=text]:focus {
     padding-right: 20px;
     padding-top: 20px;
     padding-bottom: 15px;
-    color: #00c5e4;
-    border-bottom: 2px solid #00c5e4;
     
 }
 
@@ -889,10 +911,6 @@ input[type=text]:focus {
     padding-bottom: 15px;
 }
 
-.content-feeds {
-    display: flex;
-}
-
 .content-feed {
     padding-left: 20px;
     padding-right: 20px;
@@ -901,13 +919,11 @@ input[type=text]:focus {
 }
 
 .content-feed.active {
-    color: #00c5e4;
     border-bottom: 2px solid #00c5e4;
     
 }
 
 .feed-parameters {
-    color: #d0d3d6;
     padding-top: 20px;
     padding-bottom: 20px;
 }
@@ -930,45 +946,32 @@ input[type=text]:focus {
 
 .button.button-primary {
     color: white;
-    background-color: #00c5e4;
 }
 
 .post {
     margin-bottom: 25px;
-    
 }
 
 .post-header {
-    display: flex;
-    justify-content: space-between;
     padding-bottom: 5px;
     margin-bottom: 15px;
-    border-bottom: 1px solid #d0d3d6;
     padding-top: 15px;
     padding-bottom: 15px;
-    vertical-align: middle;
-    align-items: center;
 }
 
-.post-header > .author {￼   
+.post-header > .author {
     font-size: 24px;
-    display: flex;
-    vertical-align: middle;
-    align-items: center;
 }
 
 .post-header > .title {
     font-size: 28px;
     padding-left: 10px;
-    font-weight: 600;
 }
 
 .author > .name {
     font-size: 24px;
     padding-left: 10px;
     padding-right: 10px;
-
-    
 }
 
 .author > .avatar {
@@ -979,34 +982,22 @@ input[type=text]:focus {
 .avatar-32 {
     width: 48px;
     height: 48px;
-    border-radius: 50%;
 }
 
 .post-content {
     font-size: 24px;
     padding-left: 10px;
     padding-right: 10px;
-    line-height: 1.46;
 }
 
 .post-footer {
-    border-top: 1px solid #d0d3d6;
     margin-top: 15px;
     padding-top: 10px;
     padding-bottom: 10px;
-    display: flex;
-    justify-content: space-between;
     font-size: 24px;
-    align-items: center;
-}
-
-.post-footer > .date {
-    color: #969696;
 }
 
 .read-more > .read-more-btn {
-    color: white;
-    background-color: #00c5e4;
     padding: 15px;
     border-radius: 5px;
 }
@@ -1016,23 +1007,14 @@ input[type=text]:focus {
     padding-right: 10px;
 }
 
-.rating-comments {
-    display: flex;
-    align-items: center;
-}
-
 .rating-comments > .rating {
     padding-left: 5px;
     padding-right: 5px;
-    display: flex;
-    align-items: center;
 }
 
 .rating-comments > .comments {
     padding-left: 20px;
     padding-right: 20px;
-    display: flex;
-    align-items: center;
 }
 
 .rating > .rating-count {
@@ -1047,12 +1029,10 @@ input[type=text]:focus {
 }
 
 .comments > .comment-icon {
-    color: #d0d3d6; 
     font-size: 40px;
 }
 
 .rating > .rating-btn {
-    color: #d0d3d6;
     font-size: 48px;
 }
 /* Основной контент - конец */
