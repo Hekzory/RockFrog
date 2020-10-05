@@ -264,7 +264,7 @@ input[type=text]:focus {
     background-color: white;
     margin-top: 10px;
     margin-bottom: 10px;
-    min-height: 20vh;
+    min-height: 10vh;
     -webkit-box-shadow: 0px 0px 9px 3px rgba(0,0,0,0.03);
     -moz-box-shadow: 0px 0px 9px 3px rgba(0,0,0,0.03);
     box-shadow: 0px 0px 9px 3px rgba(0,0,0,0.03);
@@ -346,6 +346,9 @@ input[type=text]:focus {
     font-size: 16px;
     text-align: center;
     border: 1px solid #d0d3d6;
+    text-decoration: none;
+    display: block;
+    color: #353535;
 }
 
 .setting-box.active {
@@ -501,6 +504,8 @@ input[type=text]:focus {
     font-size: 18px;
     padding-left: 5px;
     font-weight: 600;
+    color: #353535;
+    text-decoration: none;
 }
 
 .author > .name {
@@ -547,6 +552,8 @@ input[type=text]:focus {
     background-color: #00c5e4;
     padding: 10px;
     border-radius: 4px;
+    text-decoration: none;
+    display: block;
 }
 
 .read-more {
@@ -571,17 +578,20 @@ input[type=text]:focus {
     padding-right: 15px;
     display: flex;
     align-items: center;
+    text-decoration: none;
 }
 
 .rating > .rating-count {
     padding-left: 5px;
     padding-right: 5px;
     font-size: 17px;
+    color: #353535;
 }
 
 .comments > .comment-count {
     padding-left: 5px;
     font-size: 17px;
+    color: #353535;
 }
 
 .comments > .comment-icon {
@@ -675,6 +685,35 @@ input[type=text]:focus {
     margin-right: 10px;
 }
 /* Стили для страницы личных сообщений - конец */
+
+/* Настройки профилей - начало */
+
+.category-table {
+    display: flex;
+    min-height: 100%;
+    flex-direction: column;
+}
+
+.category-row {
+    padding-top: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #d0d3d6;
+    font-size: 18px;
+    text-decoration: none;
+    color: #353535;
+}
+
+.category-row.last {
+    border-bottom: 0px solid #d0d3d6;
+}
+
+.category-row.active {
+    color: #00ccea;
+
+}
+
+
+/* Настройки профилей - конец */
 
 /* Для экранов шириной больше 2560 пикселей - начало. Изменения только в области масштабирования, шрифтов и т.д.*/
 @media only screen and (min-width : 2560px) {
@@ -804,7 +843,6 @@ input[type=text]:focus {
 .content-box {
     margin-top: 15px;
     margin-bottom: 15px;
-    min-height: 20vh;
     -webkit-box-shadow: 0px 0px 9px 3px rgba(0,0,0,0.03);
     -moz-box-shadow: 0px 0px 9px 3px rgba(0,0,0,0.03);
     box-shadow: 0px 0px 9px 3px rgba(0,0,0,0.03);
@@ -1058,6 +1096,17 @@ input[type=text]:focus {
     font-size: 48px;
 }
 /* Основной контент - конец */
-    
+/* Настройки профилей - начало */
+
+
+.category-row {
+    padding-top: 25px;
+    padding-bottom: 25px;
+    font-size: 22px;
+}
+
+
+
+/* Настройки профилей - конец */
 }
 /* Для экранов шириной больше 2560 пикселей - конец */

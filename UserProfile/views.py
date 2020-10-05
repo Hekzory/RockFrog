@@ -294,3 +294,15 @@ def update_rating(request):
 
     user.profile.save()
     return HttpResponseRedirect('/profile/')
+
+
+class ProfileSettings(View):
+    def get(self, request):
+        if not request.user.is_authenticated:
+            return HttpResponseRedirect("/")
+        else:
+            template = loader.get_template('UserProfile/aero/profile_settings.html')
+            context = dict()
+            context['current_app_name'] = "profile"
+            context['user'] = request.user
+            return HttpResponse(template.render(context, request))

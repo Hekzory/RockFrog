@@ -1,11 +1,4 @@
 {% extends "aero/base_page.html" %}
-
-{% load static %}
-
-{% block links %}
-    <script src="{% static 'aero/posts/js/functions.js' %}"></script>
-{% endblock %}
-
 {% block main_content %}
 <div class="background-content">
     <img class="background-img" src="/static/aero/profile/img/everest.jpg"/>
@@ -49,7 +42,7 @@
                 </div>
             </div>
             <div class="settings-box">
-                <a class="setting-box active" href="/profile/">
+                <a class="setting-box" href="/profile/">
                     <div class="setting-icon">
                         <ion-icon name="eye-sharp"></ion-icon>
                     </div>
@@ -65,7 +58,7 @@
                         Изменить профиль
                     </div>
                 </a>
-                <a class="setting-box" href="/profile/settings">
+                <a class="setting-box active" href="/profile/settings">
                     <div class="setting-icon">
                         <ion-icon name="settings-sharp"></ion-icon>
                     </div>
@@ -85,38 +78,26 @@
         </div>
     </div>
     <div class="content-column wide">
-        <div class="posts-box">
-            <div class="posts-header">
-                <div class="content-feeds">
-                    <div class="content-feed active">Мои посты</div>
-                    <div class="content-feed">Реакции</div>
-                </div>
-                <div class="feed-parameters">
-                    <ion-icon name="settings-sharp"></ion-icon>
-                </div>
-            </div>
-            <div class="posts-content">
-                {% for post in posts %}
-                    {% include 'UserProfile/aero/profile_post.html' %}
-                {% endfor %}
-            </div>
+        <div class="content-box">
+
         </div>
     </div>
     <div class="content-column center-text">
         <div class="sticky-content">
             <div class="content-box">
-                <div class="content-header">
-                    <div class="header">
-                        Доска
-                    </div>
-                </div>
-                <div class="content">
-                    <div class="text-content">
-                        Пусто. Выберите предмет или достижение, и его увидят все пользователи!
-                    </div>
-                    <div class="button-content">
-                        <div class="button button-primary">Выбрать</div>
-                    </div>
+                <div class="category-table">
+                    <a href="{% url 'UserProfile:edit_security' %}" class="category-row">
+                        Безопасность
+                    </a>
+                    <a href="{% url 'UserProfile:edit_notifications' %}" class="category-row">
+                        Уведомления
+                    </a>
+                    <a href="{% url 'UserProfile:edit_privacy' %}" class="category-row">
+                        Приватность
+                    </a>
+                    <a href="{% url 'UserProfile:blockedusers' %}" class="category-row last">
+                        Чёрный список
+                    </a>
                 </div>
             </div>
         </div>
