@@ -80,7 +80,28 @@
     <div class="content-column wide">
         <div class="content-box">
             <div class="content-box-text">
-                Это настройки. Чтобы приступить, выберите раздел слева.
+                Настройки уведомлений
+            </div>
+            {% csrf_token %}
+            <div class="settings-table">
+                <div class="settings-row">
+                    <div class="settings-row-text">Уведомления о новых сообщениях</div>
+                    <div class="settings-row-checkbox">
+                        <input type="checkbox" onclick="toggle_personal_message_notifications()" id="id_personal_message_notifications" {% if personal_message_notifications %} checked {% endif %}>
+                    </div>
+                </div>
+                <div class="settings-row">
+                    <div class="settings-row-text">Уведомления о вступлении в закрытое сообщество</div>
+                    <div class="settings-row-checkbox">
+                        <input type="checkbox" onclick="toggle_accepted_to_group_notifications()" id="id_accepted_to_group_notifications" {% if accepted_to_group_notifications %} checked {% endif %}>
+                    </div>
+                </div>
+                <div class="settings-row">
+                    <div class="settings-row-text">Уведомления о публикации предложенных записей</div>
+                    <div class="settings-row-checkbox">
+                        <input type="checkbox" onclick="toggle_post_published_notifications()" id="id_post_published_notifications" {% if post_published_notifications %} checked {% endif %}>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -91,7 +112,7 @@
                     <a href="{% url 'UserProfile:edit_security' %}" class="category-row">
                         Безопасность
                     </a>
-                    <a href="{% url 'UserProfile:edit_notifications' %}" class="category-row">
+                    <a href="{% url 'UserProfile:edit_notifications' %}" class="category-row active">
                         Уведомления
                     </a>
                     <a href="{% url 'UserProfile:edit_privacy' %}" class="category-row">
@@ -105,4 +126,7 @@
         </div>
     </div>
 </div>
+{% endblock %}
+{% block scripts %}
+<script src="/static/aero/profile/js/settings.js"></script>
 {% endblock %}

@@ -115,13 +115,47 @@ class EditPrivacyView(View):
         else:
             initial_params = dict()
             initial_params['allow_to_view_for_unreg'] = request.user.profile.privacysettings.allow_to_view_for_unreg
-            template = loader.get_template('UserProfile/edit_privacy.html')
+            template = loader.get_template('UserProfile/aero/edit_privacy.html')
             form = PrivacySettingsForm(initial=initial_params)
             context = {'form': form}
             context['current_app_name'] = "profile"
             return HttpResponse(template.render(context, request))
 
     def post(self, request):
+        if not request.user.is_authenticated:
+            return HttpResponseRedirect('/')
+        else:
+            request.user.profile.last_online_update()
+            bound_form = PrivacySettingsForm(request.POST)
+            check = bound_form.is_valid()
+            if check:
+                bound_form.change_privacy_settings(request.user)
+                initial_params = dict()
+                initial_params['allow_to_view_for_unreg'] = request.user.profile.privacysettings.allow_to_view_for_unreg
+                template = loader.get_template('UserProfile/aero/edit_privacy.html')
+                form = PrivacySettingsForm(initial=initial_params)
+                context = {'form': form}
+                context['current_app_name'] = "profile"
+                return HttpResponse(template.render(context, request))
+            else:
+                template = loader.get_template('UserProfile/aero/edit_privacy.html')
+                context = {'form': bound_form}
+                context['current_app_name'] = "profile"
+                return HttpResponse(template.render(context, request))
+
+    def get_deprecated(self, request):
+        if not request.user.is_authenticated:
+            return HttpResponseRedirect('/')
+        else:
+            initial_params = dict()
+            initial_params['allow_to_view_for_unreg'] = request.user.profile.privacysettings.allow_to_view_for_unreg
+            template = loader.get_template('UserProfile/edit_privacy.html')
+            form = PrivacySettingsForm(initial=initial_params)
+            context = {'form': form}
+            context['current_app_name'] = "profile"
+            return HttpResponse(template.render(context, request))
+
+    def post_deprecated(self, request):
         if not request.user.is_authenticated:
             return HttpResponseRedirect('/')
         else:
@@ -155,7 +189,7 @@ class EditNotificationsView(View):
             context['accepted_to_group_notifications'] = request.user.profile.notificationsettings.accepted_to_group_notifications
             context['post_published_notifications'] = request.user.profile.notificationsettings.post_published_notifications
             context['current_app_name'] = "profile"
-            template = loader.get_template('UserProfile/edit_notifications.html')
+            template = loader.get_template('UserProfile/aero/edit_notifications.html')
             return HttpResponse(template.render(context, request))
 
     def post(self, request):
@@ -176,11 +210,73 @@ class EditNotificationsView(View):
             request.user.profile.notificationsettings.save()
             return JsonResponse({'status': 'ok'})
 
+    def get_deprecated(self, request):
+        if not request.user.is_authenticated:
+            return HttpResponseRedirect('/')
+        else:
+            context = dict()
+            context['user'] = request.user
+            context['personal_message_notifications'] = request.user.profile.notificationsettings.personal_message_notifications
+            context['accepted_to_group_notifications'] = request.user.profile.notificationsettings.accepted_to_group_notifications
+            context['post_published_notifications'] = request.user.profile.notificationsettings.post_published_notifications
+            context['current_app_name'] = "profile"
+            template = loader.get_template('UserProfile/edit_notifications.html')
+            return HttpResponse(template.render(context, request))
 
+    def post_deprecated(self, request):
+        if not request.user.is_authenticated:
+            return JsonResponse({'status': 'NotAuthenticated'})
+        type = request.POST['type']
+        current_state = request.POST['current_state'] == 'true'
+        if type == 'personal_message_notifications':
+            request.user.profile.notificationsettings.personal_message_notifications = current_state
+            request.user.profile.notificationsettings.save()
+            return JsonResponse({'status': 'ok'})
+        elif type == 'accepted_to_group_notifications':
+            request.user.profile.notificationsettings.accepted_to_group_notifications = current_state
+            request.user.profile.notificationsettings.save()
+            return JsonResponse({'status': 'ok'})
+        elif type == 'post_published_notifications':
+            request.user.profile.notificationsettings.post_published_notifications = current_state
+            request.user.profile.notificationsettings.save()
+            return JsonResponse({'status': 'ok'})
 
 
 class EditSecurityView(View):
     def get(self, request):
+        if not request.user.is_authenticated:
+            return HttpResponseRedirect('/')
+        else:
+            template = loader.get_template('UserProfile/aero/edit_security.html')
+            form = ChangePasswordForm()
+            context = {'form': form}
+            context['current_app_name'] = "profile"
+            return HttpResponse(template.render(context, request))
+
+    def post(self, request):
+        if not request.user.is_authenticated:
+            return HttpResponseRedirect('/')
+        else:
+            request.user.profile.last_online_update()
+            bound_form = ChangePasswordForm(request.POST)
+            check = bound_form.is_valid()
+            if check:
+                result = bound_form.change_password(request.user)
+                new_form = ChangePasswordForm()
+                context = {'change_error': not result, 'form' : new_form}
+                context['current_app_name'] = "profile"
+                if context['change_error']:
+                    template = loader.get_template('UserProfile/aero/edit_security.html')
+                else:
+                    template = loader.get_template('UserProfile/aero/password_changed.html')
+                return HttpResponse(template.render(context, request))
+            else:
+                template = loader.get_template('UserProfile/aero/edit_security.html')
+                context = {'form': bound_form}
+                context['current_app_name'] = "profile"
+                return HttpResponse(template.render(context, request))
+
+    def get_deprecated(self, request):
         if not request.user.is_authenticated:
             return HttpResponseRedirect('/')
         else:
@@ -190,7 +286,7 @@ class EditSecurityView(View):
             context['current_app_name'] = "profile"
             return HttpResponse(template.render(context, request))
 
-    def post(self, request):
+    def post_deprecated(self, request):
         if not request.user.is_authenticated:
             return HttpResponseRedirect('/')
         else:
@@ -216,6 +312,15 @@ class EditSecurityView(View):
 
 class BlockedUsersView(View):
     def get(self, request):
+        if not request.user.is_authenticated:
+            return HttpResponseRedirect('/')
+        else:
+            template = loader.get_template('UserProfile/aero/blacklist.html')
+            context = {'blacklist': request.user.profile.blacklist.all()}
+            context['current_app_name'] = "profile"
+            return HttpResponse(template.render(context, request))
+
+    def get_deprecated(self, request):
         if not request.user.is_authenticated:
             return HttpResponseRedirect('/')
         else:
@@ -263,6 +368,18 @@ class UnblockUserView(View):
             return JsonResponse({'status': 'ok'})
 
 
+class ProfileSettings(View):
+    def get(self, request):
+        if not request.user.is_authenticated:
+            return HttpResponseRedirect("/")
+        else:
+            template = loader.get_template('UserProfile/aero/profile_settings.html')
+            context = dict()
+            context['current_app_name'] = "profile"
+            context['user'] = request.user
+            return HttpResponse(template.render(context, request))
+
+
 def update_rating_lite(request):
     user = request.user
     user.profile.rating = 0
@@ -296,13 +413,3 @@ def update_rating(request):
     return HttpResponseRedirect('/profile/')
 
 
-class ProfileSettings(View):
-    def get(self, request):
-        if not request.user.is_authenticated:
-            return HttpResponseRedirect("/")
-        else:
-            template = loader.get_template('UserProfile/aero/profile_settings.html')
-            context = dict()
-            context['current_app_name'] = "profile"
-            context['user'] = request.user
-            return HttpResponse(template.render(context, request))

@@ -709,9 +709,42 @@ input[type=text]:focus {
 
 .category-row.active {
     color: #00ccea;
-
 }
 
+.content-box-text {
+    text-align: center;
+    padding-top: 30px;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-bottom: 30px;
+    font-size: 18px;
+}
+
+.settings-table {
+    display: flex;
+    flex-direction: column;
+}
+
+.settings-row {
+    display: flex;
+    padding-left: 15px;
+    padding-right: 15px;
+    justify-content: space-between;
+}
+
+.settings-row-text {
+    padding-top: 20px;
+    padding-bottom: 20px;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+.settings-row-checkbox {
+    padding-top: 20px;
+    padding-bottom: 20px;
+    padding-left: 15px;
+    padding-right: 15px;
+}
 
 /* Настройки профилей - конец */
 
