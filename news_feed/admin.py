@@ -23,19 +23,19 @@ class ArticleFilesListAdmin(admin.ModelAdmin):
     readonly_fields = ['id']
 
 class BasicArticlesAdmin(admin.ModelAdmin):
-    fields = ['id', 'author', 'text', 'pubdate', 'pluses', 'minuses', 'comments', 'files']
+    fields = ['id', 'author', 'title', 'text', 'pubdate', 'pluses', 'minuses', 'comments', 'files', 'rating']
     readonly_fields = ['id']
 
 class PersonalArticlesAdmin(admin.ModelAdmin):
-    fields = ['id', 'author', 'text', 'pubdate', 'pluses', 'minuses', 'comments', 'files']
+    fields = ['id', 'author', 'title', 'text', 'pubdate', 'pluses', 'minuses', 'comments', 'files', 'rating']
     readonly_fields = ['id']
 
 class PersonalInCommunityArticlesAdmin(admin.ModelAdmin):
-    fields = ['id', 'author', 'group', 'text', 'allowed', 'pubdate', 'pluses', 'minuses', 'comments', 'files']
+    fields = ['id', 'author', 'title', 'group', 'text', 'allowed', 'pubdate', 'pluses', 'minuses', 'comments', 'files', 'rating']
     readonly_fields = ['id']
 
 class CommunityArticlesAdmin(admin.ModelAdmin):
-    fields = ['id', 'group', 'text', 'allowed', 'pubdate', 'pluses', 'minuses', 'comments', 'files']   
+    fields = ['id', 'group', 'title', 'text', 'allowed', 'pubdate', 'pluses', 'minuses', 'comments', 'files', 'rating']   
     readonly_fields = ['id'] 
 
 admin.site.register(NewsFeedArticlesList, NewsFeedArticlesListAdmin)

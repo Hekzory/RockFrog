@@ -1,0 +1,52 @@
+{% extends "aero/base_page.html" %}
+
+{% load static %}
+
+{% block links %}
+    <script src="{% static 'aero/posts/js/functions.js' %}"></script>
+{% endblock %}
+
+{% block main_content %}
+<div class="background-content">
+    <img class="background-img" src="/static/aero/profile/img/everest.jpg"/>
+</div>
+<div class="content-columns" id="content-columns">
+    <div class="content-column long">
+        <div class="posts-box">
+            <div class="posts-header">
+                <div class="content-feeds">
+                    <div class="content-feed active">Мои посты</div>
+                    <div class="content-feed">Реакции</div>
+                </div>
+                <div class="feed-parameters">
+                    <ion-icon name="settings-sharp"></ion-icon>
+                </div>
+            </div>
+            <div class="posts-content">
+                {% for post in posts %}
+                    {% include 'UserProfile/aero/profile_post.html' %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <div class="content-column center-text">
+        <div class="sticky-content">
+            <div class="content-box">
+                <div class="content-header">
+                    <div class="header">
+                        Доска
+                    </div>
+                </div>
+                <div class="content">
+                    <div class="text-content">
+                        Пусто. Выберите предмет или достижение, и его увидят все пользователи!
+                    </div>
+                    <div class="button-content">
+                        <div class="button button-primary">Выбрать</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

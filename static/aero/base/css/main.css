@@ -17,6 +17,27 @@ body {
     letter-spacing: 0.005em;
     font-stretch: condensed;
 }
+
+.grey-icon:hover {
+    color: #e0e3e6 !important;
+    transition-property: color;
+    transition-duration: 0.2s;
+}
+
+.blue-icon {
+    color: #00ccea !important;
+}
+
+.blue-icon:hover {
+    color: #10dcfa !important;
+    transition-property: color;
+    transition-duration: 0.2s;
+}
+
+.pointer {
+    cursor: pointer;
+}
+
 .page-container {
     display: flex;
     flex-direction: row;
@@ -32,6 +53,7 @@ body {
     box-shadow: 2px 0px 10px 0px rgba(92, 92, 92, 0.05);
     z-index: 1020;
 }
+
 .sidebar {
     display: flex;
     flex-direction: column;

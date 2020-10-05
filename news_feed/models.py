@@ -108,7 +108,7 @@ class BasicComment(models.Model):
 class BasicArticle(models.Model):
 	allowed = models.BooleanField(default=True)
 	author = models.ForeignKey(User, on_delete=models.PROTECT, related_name='articles', null=True, blank=True)
-	title = models.TextField(max_length=40, null=True, blank=True)
+	title = models.CharField(max_length=256, default='')
 	text = models.TextField()	
 	pubdate = models.DateTimeField('date published', default=datetime.now)      
 	pluses = models.ManyToManyField(User, blank=True, related_name='plused_articles')
@@ -118,7 +118,7 @@ class BasicArticle(models.Model):
 	comments = models.OneToOneField(CommentsList, on_delete=models.CASCADE, null=True, blank=True, related_name="article")
 	files = models.OneToOneField(ArticleFilesList, on_delete=models.CASCADE, null=True, blank=True, related_name="article")
 
-	rating = models.FloatField(null=True, blank=True, default=0)
+	rating = models.IntegerField(default=0)
 
 	objects = InheritanceManager()
 
@@ -143,7 +143,8 @@ class BasicArticle(models.Model):
 
 	def increase_rating(self):		
 		article = self.get_child()
-		article.rating += 1
+		self.rating += 1
+		print(0)
 		if article.__class__.__name__ == 'PersonalArticle':
 			article.author.profile.rating += 1
 			article.author.profile.save()			
@@ -155,11 +156,11 @@ class BasicArticle(models.Model):
 		elif article.__class__.__name__ == 'CommunityArticle':
 			article.group.rating += 1
 			article.group.save()
-		article.save()
+		self.save()
 
 	def decrease_rating(self):		
 		article = self.get_child()
-		article.rating -= 1
+		self.rating -= 1
 		if article.__class__.__name__ == 'PersonalArticle':
 			article.author.profile.rating -= 1
 			article.author.profile.save()
@@ -171,7 +172,7 @@ class BasicArticle(models.Model):
 		elif article.__class__.__name__ == 'CommunityArticle':
 			article.group.rating -= 1
 			article.group.save()
-		article.save()
+		self.save()
 
 	def can_see_article(self, user):
 		return False
@@ -237,6 +238,7 @@ class PersonalArticle(BasicArticle):
 		return self.allowed and self.author == user
 
 	def can_plus_or_comment(self, user):
+		return True
 		return self.allowed and user not in self.author.profile.blacklist.all()
 
 class CommunityArticle(BasicArticle):

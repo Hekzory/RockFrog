@@ -1,0 +1,64 @@
+{% load templatetags %}
+
+<div class="post">
+    <div class="post-header">
+        <a class="title" href="{% url 'news_feed:view_article' post.id %}">
+            {{ post.title|truncatechars:60 }}
+        </a>
+        <div class="author">
+            <div class="name">
+                {{ post.author }}
+            </div>
+            <div class="avatar">
+                <img class="avatar-32" src="/media/{{ user.profile.avatar }}"/>
+            </div>
+        </div>
+    </div>
+    <div class="post-content">
+        {{ post.text|truncatechars:200 }}
+    </div>
+    <div class="post-footer">
+        <div class="rating-comments">
+            <div class="rating">
+                {% if request.user.is_authenticated %}
+                    {% can_plus post request.user as can_plus_val %}
+                    {% if not can_plus_val %}
+                        <ion-icon class="rating-btn" name="arrow-up-circle-sharp"></ion-icon>
+                        <div id="rating{{ post.id }}" class="rating-count">{% if post.rating > 0 %}+{% endif %}{{ post.rating }}</div>
+                        <ion-icon class="rating-btn" name="arrow-down-circle-sharp"></ion-icon>
+                    {% else %}
+                        {% if request.user in post.pluses.all %}
+                            <ion-icon id="plusicon{{post.id}}" class="rating-btn grey-icon blue-icon pointer" name="arrow-up-circle-sharp" onclick="plus_minus('{{ post.id }}', 'remove_plus')"></ion-icon>
+                            <div id="rating{{ post.id }}" class="rating-count">{% if post.rating > 0 %}+{% endif %}{{ post.rating }}</div>
+                            <ion-icon id="minusicon{{post.id}}" class="rating-btn grey-icon pointer" name="arrow-down-circle-sharp" onclick="plus_minus('{{ post.id }}', 'minusminus')"></ion-icon>  
+                        {% elif request.user in post.minuses.all %}
+                            <ion-icon id="plusicon{{post.id}}" class="rating-btn grey-icon pointer" name="arrow-up-circle-sharp" onclick="plus_minus('{{ post.id }}', 'plusplus')"></ion-icon>
+                            <div id="rating{{ post.id }}" class="rating-count">{% if post.rating > 0 %}+{% endif %}{{ post.rating }}</div>
+                            <ion-icon  id="minusicon{{post.id}}" class="rating-btn grey-icon blue-icon pointer" name="arrow-down-circle-sharp" onclick="plus_minus('{{ post.id }}', 'remove_minus')"></ion-icon>  
+                        {% else %}
+                            <ion-icon id="plusicon{{post.id}}" class="rating-btn grey-icon pointer" name="arrow-up-circle-sharp" onclick="plus_minus('{{ post.id }}', 'plus')"></ion-icon>
+                            <div id="rating{{ post.id }}" class="rating-count">{% if post.rating > 0 %}+{% endif %}{{ post.rating }}</div>
+                            <ion-icon id="minusicon{{post.id}}" class="rating-btn grey-icon pointer" name="arrow-down-circle-sharp" onclick="plus_minus('{{ post.id }}', 'minus')"></ion-icon>                            
+                        {% endif %} 
+                    {% endif %}
+                {% else %}
+                    <ion-icon class="rating-btn" name="arrow-up-circle-sharp"></ion-icon>
+                    <div class="rating-count">{% if post.rating > 0 %}+{% endif %}{{ post.rating }}</div>
+                    <ion-icon class="rating-btn" name="arrow-down-circle-sharp"></ion-icon>
+                {% endif %}
+            </div>
+            <a class="comments" href="{% url 'news_feed:view_article' post.id %}">
+                <ion-icon class="comment-icon" name="chatbox-sharp"></ion-icon>
+                <div class="comment-count">{{ post.comments.comments.count }}</div>
+            </a>
+        </div>
+        <div class="date">
+            {{ post.pubdate }}
+        </div>
+        <div class="read-more">
+            <a class="read-more-btn" href="{% url 'news_feed:view_article' post.id %}">
+                Читать далее
+            </a>
+        </div>
+    </div>
+</div>

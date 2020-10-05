@@ -1,9 +1,11 @@
 <!doctype html>
+{% csrf_token %}
 <html lang="ru">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>Главная</title>
+    {% block links %}{% endblock %}
     <link rel="stylesheet" type="text/css" href="/static/aero/base/css/main.css">
     <script src="https://unpkg.com/ionicons@5.1.2/dist/ionicons.js"></script>
     <script
