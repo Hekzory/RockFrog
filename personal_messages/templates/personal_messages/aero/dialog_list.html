@@ -13,9 +13,11 @@
                     {% for dialog in dialogs %}
                     <div class="message-row">
                         <div class="message-avatar">
-                            <img src="/static/aero/profile/img/avatar.jpg" \>
+                            <a class="message-avatar-link" href="/profile/{{dialog.0}}">
+                                <img src="/static/aero/profile/img/avatar.jpg" \>
+                            </a>
                         </div>
-                        <div class="message-info">
+                        <a class="message-info" href="/conversations/user/{{ dialog.0.id }}">
                             <div class="message-info-upper">
                                 <div class="message-info-author">@{{ dialog.0 }}</div>
                                 <div class="message-info-date">{{ dialog.1.last_interaction }}</div>
@@ -32,7 +34,7 @@
                                 <div class="message-info-counter">{{dialog.2}}</div>
                                 {% endif %}
                             </div>
-                        </div>
+                        </a>
                     </div>
                     {% endfor %}
                 </div>

@@ -266,7 +266,7 @@ class PersonalInCommunityArticle(BasicArticle):
 		return self.allowed and self.group.can_see_group(user)
 
 class NewsFeedArticlesList(models.Model):
-	articles = models.ManyToManyField(BasicArticle, blank=True, null=True)
+	articles = models.ManyToManyField(BasicArticle, blank=True)
 	list_type = models.CharField(max_length=40, default='best')
 
 	def generate_articles(self, days, limit):	

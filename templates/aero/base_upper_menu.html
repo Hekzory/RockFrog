@@ -6,9 +6,18 @@
         <input type="text" class="search-box" placeholder="Поиск">
     </div>
     <div class="profile">
+        {% if request.user.is_authenticated %}
         <div class="upper-profile-menu">
             Привет, admin!
         </div>
         <img class="menu-profile-img" src="/media/{{ user.profile.avatar }}"/>
+        {% if request.user.is_staff %}
+        <a class="upper-menu-link" href="/admin">Админ-панель</a>
+        {% endif %}
+        <a class="upper-menu-link" href="/auth/logout">Выход</a>
+        {% else %}
+        <a class="upper-menu-link" href="/auth/login">Вход</a>
+        <a class="upper-menu-link" href="/auth/register">Регистрация</a>
+        {% endif %}
     </div>
 </div>
