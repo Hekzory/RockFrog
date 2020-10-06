@@ -80,7 +80,41 @@
     <div class="content-column wide">
         <div class="content-box">
             <div class="content-box-text">
-                Настройки безопасности.
+                Настройки безопасности
+            </div>
+            <div class="content-box-text">
+                Смена пароля
+            </div>
+            {% csrf_token %}
+            <div class="settings-table">
+                <div class="settings-row">
+                    <div class="settings-row-text">Старый пароль</div>
+                    <div class="settings-row-field">
+                        <input type="password" class="password-field" id="id_old_password" placeholder="Старый пароль">
+                    </div>
+                </div>
+                <div class="settings-row">
+                    <div class="settings-row-text">Новый пароль</div>
+                    <div class="settings-row-field">
+                        <input type="password" class="password-field" id="id_new_password" placeholder="Новый пароль">
+                    </div>
+                </div>
+                <div class="settings-row">
+                    <div class="settings-row-text">Подтверждение пароля</div>
+                    <div class="settings-row-field">
+                        <input type="password" class="password-field" id="id_confirm_password" placeholder="Повторите пароль">
+                    </div>
+                </div>
+                <div class="settings-row-button" id="id_notification_password_row" style="display: none;">
+                    <div class="settings-row-notification" id="id_notification_password">
+
+                    </div>
+                </div>
+                <div class="settings-row-button">
+                    <div class="settings-button" onclick="change_password()">
+                        Изменить
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -105,4 +139,7 @@
         </div>
     </div>
 </div>
+{% endblock %}
+{% block scripts %}
+<script src="/static/aero/profile/js/settings.js"></script>
 {% endblock %}

@@ -750,6 +750,7 @@ input[type=text]:focus {
     padding-left: 15px;
     padding-right: 15px;
     justify-content: space-between;
+    align-items: center;
 }
 
 .settings-row-text {
@@ -764,6 +765,58 @@ input[type=text]:focus {
     padding-bottom: 20px;
     padding-left: 15px;
     padding-right: 15px;
+}
+
+.settings-row-field {
+    padding-top: 20px;
+    padding-bottom: 20px;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+.settings-row-button {
+    display: flex;
+    padding-left: 15px;
+    padding-right: 15px;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.settings-row-notification {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+
+.password-field {
+    font-size: 16px;
+    border-radius: 0px;
+    border: none;
+    padding: 10px 0;
+    border-bottom: 1px solid #d0d3d6;
+    outline: none;
+}
+
+.password-field:focus {
+    border-bottom: 1px solid #00c5e4;
+}
+
+.password-field::placeholder {
+    color: #d0d3d6;
+}
+
+.settings-button {
+    color: white;
+    background-color: #00c5e4;
+    padding: 10px;
+    border-radius: 4px;
+    text-decoration: none;
+    display: block;
+    self-align: center;
+    cursor: pointer;
 }
 
 /* Настройки профилей - конец */

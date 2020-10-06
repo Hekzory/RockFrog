@@ -42,3 +42,50 @@ function toggle_post_published_notifications() {
         },
     });
 }
+
+function toggle_view_for_unreg() {
+    var current_state = document.getElementById('id_view_for_unreg').checked;
+    var type = 'view_for_unreg';
+    var csrftoken = $('input[name="csrfmiddlewaretoken"]').val();
+    $.ajax({
+        url : "/profile/settings/edit_privacy/",
+        type : "POST",
+        data : {
+            'current_state' : current_state,
+            'type' : type,
+        	'csrfmiddlewaretoken': csrftoken,
+        },
+    });
+}
+
+function change_password() {
+    var current_password = document.getElementById('id_old_password').value;
+    var new_password = document.getElementById('id_new_password').value;
+    var confirm_password = document.getElementById('id_confirm_password').value;
+    var csrftoken = $('input[name="csrfmiddlewaretoken"]').val();
+    $.ajax({
+        url : "/profile/settings/edit_security/",
+        type : "POST",
+        data : {
+            'old_password': current_password,
+            'new_password': new_password,
+            'confirm_password': confirm_password,
+            'type' : 'change_password',
+        	'csrfmiddlewaretoken': csrftoken,
+        },
+        success : function(data) {
+			if (data["status"] == "ok") {
+			    document.getElementById('id_old_password').value = "";
+                document.getElementById('id_new_password').value = "";
+                document.getElementById('id_confirm_password').value = "";
+                $('#id_notification_password_row').show();
+                $('#id_notification_password').text('Пароль был успешно изменён. Авторизуйтесь повторно.');
+			}
+			else if (data["status"] == "error") {
+			    $('#id_notification_password_row').show();
+			    $('#id_notification_password').text(data['error']);
+			}
+
+        },
+    });
+}
