@@ -506,10 +506,10 @@ def moreedit(request, groupid):
 					pass
 				group.image = request.FILES['groupimage']	
 
-				new_article = GroupArticle(group=group, text='В сообществе обновлена фотография', pubdate=datetime.now())
+				new_article = CommunityArticle(group=group, text='В сообществе обновлена фотография')
 				new_article.save()
 					
-				new_file = ArticleFile(article=new_article, name=request.FILES['groupimage'].name, file=request.FILES['groupimage'])
+				new_file = BasicArticleFile(files_list=new_article.files, name=request.FILES['groupimage'].name, file=request.FILES['groupimage'])
 				new_file.save()
 
 				group.save()

@@ -4,10 +4,17 @@
             <img width="48" height="48" src="/static/aero/base/img/logo.png"/>
         </div>
         <div class="left-menu-element-list">
+            {% if current_app_name == "news_feed" %}
+            <a class="left-menu-link active" href="/">
+                <ion-icon name="newspaper-sharp" class="left-menu-icon active"></ion-icon>
+                <div class="left-menu-element active">Лента</div>
+            </a>
+            {% else %}
             <a class="left-menu-link" href="/">
                 <ion-icon name="newspaper-sharp" class="left-menu-icon"></ion-icon>
                 <div class="left-menu-element">Лента</div>
-            </a>
+            </a>  
+            {% endif %}          
             <a class="left-menu-link" href="/groups/">
                 <ion-icon name="people-sharp" class="left-menu-icon"></ion-icon>
                 <div class="left-menu-element">Сообщества</div>

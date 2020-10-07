@@ -93,6 +93,8 @@ def view_article(request, articleid):
 		article = BasicArticle.objects.get(id=articleid).get_child()
 		context = {
 			'post': article,
+			'title': 'Пост',
+			'current_app_name': 'news_feed',
 		}
 		return render(request, 'news_feed/aero/news_feed_article.html', context)
 	else:

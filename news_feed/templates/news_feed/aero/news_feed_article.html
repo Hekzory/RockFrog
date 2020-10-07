@@ -1,31 +1,99 @@
 {% extends "aero/base_page.html" %}
 
 {% load static %}
+{% load templatetags %}
 
-{% block links %}
+{% block scripts %}
     <script src="{% static 'aero/posts/js/functions.js' %}"></script>
 {% endblock %}
 
+{% block css %}
+    <link rel="stylesheet" type="text/css" href="/static/aero/posts/css/post.css">
+{% endblock %}
+
 {% block main_content %}
-<div class="background-content">
-    <img class="background-img" src="/static/aero/profile/img/everest.jpg"/>
-</div>
 <div class="content-columns" id="content-columns">
-    <div class="content-column long">
-        <div class="posts-box">
-            <div class="posts-header">
-                <div class="content-feeds">
-                    <div class="content-feed active">Мои посты</div>
-                    <div class="content-feed">Реакции</div>
+    <div class="wide-content-column">
+        <div class="content-box wide">
+            <div class="content">
+                <div class="post">
+                    <div class="big-post-header">
+                        <div class="title">
+                            {{ post.title }}
+                        </div>
+                    </div>
+                    <div class="big-post-content">
+                        {{ post.text }}
+                    </div>
+                    <div class="big-post-footer">
+                        <div class="author">
+                            <div class="avatar">
+                                {% if post|class_name == 'CommunityArticle' %}
+                                <img class="avatar-32" src="{{ post.group.image.url }}"/>
+                                {% else %}
+                                <img class="avatar-32" src="/media/{{ post.author.profile.avatar }}"/>
+                                {% endif %}
+                            </div>
+                            {% if post|class_name == 'CommunityArticle' %}
+                            <a class="name" href="{% url 'communities:community' post.group.slug %}">
+                                {{ post.group.groupname }}
+                            </a>                            
+                            {% else %}
+                            <a class="name" href="{% url 'UserProfile:userprofile' post.author %}">
+                                {{ post.author }}
+                            </a>
+                            {% endif %}
+                        </div>
+                        <div class="secondary-info">
+                            {{ post.pubdate }}
+                        </div>
+                    </div>
+                    <div class="big-post-footer">
+                        <div class="rating-comments">
+                            <div class="rating">
+                                {% if request.user.is_authenticated %}
+                                    {% can_plus post request.user as can_plus_val %}
+                                    {% if not can_plus_val %}
+                                        <ion-icon class="rating-btn" name="arrow-up-circle-sharp"></ion-icon>
+                                        <div id="rating{{ post.id }}" class="rating-count">{% if post.rating > 0 %}+{% endif %}{{ post.rating }}</div>
+                                        <ion-icon class="rating-btn" name="arrow-down-circle-sharp"></ion-icon>
+                                    {% else %}
+                                        {% if request.user in post.pluses.all %}
+                                            <ion-icon id="plusicon{{post.id}}" class="rating-btn grey-icon blue-icon pointer" name="arrow-up-circle-sharp" onclick="plus_minus('{{ post.id }}', 'remove_plus')"></ion-icon>
+                                            <div id="rating{{ post.id }}" class="rating-count">{% if post.rating > 0 %}+{% endif %}{{ post.rating }}</div>
+                                            <ion-icon id="minusicon{{post.id}}" class="rating-btn grey-icon pointer" name="arrow-down-circle-sharp" onclick="plus_minus('{{ post.id }}', 'minusminus')"></ion-icon>  
+                                        {% elif request.user in post.minuses.all %}
+                                            <ion-icon id="plusicon{{post.id}}" class="rating-btn grey-icon pointer" name="arrow-up-circle-sharp" onclick="plus_minus('{{ post.id }}', 'plusplus')"></ion-icon>
+                                            <div id="rating{{ post.id }}" class="rating-count">{% if post.rating > 0 %}+{% endif %}{{ post.rating }}</div>
+                                            <ion-icon  id="minusicon{{post.id}}" class="rating-btn grey-icon blue-icon pointer" name="arrow-down-circle-sharp" onclick="plus_minus('{{ post.id }}', 'remove_minus')"></ion-icon>  
+                                        {% else %}
+                                            <ion-icon id="plusicon{{post.id}}" class="rating-btn grey-icon pointer" name="arrow-up-circle-sharp" onclick="plus_minus('{{ post.id }}', 'plus')"></ion-icon>
+                                            <div id="rating{{ post.id }}" class="rating-count">{% if post.rating > 0 %}+{% endif %}{{ post.rating }}</div>
+                                            <ion-icon id="minusicon{{post.id}}" class="rating-btn grey-icon pointer" name="arrow-down-circle-sharp" onclick="plus_minus('{{ post.id }}', 'minus')"></ion-icon>                            
+                                        {% endif %} 
+                                    {% endif %}
+                                {% else %}
+                                    <ion-icon class="rating-btn" name="arrow-up-circle-sharp"></ion-icon>
+                                    <div class="rating-count">{% if post.rating > 0 %}+{% endif %}{{ post.rating }}</div>
+                                    <ion-icon class="rating-btn" name="arrow-down-circle-sharp"></ion-icon>
+                                {% endif %}
+                            </div>
+                            <div class="comments">
+                                <ion-icon class="comment-icon" name="chatbox-sharp"></ion-icon>
+                                <div class="comment-count">{{ post.comments.comments.count }}</div>
+                            </div>
+                        </div>
+                        <div class="secondary-info">
+                            {% if post|class_name == 'PersonalArticle' %}
+                            пост пользователя
+                            {% elif post|class_name == 'PersonalInCommunityArticle' %}
+                            в <a class="name" href="{% url 'communities:community' post.group.slug %}">{{ post.group.groupname }}</a>
+                            {% else %}
+                            пост сообщества
+                            {% endif %}
+                        </div>                        
+                    </div>
                 </div>
-                <div class="feed-parameters">
-                    <ion-icon name="settings-sharp"></ion-icon>
-                </div>
-            </div>
-            <div class="posts-content">
-                {% for post in posts %}
-                    {% include 'UserProfile/aero/profile_post.html' %}
-                {% endfor %}
             </div>
         </div>
     </div>
@@ -34,15 +102,12 @@
             <div class="content-box">
                 <div class="content-header">
                     <div class="header">
-                        Доска
+                        Дополнительно
                     </div>
                 </div>
                 <div class="content">
                     <div class="text-content">
-                        Пусто. Выберите предмет или достижение, и его увидят все пользователи!
-                    </div>
-                    <div class="button-content">
-                        <div class="button button-primary">Выбрать</div>
+                        Недоступно
                     </div>
                 </div>
             </div>

@@ -18,6 +18,11 @@ body {
     font-stretch: condensed;
 }
 
+a {
+    color: #353535;
+    text-decoration: none;
+}
+
 .grey-icon:hover {
     color: #e0e3e6 !important;
     transition-property: color;
@@ -26,12 +31,12 @@ body {
 
 .blue-icon {
     color: #00ccea !important;
+    transition-property: color;
+    transition-duration: 0.2s;
 }
 
 .blue-icon:hover {
     color: #10dcfa !important;
-    transition-property: color;
-    transition-duration: 0.2s;
 }
 
 .pointer {
@@ -517,14 +522,18 @@ input[type=text]:focus {
 }
 
 .author > .name {
+    display: block;
     font-size: 18px;
     padding-left: 10px;
     padding-right: 10px;
+    text-decoration: none;
+    color: #353535;
 }
 
 .author > .avatar {
     padding-left: 5px;
     padding-right: 5px;
+    display: flex;
 }
 
 .avatar-32 {
@@ -551,7 +560,7 @@ input[type=text]:focus {
     align-items: center;
 }
 
-.post-footer > .date {
+.post-footer > .secondary-info {
     color: #969696;
 }
 
@@ -592,24 +601,24 @@ input[type=text]:focus {
 .rating > .rating-count {
     padding-left: 5px;
     padding-right: 5px;
-    font-size: 17px;
+    font-size: 18px;
     color: #353535;
 }
 
 .comments > .comment-count {
     padding-left: 5px;
-    font-size: 17px;
+    font-size: 18px;
     color: #353535;
 }
 
 .comments > .comment-icon {
     color: #d0d3d6; 
-    font-size: 22px;
+    font-size: 24px;
 }
 
 .rating > .rating-btn {
     color: #d0d3d6;
-    font-size: 22px;
+    font-size: 24px;
 }
 /* Основной контент - конец */
 
