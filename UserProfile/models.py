@@ -28,6 +28,11 @@ class Profile(models.Model):
     def __str__(self):
         return self.user.username
 
+    def get_avatar_url(self):
+        if self.avatar is None or str(self.avatar) == "/static/profile.jpg":
+            return "/static/aero/profile/img/avatar.jpg"
+        return "/media/"+str(self.avatar)
+
     def last_online_update(self):
         self.last_time_online = datetime.now()
         self.save()

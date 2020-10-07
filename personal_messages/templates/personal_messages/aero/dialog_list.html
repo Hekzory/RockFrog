@@ -14,7 +14,7 @@
                     <div class="message-row">
                         <div class="message-avatar">
                             <a class="message-avatar-link" href="/profile/{{dialog.0}}">
-                                <img src="/static/aero/profile/img/avatar.jpg" \>
+                                <img src="{{ dialog.0.profile.get_avatar_url }}" \>
                             </a>
                         </div>
                         <a class="message-info" href="/conversations/user/{{ dialog.0.id }}">

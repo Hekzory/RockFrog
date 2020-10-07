@@ -7,7 +7,7 @@
     <div class="content-column" id="col-1">
         <div class="sticky-content">
             <div class="content-box profile-box">
-                <img class="main-avatar" src="/media/{{ user.profile.avatar }}"/>
+                <img class="main-avatar" src="{{ user.profile.get_avatar_url }}"/>
                 <div class="profile-name">
                     @{{ user.username }}
                 </div>

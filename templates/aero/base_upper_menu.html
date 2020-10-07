@@ -8,9 +8,9 @@
     <div class="profile">
         {% if request.user.is_authenticated %}
         <div class="upper-profile-menu">
-            Привет, admin!
+            Привет, {{ request.user }}!
         </div>
-        <img class="menu-profile-img" src="/media/{{ user.profile.avatar }}"/>
+        <img class="menu-profile-img" src="{{ user.profile.get_avatar_url }}"/>
         {% if request.user.is_staff %}
         <a class="upper-menu-link" href="/admin">Админ-панель</a>
         {% endif %}

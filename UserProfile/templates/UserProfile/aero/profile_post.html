@@ -19,7 +19,7 @@
                 {% if post|class_name == 'CommunityArticle' %}
                 <img class="avatar-32" src="/media/{{ post.group.groupimage }}"/>
                 {% else %}
-                <img class="avatar-32" src="/media/{{ post.author.profile.avatar }}"/>
+                <img class="avatar-32" src="{{ post.author.profile.get_avatar_url }}"/>
                 {% endif %}
             </div>
         </div>
