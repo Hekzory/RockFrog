@@ -23,10 +23,13 @@ a {
     text-decoration: none;
 }
 
+.grey-icon {
+    transition-property: color;
+    transition-duration: 0.2s;    
+}
+
 .grey-icon:hover {
     color: #e0e3e6 !important;
-    transition-property: color;
-    transition-duration: 0.2s;
 }
 
 .blue-icon {
@@ -407,7 +410,7 @@ input[type=text]:focus {
     justify-content: space-between;
     font-size: 18px;
     margin-bottom: 15px;
-    border-bottom: 1px solid #d0d3d6;
+    border-bottom: 1px solid #eaeaea;
 }
 
 .content-header {
@@ -417,7 +420,7 @@ input[type=text]:focus {
     justify-content: space-around;
     font-size: 19px;
     margin-bottom: 15px;
-    border-bottom: 1px solid #d0d3d6;
+    border-bottom: 1px solid #eaeaea;
     
 }
 
@@ -500,7 +503,7 @@ input[type=text]:focus {
     justify-content: space-between;
     padding-bottom: 5px;
     margin-bottom: 10px;
-    border-bottom: 1px solid #d0d3d6;
+    border-bottom: 1px solid #eaeaea;
     padding-top: 10px;
     padding-bottom: 10px;
     vertical-align: middle;
@@ -726,14 +729,14 @@ input[type=text]:focus {
 .category-row {
     padding-top: 20px;
     padding-bottom: 20px;
-    border-bottom: 1px solid #d0d3d6;
+    border-bottom: 1px solid #eaeaea;
     font-size: 18px;
     text-decoration: none;
     color: #353535;
 }
 
 .category-row.last {
-    border-bottom: 0px solid #d0d3d6;
+    border-bottom: 0px solid #eaeaea;
 }
 
 .category-row.active {
@@ -805,7 +808,7 @@ input[type=text]:focus {
     border-radius: 0px;
     border: none;
     padding: 10px 0;
-    border-bottom: 1px solid #d0d3d6;
+    border-bottom: 1px solid #eaeaea;
     outline: none;
 }
 
@@ -1050,7 +1053,7 @@ input[type=text]:focus {
     padding-left: 20px;
     font-size: 26px;
     margin-bottom: 20px;
-    border-bottom: 1px solid #d0d3d6;
+    border-bottom: 1px solid #eaeaea;
 }
 
 .content-header {
@@ -1058,7 +1061,7 @@ input[type=text]:focus {
     padding-left: 20px;
     font-size: 26px;
     margin-bottom: 20px;
-    border-bottom: 1px solid #d0d3d6;
+    border-bottom: 1px solid #eaeaea;
     
 }
 

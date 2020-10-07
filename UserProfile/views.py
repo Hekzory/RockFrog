@@ -6,7 +6,7 @@ from django.views.generic import View
 from .forms import *
 from news_feed.models import *
 from news_feed.views import generate_self_articles
-# Create your views here.
+from django.core import serializers
 
 
 class UserProfileView(View):
@@ -363,6 +363,18 @@ class ProfileSettings(View):
             context['current_app_name'] = "profile"
             context['user'] = request.user
             return HttpResponse(template.render(context, request))
+
+
+class GetPosts(View):
+    def post(self, request):
+        feed = request.POST.get('feed')
+        user = User.objects.get(id=request.POST.get('userid'))
+        if feed == 'own':
+            posts = BasicArticle.objects.filter(Q(allowed=True) & (Q(author=user))).order_by('-pubdate').select_subclasses()
+        if feed == 'reacted':
+            posts = BasicArticle.objects.filter(Q(allowed=True) & (Q(pluses__in=[user]) | Q(minuses__in=[user]))).order_by('-pubdate').select_subclasses()
+        data = serializers.serialize("json", posts)
+        return JsonResponse(data, safe=False)
 
 
 def update_rating_lite(request):
