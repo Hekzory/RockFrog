@@ -7,10 +7,20 @@
         </a>
         <div class="author">
             <div class="name">
+                {% if post|class_name == 'PersonalArticle' %}
                 {{ post.author }}
+                {% elif post|class_name == 'PersonalInCommunityArticle' %}
+                {{ post.author }} в {{ post.group.groupname }}
+                {% else %}
+                {{ post.group.groupname }}
+                {% endif %}
             </div>
             <div class="avatar">
-                <img class="avatar-32" src="/media/{{ user.profile.avatar }}"/>
+                {% if post|class_name == 'CommunityArticle' %}
+                <img class="avatar-32" src="/media/{{ post.group.groupimage }}"/>
+                {% else %}
+                <img class="avatar-32" src="/media/{{ post.author.profile.avatar }}"/>
+                {% endif %}
             </div>
         </div>
     </div>
@@ -48,11 +58,11 @@
                 {% endif %}
             </div>
             <a class="comments" href="{% url 'news_feed:view_article' post.id %}">
-                <ion-icon class="comment-icon" name="chatbox-sharp"></ion-icon>
+                <ion-icon class="comment-icon grey-icon" name="chatbox-sharp"></ion-icon>
                 <div class="comment-count">{{ post.comments.comments.count }}</div>
             </a>
         </div>
-        <div class="date">
+        <div class="secondary-info">
             {{ post.pubdate }}
         </div>
         <div class="read-more">
