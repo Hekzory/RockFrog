@@ -3,22 +3,22 @@ from django.contrib import admin
 from .models import *
 
 
-class ConversationsListAdmin(admin.ModelAdmin):
-    fields = ['user', 'conversations']
+class DialogListAdmin(admin.ModelAdmin):
+    fields = ['user', 'dialogs']
 
 
-admin.site.register(ConversationList, ConversationsListAdmin)
+admin.site.register(DialogList, DialogListAdmin)
 
 
-class ConversationAdmin(admin.ModelAdmin):
-    fields = ['user1', 'user2', 'messages', 'last_interaction', 'last_view_user1', 'last_view_user2']
+class DialogAdmin(admin.ModelAdmin):
+    fields = ['owner', 'user', 'messages', 'last_view']
 
 
-admin.site.register(Conversation, ConversationAdmin)
+admin.site.register(Dialog, DialogAdmin)
 
 
-class ConversationMessageAdmin(admin.ModelAdmin):
+class DialogMessageAdmin(admin.ModelAdmin):
     fields = ['user', 'text', 'date_time']
 
 
-admin.site.register(ConversationMessage, ConversationMessageAdmin)
+admin.site.register(DialogMessage, DialogMessageAdmin)

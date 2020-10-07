@@ -1,0 +1,82 @@
+.pm-dialog {
+    display: flex;
+    flex-direction: column;
+    height: 85vh;
+    justify-content: space-between;
+}
+
+.pm-dialog-header {
+    flex-basis: 7.5%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 22px;
+    border-bottom: 1px solid #d0d3d6;
+}
+
+.pm-dialog-header > .dialog-back {
+    flex-basis: 10%;
+    padding: 15px;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid #d0d3d6;
+    margin: 0 25px;
+    font-size: 22px;
+}
+.pm-dialog-header > .dialog-name {
+    flex-basis: 30%;
+    padding: 15px;
+    font-size: 24px;
+    text-align: center;
+    display: block;
+}
+.pm-dialog-header > .dialog-options {
+    flex-basis: 15%;
+    padding: 15px;
+    text-align: center;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.dialog-avatar {
+    border-radius: 50%;
+    display: block;
+    height: 4vh;
+    width: 4vh;
+    margin: 0 15px;
+}
+
+.dialog-settings-icon {
+    color: #d0d3d6;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    margin: 0 15px;
+    text-decoration: none;
+    vertical-align: middle !important;
+    font-size: 32px;
+}
+
+.dialog-back-icon {
+    color: #d0d3d6;
+    margin-right: 5px;
+    text-decoration: none;
+    vertical-align: middle !important;
+    font-size: 32px;
+    display: block
+}
+
+.dialog-back-text {
+    display: block;
+}
+
+.pm-dialog-content {
+    flex-basis: 85%;
+}
+
+.pm-dialog-footer {
+    flex-basis: 7.5%;
+    border-top: 1px solid #d0d3d6;
+}

@@ -9,29 +9,29 @@
                 </div>
             </div>
             <div class="content">
-                <div class="message-table">
+                <div class="message-table" id="messages">
                     {% for dialog in dialogs %}
                     <div class="message-row">
                         <div class="message-avatar">
-                            <a class="message-avatar-link" href="/profile/{{dialog.0}}">
-                                <img src="{{ dialog.0.profile.get_avatar_url }}" \>
+                            <a class="message-avatar-link" href="/profile/{{dialog.0.user}}">
+                                <img src="{{ dialog.0.user.profile.get_avatar_url }}" \>
                             </a>
                         </div>
-                        <a class="message-info" href="/conversations/user/{{ dialog.0.id }}">
+                        <a class="message-info" href="/conversations/user/{{ dialog.0.user.id }}">
                             <div class="message-info-upper">
-                                <div class="message-info-author">@{{ dialog.0 }}</div>
-                                <div class="message-info-date">{{ dialog.1.last_interaction }}</div>
+                                <div class="message-info-author">@{{ dialog.0.user }}</div>
+                                <div class="message-info-date">{{ dialog.0.last_interact }}</div>
                             </div>
                             <div class="message-info-lower">
                                 <div class="message-info-text">
-                                    {% if conversation.1.is_empty %}
+                                    {% if dialog.0.is_empty %}
                                     Сообщения отсутствуют
                                     {% else %}
-                                    {{dialog.1.get_last_message|truncatechars:100 }}
+                                    {{dialog.0.get_last_message.text|truncatechars:100 }}
                                     {% endif %}
                                 </div>
-                                {% if dialog.2 > 0 %}
-                                <div class="message-info-counter">{{dialog.2}}</div>
+                                {% if dialog.1 > 0 %}
+                                <div class="message-info-counter">{{dialog.1}}</div>
                                 {% endif %}
                             </div>
                         </a>

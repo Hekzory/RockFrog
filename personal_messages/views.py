@@ -13,6 +13,42 @@ class DialogPage(View):
     def get(self, request, user_id):
         context = dict()
         context['current_app_name'] = "personal_messages"
+
+        if not request.user.is_authenticated:
+            return HttpResponseRedirect('/auth/login')
+
+        request.user.profile.last_online_update()
+
+        try:
+            user_messaging_with = User.objects.get(pk=user_id)
+            context['user_messaging_with'] = user_messaging_with
+        except ObjectDoesNotExist:
+            template = loader.get_template('personal_messages/user_not_found.html')
+            return HttpResponse(template.render(context, request), status=404)
+
+        # Если пользователь пытается пообщаться с самим собой, посылаем его
+        if request.user.id == user_id:
+            return HttpResponseRedirect('/conversations')
+
+        try:
+            current_dialog = request.user.dialog_list.dialogs.get(user=user_messaging_with)
+        except Dialog.DoesNotExist:
+            current_dialog = create_dialog(request.user, user_messaging_with)
+
+        context['messages'] = current_dialog.get_messages_sorted_by_date()
+        context['dialog_id'] = current_dialog.id
+        # Проверка на наличие в чёрных списках
+        context["is_viewer_blacklisted"] = False
+        context["is_viewed_blacklisted"] = False
+        if user_messaging_with.profile.blacklist.filter(pk=request.user.pk).exists():
+            context["is_viewer_blacklisted"] = True
+        if request.user.profile.blacklist.filter(pk=user_messaging_with.pk).exists():
+            context["is_viewed_blacklisted"] = True
+        return render(request, 'personal_messages/aero/dialog_page.html', context)
+
+    def get_deprecated(self, request, user_id):
+        context = dict()
+        context['current_app_name'] = "personal_messages"
         if request.user.is_authenticated:
             request.user.profile.last_online_update()
             try:
@@ -52,67 +88,37 @@ class DialogPage(View):
         else:
             return HttpResponseRedirect('/auth/login')
 
+
 class DialogsList(View):
     def get(self, request):
         context = dict()
         context['current_app_name'] = "personal_messages"
         if request.user.is_authenticated:
-            conversation_list = request.user.conversationlist.conversations.all().order_by(
-                'last_interaction')[::-1]
-            users_messaging_with = []
+            dialog_list = request.user.dialog_list.dialogs.all()
             unread_messages = []
-            for conversation in conversation_list:
-                if request.user.id == conversation.user1.id:
-                    unread_messages.append(conversation.messages.filter(date_time__gt=conversation.last_view_user1).count())
-                    users_messaging_with.append(conversation.user2)
-                elif request.user.id == conversation.user2.id:
-                    unread_messages.append(conversation.messages.filter(date_time__gt=conversation.last_view_user2).count())
-                    users_messaging_with.append(conversation.user1)
-            context['dialogs'] = zip(users_messaging_with, conversation_list, unread_messages)
+            for dialog in dialog_list:
+                unread_messages.append(dialog.messages.filter(date_time__gt=dialog.last_view).count())
+            context['dialogs'] = list(zip(dialog_list, unread_messages))
             return render(request, 'personal_messages/aero/dialog_list.html', context)
         else:
             return HttpResponseRedirect('/auth/login')
 
-    #Код, работающий со старым дизайном сайта
-    def get_deprecated(self, request):
-        context = dict()
-        if request.user.is_authenticated:
-            context['conversationlist'] = request.user.conversationlist.conversations.all().order_by('last_interaction')[::-1]
-            users_messaging_with = []
-            unread_messages = []
-            for i in context['conversationlist']:
-                if request.user.id == i.user1.id:
-                    unread_messages.append(i.messages.filter(date_time__gt=i.last_view_user1).count())
-                    users_messaging_with.append(i.user2)
-                elif request.user.id == i.user2.id:
-                    unread_messages.append(i.messages.filter(date_time__gt=i.last_view_user2).count())
-                    users_messaging_with.append(i.user1)
-            context['users_messaging_with'] = users_messaging_with
-            context['conversations'] = [[users_messaging_with[i], context['conversationlist'][i], unread_messages[i]] for i in range(len(users_messaging_with))]
-            return render(request, 'personal_messages/dialog_list.html', context)
-        else:
-            return HttpResponseRedirect('/auth/login')
 
 class DialogsListBase(View):
     def get(self, request):
         context = dict()
         context['current_app_name'] = "personal_messages"
         if request.user.is_authenticated:
-            context['conversationlist'] = request.user.conversationlist.conversations.all().order_by('last_interaction')[::-1]
-            users_messaging_with = []
+            dialog_list = request.user.dialog_list.dialogs.all()
             unread_messages = []
-            for i in context['conversationlist']:
-                if request.user.id == i.user1.id:
-                    unread_messages.append(i.messages.filter(date_time__gt=i.last_view_user1).count())
-                    users_messaging_with.append(i.user2)
-                elif request.user.id == i.user2.id:
-                    unread_messages.append(i.messages.filter(date_time__gt=i.last_view_user2).count())
-                    users_messaging_with.append(i.user1)
-            context['users_messaging_with'] = users_messaging_with
-            context['conversations'] = [[users_messaging_with[i], context['conversationlist'][i], unread_messages[i]] for i in range(len(users_messaging_with))]
-            return render(request, 'personal_messages/dialog_list_base.html', context)
+            for dialog in dialog_list:
+                unread_messages.append(dialog.messages.filter(date_time__gt=dialog.last_view).count())
+            context['dialogs'] = list(zip(dialog_list, unread_messages))
+            print(context['dialogs'])
+            return render(request, 'personal_messages/aero/dialog_list_base.html', context)
         else:
             return HttpResponseRedirect('/auth/login')
+
 
 class DeleteMessage(View):
     def post(self, request):
@@ -127,9 +133,10 @@ class DeleteMessage(View):
             return JsonResponse({"response": "IdNotADigit"})
         if message.is_earlier_24() and message.user.id == request.user.id:
             message.delete()
-            return JsonResponse({"response":"ok"})
+            return JsonResponse({"response": "ok"})
         else:
             return JsonResponse({"response": "error"})
+
 
 class EditMessage(View):
     def post(self, request):
@@ -145,6 +152,6 @@ class EditMessage(View):
         if message.is_earlier_24() and message.user.id == request.user.id and request.POST["message"].strip() != "":
             message.text = request.POST["message"]
             message.save()
-            return JsonResponse({"response":"ok"})
+            return JsonResponse({"response": "ok"})
         else:
             return JsonResponse({"response": "error"})
