@@ -749,6 +749,16 @@ input[type=text]:focus {
     font-size: 18px;
 }
 
+.content-box-text.small {
+    text-align: center;
+    padding-top: 30px;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-bottom: 30px;
+    font-size: 15px;
+}
+
+
 .settings-table {
     display: flex;
     flex-direction: column;
@@ -826,6 +836,28 @@ input[type=text]:focus {
     display: block;
     self-align: center;
     cursor: pointer;
+}
+
+.medium-grey-icon {
+    color: #d0d3d6;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    margin-left: 15px;
+    text-decoration: none;
+    vertical-align: middle !important;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.settings-row-avatar {
+    border-radius: 50%;
+    width: 4vh;
+    height: 4vh;
+}
+
+.settings-row-user {
+    display: flex;
+    align-items: center;
 }
 
 /* Настройки профилей - конец */

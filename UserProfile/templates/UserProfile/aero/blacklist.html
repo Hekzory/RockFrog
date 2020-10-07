@@ -78,9 +78,23 @@
         </div>
     </div>
     <div class="content-column wide">
+        {% csrf_token %}
         <div class="content-box">
             <div class="content-box-text">
-                Черный список.
+                Чёрный список
+            </div>
+            <div class="settings-table" id="blacklist-table">
+                {% for user in blacklist %}
+                <div class="settings-row" id="blacklist-user-{{user.id}}">
+                    <div class="settings-row-user">
+                        <a href="/profile/{{user.username}}"><img src="{{user.profile.get_avatar_url}}" class="settings-row-avatar"></a>
+                        <a class="settings-row-text" href="/profile/{{user.username}}">{{ user.username }}</a>
+                    </div>
+                    <ion-icon name="trash-sharp" class="medium-grey-icon" onclick="delete_from_blacklist({{user.id}})"></ion-icon>
+                </div>
+                {% empty %}
+                <div class="content-box-text small">Ваш чёрный список пуст.</div>
+                {% endfor %}
             </div>
         </div>
     </div>
@@ -105,4 +119,7 @@
         </div>
     </div>
 </div>
+{% endblock %}
+{% block scripts %}
+<script src="/static/aero/profile/js/settings.js"></script>
 {% endblock %}
