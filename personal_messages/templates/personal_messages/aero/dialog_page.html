@@ -20,15 +20,32 @@
                         @{{ user_messaging_with.username }}
                     </a>
                     <div class="dialog-options">
-                        <ion-icon name="settings-sharp" class="dialog-settings-icon"></ion-icon>
+                        <ion-icon name="ellipsis-horizontal-sharp" class="dialog-settings-icon"></ion-icon>
                         <img class="dialog-avatar" src="{{ user_messaging_with.profile.get_avatar_url }}">
                     </div>
                 </div>
                 <div class="pm-dialog-content">
-                    hi
+                    {% for message in messages %}
+                        <div class="pm-dialog-message">
+                            <div class="pm-dialog-message-avatar">
+                                <img class="pm-dialog-message-avatar-img" src="{{ message.user.profile.get_avatar_url }}">
+                            </div>
+                            <div class="pm-dialog-message-info">
+                                <div class="pm-dialog-message-info-upper">
+                                    {{ message.user }}
+                                </div>
+                                <div class="pm-dialog-message-info-text">
+                                    {{ message.text }}
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
                 </div>
                 <div class="pm-dialog-footer">
-                    hi
+                    <div class="dialog-send-block">
+                        <input type="text" class="dialog-input" placeholder="Сообщение...">
+                        <ion-icon name="send-sharp" class="dialog-send-message-icon"></ion-icon>
+                    </div>
                 </div>
             </div>
         </div>

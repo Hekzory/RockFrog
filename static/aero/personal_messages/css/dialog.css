@@ -12,10 +12,11 @@
     align-items: center;
     font-size: 22px;
     border-bottom: 1px solid #d0d3d6;
+    margin-bottom: 15px;
 }
 
 .pm-dialog-header > .dialog-back {
-    flex-basis: 10%;
+    flex-basis: 7.5%;
     padding: 15px;
     text-align: center;
     display: flex;
@@ -24,13 +25,16 @@
     border: 1px solid #d0d3d6;
     margin: 0 25px;
     font-size: 22px;
+    color: #a5a5a5;
 }
+
 .pm-dialog-header > .dialog-name {
     flex-basis: 30%;
     padding: 15px;
     font-size: 24px;
     text-align: center;
     display: block;
+    font-weight: 600;
 }
 .pm-dialog-header > .dialog-options {
     flex-basis: 15%;
@@ -59,8 +63,12 @@
     font-size: 32px;
 }
 
+.dialog-settings-icon:hover {
+    color: #00c5e4;
+    cursor: pointer;
+}
+
 .dialog-back-icon {
-    color: #d0d3d6;
     margin-right: 5px;
     text-decoration: none;
     vertical-align: middle !important;
@@ -70,13 +78,105 @@
 
 .dialog-back-text {
     display: block;
+    font-weight: 600;
+}
+
+.dialog-back:hover {
+    border: 1px solid #00c5e4 !important;
+    color: #00c5e4 !important;
 }
 
 .pm-dialog-content {
     flex-basis: 85%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+}
+
+.pm-dialog-message {
+    flex-basis: 5.5vh;
+    padding: 5px;
+    margin: 5px 5%;
+    display: flex;
+    align-items: center;
+}
+
+.pm-dialog-message-avatar {
+    flex-basis: 10%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pm-dialog-message-avatar-img {
+    height: 4.5vh;
+    width: 4.5vh;
+    border-radius: 50%;
+}
+
+.pm-dialog-message-info {
+    flex-basis: 90%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    font-size: 17px;
+}
+
+.pm-dialog-message-info-upper {
+    margin-top: 15px;
+    margin-bottom: 15px;
+    font-size: 18px;
+    font-weight: 600;
+}
+.pm-dialog-message-info-text {
+    margin-top: 15px;
+    margin-bottom: 25px;
 }
 
 .pm-dialog-footer {
     flex-basis: 7.5%;
     border-top: 1px solid #d0d3d6;
+    display: flex;
+    justify-content: center;
+    margin-top: 15px;
+}
+
+.dialog-send-block {
+    flex-basis: 80%;
+    display: flex;
+    align-items: center;
+}
+
+.dialog-input {
+    flex-basis: 90%;
+    padding: 15px;
+    border: none;
+    outline: none;
+    border: 1px solid #d0d3d6;
+    font-size: 18px;
+}
+
+.dialog-input:focus {
+    outline: 1px solid #00c5e4;
+}
+
+.dialog-input::placeholder {
+    color: #d0d3d6;
+    font-size: 18px;
+}
+
+.dialog-send-message-icon {
+    flex-basis: 10%;
+    color: #d0d3d6;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    margin: 0 15px;
+    text-decoration: none;
+    vertical-align: middle !important;
+    font-size: 36px;
+}
+
+.dialog-send-message-icon:hover {
+    color: #00c5e4;
+    cursor: pointer;
 }
