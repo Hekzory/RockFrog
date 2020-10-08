@@ -89,3 +89,26 @@ function change_password() {
         },
     });
 }
+
+function delete_from_blacklist(id) {
+    var csrftoken = $('input[name="csrfmiddlewaretoken"]').val();
+    $.ajax({
+        url : "/profile/unblock/",
+        type : "POST",
+        data : {
+            'user_id' : id,
+        	'csrfmiddlewaretoken': csrftoken,
+        },
+
+        success : function(data) {
+			delete_unblock_button(id);
+        },
+    });
+}
+
+function delete_unblock_button(id) {
+    $("#blacklist-user-"+id).remove();
+    if ($("#blacklist-table").children().length == 0) {
+    $("#blacklist-table").html('<div class="content-box-text small">Ваш чёрный список пуст.</div>');
+    }
+}
