@@ -86,7 +86,7 @@ def generate_reacted_articles(user):
 		return HttpResponseRedirect('/')
 
 def generate_self_articles(user):
-	return BasicArticle.objects.filter(author=user).select_subclasses()
+	return BasicArticle.objects.filter(Q(author=user)).order_by('-pubdate').select_subclasses("personalarticle", "personalincommunityarticle")
 
 def view_article(request, articleid):
 	if BasicArticle.objects.filter(id=articleid).exists():

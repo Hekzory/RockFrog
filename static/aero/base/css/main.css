@@ -1,5 +1,7 @@
 /* Общее - начало */
-
+html {
+    overflow-y: scroll;
+}
 html, body {
     height: 100%;
     font-size: 14px;
@@ -553,7 +555,7 @@ input[type=text]:focus {
 }
 
 .post-footer {
-    border-top: 1px solid #d0d3d6;
+    border-top: 1px solid #eaeaea;
     margin-top: 10px;
     padding-top: 5px;
     padding-bottom: 5px;
