@@ -1,0 +1,35 @@
+<div class="content-box profile-box">
+    <img class="main-avatar" src="{{ user.profile.get_avatar_url }}"/>
+    <div class="profile-name">
+        @{{ user.username }}
+    </div>
+    <div class="profile-about">
+        {{ user.profile.about }}
+    </div>
+    <div class="profile-stats">
+        <div class="profile-stat">
+            <div class="stat-header">
+                Карма
+            </div>
+            <div class="stat-counter">
+                {{ user.profile.rating }}
+            </div>
+        </div>
+        <div class="profile-stat center-borders">
+            <div class="stat-header">
+                Кредиты
+            </div>
+            <div class="stat-counter">
+                {{ user.profile.coinmanagement.coins }}
+            </div>
+        </div>
+        <div class="profile-stat">
+            <div class="stat-header">
+                Посты
+            </div>
+            <div class="stat-counter">
+                {{ request.user.articles.count }}
+            </div>
+        </div>
+    </div>
+</div>

@@ -6,75 +6,8 @@
 <div class="content-columns" id="content-columns">
     <div class="content-column" id="col-1">
         <div class="sticky-content">
-            <div class="content-box profile-box">
-                <img class="main-avatar" src="{{ user.profile.get_avatar_url }}"/>
-                <div class="profile-name">
-                    @{{ user.username }}
-                </div>
-                <div class="profile-about">
-                    {{ user.profile.about }}
-                </div>
-                <div class="profile-stats">
-                    <div class="profile-stat">
-                        <div class="stat-header">
-                            Карма
-                        </div>
-                        <div class="stat-counter">
-                            undefined
-                        </div>
-                    </div>
-                    <div class="profile-stat center-borders">
-                        <div class="stat-header">
-                            Кредиты
-                        </div>
-                        <div class="stat-counter">
-                            {{ user.profile.coinmanagement.coins }}
-                        </div>
-                    </div>
-                    <div class="profile-stat">
-                        <div class="stat-header">
-                            Посты
-                        </div>
-                        <div class="stat-counter">
-                            {{ request.user.articles.count }}
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="settings-box">
-                <a class="setting-box" href="/profile/">
-                    <div class="setting-icon">
-                        <ion-icon name="eye-sharp"></ion-icon>
-                    </div>
-                    <div class="setting-header">
-                        Просмотр
-                    </div>
-                </a>
-                <a class="setting-box">
-                    <div class="setting-icon">
-                        <ion-icon name="person-sharp"></ion-icon>
-                    </div>
-                    <div class="setting-header">
-                        Изменить профиль
-                    </div>
-                </a>
-                <a class="setting-box active" href="/profile/settings">
-                    <div class="setting-icon">
-                        <ion-icon name="settings-sharp"></ion-icon>
-                    </div>
-                    <div class="setting-header">
-                        Настройки
-                    </div>
-                </a>
-                <a class="setting-box">
-                    <div class="setting-icon">
-                        <ion-icon name="star-sharp"></ion-icon>
-                    </div>
-                    <div class="setting-header">
-                        Избранное
-                    </div>
-                </a>
-            </div>
+            {% include 'UserProfile/aero/profile_card.html' %}
+            {% include 'UserProfile/aero/settings_four_boxes.html' with box='settings' %}
         </div>
     </div>
     <div class="content-column wide">

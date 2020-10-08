@@ -1,0 +1,34 @@
+<div class="settings-box">
+    <a class="setting-box {% if box == 'view' %} active {% endif %}" href="/profile/">
+        <div class="setting-icon">
+            <ion-icon name="eye-sharp"></ion-icon>
+        </div>
+        <div class="setting-header">
+            Просмотр
+        </div>
+    </a>
+    <a class="setting-box">
+        <div class="setting-icon grey-icon">
+            <ion-icon name="person-sharp"></ion-icon>
+        </div>
+        <div class="setting-header">
+            Изменить профиль
+        </div>
+    </a>
+    <a class="setting-box {% if box == 'settings' %} active {% endif %}" href="/profile/settings">
+        <div class="setting-icon grey-icon">
+            <ion-icon name="settings-sharp"></ion-icon>
+        </div>
+        <div class="setting-header">
+            Настройки
+        </div>
+    </a>
+    <a class="setting-box">
+        <div class="setting-icon grey-icon">
+            <ion-icon name="star-sharp"></ion-icon>
+        </div>
+        <div class="setting-header">
+            Избранное
+        </div>
+    </a>
+</div>
