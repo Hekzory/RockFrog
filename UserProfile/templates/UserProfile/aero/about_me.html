@@ -1,0 +1,35 @@
+{% extends "aero/base_page.html" %}
+{% block main_content %}
+<div class="background-content">
+    <img class="background-img" src="/static/aero/profile/img/everest.jpg"/>
+</div>
+<div class="content-columns" id="content-columns">
+    <div class="content-column" id="col-1">
+        <div class="sticky-content">
+            {% include 'UserProfile/aero/profile_card.html' %}
+            {% include 'UserProfile/aero/settings_four_boxes.html' with box='edit' %}
+        </div>
+    </div>
+    <div class="content-column wide">
+        <div class="content-box">
+            <div class="content-box-text">
+                Обо мне.
+            </div>
+        </div>
+    </div>
+    <div class="content-column center-text">
+        <div class="sticky-content">
+            <div class="content-box">
+                <div class="category-table">
+                    <a href="{% url 'UserProfile:edit_profile' %}" class="category-row">
+                        Основные данные
+                    </a>
+                    <a href="{% url 'UserProfile:about_me' %}" class="category-row active">
+                        О себе
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

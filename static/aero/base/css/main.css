@@ -864,6 +864,23 @@ input[type=text]:focus {
     align-items: center;
 }
 
+.edit-profile-field {
+    font-size: 16px;
+    border-radius: 0px;
+    border: none;
+    padding: 10px 0;
+    border-bottom: 1px solid #eaeaea;
+    outline: none;
+}
+
+.edit-profile-field:focus {
+    border-bottom: 1px solid #00c5e4;
+}
+
+.edit-profile-field::placeholder {
+    color: #d0d3d6;
+}
+
 /* Настройки профилей - конец */
 
 /* Для экранов шириной больше 2560 пикселей - начало. Изменения только в области масштабирования, шрифтов и т.д.*/
