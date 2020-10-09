@@ -3,7 +3,11 @@
 <div class="post">
     <div class="post-header">
         <a class="title" href="{% url 'news_feed:view_article' post.id %}">
+            {% if post.title %}
             {{ post.title|truncatechars:60 }}
+            {% else %}
+            Без названия
+            {% endif %}
         </a>
         <div class="author">
             <div class="name">
@@ -16,8 +20,8 @@
                 {% endif %}
             </div>
             <div class="avatar">
-                {% if post|class_name == 'CommunityArticle' %}
-                <img class="avatar-32" src="/media/{{ post.group.groupimage }}"/>
+                {% if post|class_name != 'PersonalArticle' %}
+                <img class="avatar-32" src="{{ post.group.image.url }}"/>
                 {% else %}
                 <img class="avatar-32" src="{{ post.author.profile.get_avatar_url }}"/>
                 {% endif %}

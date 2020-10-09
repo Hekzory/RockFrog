@@ -10,6 +10,8 @@ from django.core import serializers
 from datetime import datetime
 import base64
 from django.core.files.base import ContentFile
+import json
+from datetime import datetime
 
 
 class UserProfileView(View):
@@ -409,11 +411,58 @@ class GetPosts(View):
         feed = request.POST.get('feed')
         user = User.objects.get(id=request.POST.get('userid'))
         if feed == 'own':
-            posts = BasicArticle.objects.filter(Q(allowed=True) & (Q(author=user))).order_by('-pubdate').select_subclasses()
+            posts = BasicArticle.objects.filter(Q(allowed=True) & (Q(author=user))).order_by('-pubdate').select_subclasses()[:10]
         if feed == 'reacted':
-            posts = BasicArticle.objects.filter(Q(allowed=True) & (Q(pluses__in=[user]) | Q(minuses__in=[user]))).order_by('-pubdate').select_subclasses()
-        data = serializers.serialize("json", posts)
+            posts = BasicArticle.objects.filter(Q(allowed=True) & (Q(pluses__in=[user]) | Q(minuses__in=[user]))).order_by('-pubdate').select_subclasses()[:10]
+        #data = serializers.serialize("json", posts, fields=('id', 'title'))
+        data = json.dumps(serialize_posts(posts, request))
         return JsonResponse(data, safe=False)
+
+
+def serialize_posts(posts, request):
+    data = []
+    for i in range(len(posts)):
+        post = posts[i]
+        post_dict = {}
+        post_dict["id"] = post.id
+        if post.__class__.__name__ == "CommunityArticle":
+            post_dict["author"] = post.group.groupname
+        elif post.__class__.__name__ == "PersonalInCommunityArticle":
+            post_dict["author"] = post.author.username + ' в ' + post.group.groupname
+        else:
+            post_dict["author"] = post.author.username
+        if not post.title:
+            post_dict["title"] = "Без названия"
+        else:
+            if len(post.title) > 60:
+                post_dict["title"] = post.title[:59] + '...'
+            else:
+                post_dict["title"] = post.title
+        if len(post.text) > 200:
+            post_dict["text"] = post.text[:199] + '...'
+        else:
+            post_dict["text"] = post.text
+        if post.rating > 0:
+            post_dict["rating"] = '+' + str(post.rating)
+        else:
+            post_dict["rating"] = post.rating
+        if not request.user.is_authenticated:
+            post_dict["react_status"] = "not_user"
+        elif request.user in post.pluses.all():
+            post_dict["react_status"] = "plus"
+        elif request.user in post.minuses.all():
+            post_dict["react_status"] = "minus"
+        else:
+            post_dict["react_status"] = "no_react"
+        post_dict["comment_count"] = post.comments.comments.count()
+        post_dict["post_link"] = "/article/" + str(post.id)
+        post_dict["pubdate"] = datetime.strftime(post.pubdate, '%d.%m.%Y %H:%M')
+        if post.__class__.__name__ != "PersonalArticle":
+            post_dict["avatar"] = post.group.image.url
+        else:
+            post_dict["avatar"] = post.author.profile.get_avatar_url()
+        data.append(post_dict)
+    return data
 
 
 def update_rating_lite(request):
