@@ -113,20 +113,14 @@ function delete_unblock_button(id) {
     }
 }
 
-const toBase64 = file => new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = error => reject(error);
-});
 
-async function change_profile() {
+function change_profile() {
     var birthday = document.getElementById('id_birthday').value;
     var email = document.getElementById('id_email').value;
     var city = document.getElementById('id_city').value;
     var phone = document.getElementById('id_phone').value;
     var csrftoken = $('input[name="csrfmiddlewaretoken"]').val();
-    var avatar = $('#id_avatar')[0].files[0];
+    var avatar = $('#id_avatar').val();
     $.ajax({
         url : "/profile/edit_profile/",
         type : "POST",
@@ -137,7 +131,6 @@ async function change_profile() {
             'phone': phone,
             'type' : 'edit_profile',
         	'csrfmiddlewaretoken': csrftoken,
-        	'avatar': await toBase64(avatar),
         },
         success : function(data) {
 			if (data["status"] == "ok") {
@@ -149,5 +142,27 @@ async function change_profile() {
 			    $('#id_notification_profile').text(data['error']);
 			}
         },
+    });
+    if (avatar) {
+        change_avatar();
+    }
+}
+
+function change_avatar() {
+    var avatar = $('#id_avatar').val();
+    var avatar_data = new FormData();
+    avatar_data.append('avatar', $('#id_avatar')[0].files[0], 'avatar.jpg');
+    avatar_data.append('csrfmiddlewaretoken', $('input[name="csrfmiddlewaretoken"]').val());
+    $.ajax({
+        url : "/profile/change_avatar/",
+        type : "POST",
+        data : avatar_data,
+        success : function(data) {
+            $('.main-avatar').attr('src', data['path']);
+            $('.menu-profile-img').attr('src', data['path']);
+        },
+        cache: false,
+        processData: false,
+        contentType: false,
     });
 }

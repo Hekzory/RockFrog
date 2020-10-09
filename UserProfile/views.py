@@ -87,10 +87,6 @@ class EditProfileView(View):
             return JsonResponse({'status': 'NotAuthenticated'})
         else:
             request.user.profile.last_online_update()
-            format, avatar = request.POST['avatar'].split(';base64,')
-            format = format.split('/')[-1]
-            name = 'avatar.' + format
-            avatar_data = ContentFile(base64.b64decode(avatar))
             info = dict()
             info['birth_date'] = request.POST['birthday']
             info['email'] = request.POST['email']
@@ -147,6 +143,20 @@ class EditProfileView(View):
                 template = loader.get_template('UserProfile/editprofile.html')
                 context = {'form': bound_form}
                 return HttpResponse(template.render(context, request))
+
+
+class ChangeAvatarView(View):
+    def post(self, request):
+        if not request.user.is_authenticated:
+            return JsonResponse({'status': 'NotAuthenticated'})
+        bound_form = ChangeAvatarForm(request.FILES)
+        check = bound_form.is_valid()
+        if check:
+            path = bound_form.change_profile(request.user)
+            return JsonResponse({'status': 'ok', 'path': path})
+        else:
+            error = list(bound_form.errors.as_data().items())[0][1][0].message
+            return JsonResponse({'status': 'error', 'error': error})
 
 
 class EditPrivacyView(View):

@@ -8,9 +8,9 @@ from django.contrib.auth import authenticate
 class ProfileForm(forms.Form):
     about = forms.CharField(max_length=500, widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 4}), required=False)
     birth_date = forms.DateField(widget=forms.SelectDateWidget(attrs={'class': 'form-control'}, years=list(range(1900, 2020))), required=False)
-    email = forms.CharField(max_length=50, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    email = forms.CharField(max_length=50, widget=forms.TextInput(attrs={'class': 'form-control'}), required=False)
     city = forms.CharField(max_length=30, widget=forms.TextInput(attrs={'class': 'form-control'}), required=False)
-    phone = forms.CharField(max_length=30, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    phone = forms.CharField(max_length=30, widget=forms.TextInput(attrs={'class': 'form-control'}), required=False)
     interests = forms.CharField(max_length=500, widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 4}), required=False)
     avatar = forms.ImageField(required=False)
 
@@ -58,17 +58,34 @@ class ProfileForm(forms.Form):
             profile.about = self.get_about()
         if self.get_birth_date() is not None:
             profile.birth_date = self.get_birth_date()
-        profile.email = self.get_email()
-        user.email = self.get_email()
+        if self.get_email() is not None:
+            profile.email = self.get_email()
+            user.email = self.get_email()
         if self.get_city() is not None:
             profile.city = self.get_city()
-        profile.phone = self.get_phone()
+        if self.get_phone() is not None:
+            profile.phone = self.get_phone()
         if self.get_interests() is not None:
             profile.interests = self.get_interests()
         if self.get_avatar() is not None:
             profile.avatar = self.get_avatar()
         profile.save()
         user.save()
+
+
+class ChangeAvatarForm(forms.Form):
+    avatar = forms.ImageField(required=False)
+
+    def get_avatar(self):
+        return self.data['avatar']
+
+    def change_profile(self, user):
+        profile = user.profile
+        if self.get_avatar() is not None:
+            profile.avatar = self.get_avatar()
+        profile.save()
+        user.save()
+        return '/media/' + profile.avatar.name
 
 
 class PrivacySettingsForm(forms.Form):
