@@ -112,3 +112,42 @@ function delete_unblock_button(id) {
     $("#blacklist-table").html('<div class="content-box-text small">Ваш чёрный список пуст.</div>');
     }
 }
+
+const toBase64 = file => new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = error => reject(error);
+});
+
+async function change_profile() {
+    var birthday = document.getElementById('id_birthday').value;
+    var email = document.getElementById('id_email').value;
+    var city = document.getElementById('id_city').value;
+    var phone = document.getElementById('id_phone').value;
+    var csrftoken = $('input[name="csrfmiddlewaretoken"]').val();
+    var avatar = $('#id_avatar')[0].files[0];
+    $.ajax({
+        url : "/profile/edit_profile/",
+        type : "POST",
+        data : {
+            'birthday': birthday,
+            'email': email,
+            'city': city,
+            'phone': phone,
+            'type' : 'edit_profile',
+        	'csrfmiddlewaretoken': csrftoken,
+        	'avatar': await toBase64(avatar),
+        },
+        success : function(data) {
+			if (data["status"] == "ok") {
+                $('#id_notification_profile_row').show();
+                $('#id_notification_profile').text('Вы успешно изменили профиль.');
+			}
+			else if (data["status"] == "error") {
+			    $('#id_notification_profile_row').show();
+			    $('#id_notification_profile').text(data['error']);
+			}
+        },
+    });
+}

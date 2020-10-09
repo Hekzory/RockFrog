@@ -7,6 +7,9 @@ from .forms import *
 from news_feed.models import *
 from news_feed.views import generate_self_articles
 from django.core import serializers
+from datetime import datetime
+import base64
+from django.core.files.base import ContentFile
 
 
 class UserProfileView(View):
@@ -68,6 +71,42 @@ class EditProfileView(View):
         if not request.user.is_authenticated:
             return HttpResponseRedirect('/')
         else:
+            template = loader.get_template('UserProfile/aero/edit_profile.html')
+            context = dict()
+            context['user_email'] = request.user.profile.email
+            context['user_city'] = request.user.profile.city
+            context['user_phone'] = request.user.profile.phone
+            context['user_birthday'] = datetime.strftime(request.user.profile.birth_date, '%Y-%m-%d')
+            context['current_app_name'] = "profile"
+            return HttpResponse(template.render(context, request))
+
+    def post(self, request):
+        if not request.user.is_authenticated:
+            return JsonResponse({'status': 'NotAuthenticated'})
+        else:
+            request.user.profile.last_online_update()
+            format, avatar = request.POST['avatar'].split(';base64,')
+            format = format.split('/')[-1]
+            name = 'avatar.' + format
+            avatar_data = ContentFile(base64.b64decode(avatar))
+            info = dict()
+            info['birth_date'] = request.POST['birthday']
+            info['email'] = request.POST['email']
+            info['city'] = request.POST['city']
+            info['phone'] = request.POST['phone']
+            bound_form = ProfileForm(info)
+            check = bound_form.is_valid()
+            if check:
+                bound_form.change_profile(request.user)
+                return JsonResponse({'status': 'ok'})
+            else:
+                error = list(bound_form.errors.as_data().items())[0][1][0].message
+                return JsonResponse({'status': 'error', 'error': error})
+
+    def get_deprecated(self, request):
+        if not request.user.is_authenticated:
+            return HttpResponseRedirect('/')
+        else:
             initial_params = dict()
             initial_params['about'] = request.user.profile.about
             initial_params['birth_date'] = request.user.profile.birth_date
@@ -81,7 +120,7 @@ class EditProfileView(View):
             template = loader.get_template('UserProfile/editprofile.html')
             return HttpResponse(template.render(context, request))
 
-    def post(self, request):
+    def post_deprecated(self, request):
         if not request.user.is_authenticated:
             return HttpResponseRedirect("/")
         else:
@@ -410,3 +449,13 @@ def update_rating(request):
     return HttpResponseRedirect('/profile/')
 
 
+class AboutMeView(View):
+    def get(self, request):
+        if not request.user.is_authenticated:
+            return HttpResponseRedirect('/')
+        else:
+            template = loader.get_template('UserProfile/aero/about_me.html')
+            form = ProfileForm()
+            context = {'form': form}
+            context['current_app_name'] = "profile"
+            return HttpResponse(template.render(context, request))

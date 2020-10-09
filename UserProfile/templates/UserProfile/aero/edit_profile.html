@@ -1,0 +1,81 @@
+{% extends "aero/base_page.html" %}
+{% block main_content %}
+<div class="background-content">
+    <img class="background-img" src="/static/aero/profile/img/everest.jpg"/>
+</div>
+<div class="content-columns" id="content-columns">
+    <div class="content-column" id="col-1">
+        <div class="sticky-content">
+            {% include 'UserProfile/aero/profile_card.html' %}
+            {% include 'UserProfile/aero/settings_four_boxes.html' with box='edit' %}
+        </div>
+    </div>
+    <div class="content-column wide">
+        <div class="content-box">
+            <div class="content-box-text">
+                Общая информация.
+            </div>
+            {% csrf_token %}
+            <div class="settings-table">
+                <div class="settings-row">
+                    <div class="settings-row-text">Аватар</div>
+                    <div class="settings-row-field">
+                        <input type="file" class="edit-profile-field" id="id_avatar">
+                    </div>
+                </div>
+                <div class="settings-row">
+                    <div class="settings-row-text">Дата рождения</div>
+                    <div class="settings-row-field">
+                        <input type="date" class="edit-profile-field" id="id_birthday" value="{{ user_birthday }}">
+                    </div>
+                </div>
+                <div class="settings-row">
+                    <div class="settings-row-text">Почта</div>
+                    <div class="settings-row-field">
+                        <input type="email" class="edit-profile-field" id="id_email" placeholder="Почта" value="{{ user_email }}">
+                    </div>
+                </div>
+                <div class="settings-row">
+                    <div class="settings-row-text">Город</div>
+                    <div class="settings-row-field">
+                        <input type="city" class="edit-profile-field" id="id_city" placeholder="Город" value="{{ user_city }}">
+                    </div>
+                </div>
+                <div class="settings-row">
+                    <div class="settings-row-text">Телефон</div>
+                    <div class="settings-row-field">
+                        <input type="tel" class="edit-profile-field" id="id_phone" pattern="[+]{7}[0-9]{11,14}" placeholder="Телефон" value="{{ user_phone }}">
+                    </div>
+                </div>
+                <div class="settings-row-button" id="id_notification_profile_row" style="display: none;">
+                    <div class="settings-row-notification" id="id_notification_profile">
+
+                    </div>
+                </div>
+                <div class="settings-row-button">
+                    <div class="settings-button" onclick="change_profile()">
+                        Изменить
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="content-column center-text">
+        <div class="sticky-content">
+            <div class="content-box">
+                <div class="category-table">
+                    <a href="{% url 'UserProfile:edit_profile' %}" class="category-row active">
+                        Основные данные
+                    </a>
+                    <a href="{% url 'UserProfile:about_me' %}" class="category-row">
+                        О себе
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="/static/aero/profile/js/settings.js"></script>
+{% endblock %}

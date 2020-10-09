@@ -51,7 +51,7 @@ class ProfileForm(forms.Form):
                 raise ValidationError('Неверный формат номера телефона')
         return phone
 
-    def change_profile(self, user, avatar):
+    def change_profile(self, user):
         profile = user.profile
         self.clean()
         if self.get_about() is not None:
