@@ -644,12 +644,10 @@ input[type=text]:focus {
     flex-grow: 0;
     flex-basis: 12.5%;
     align-self: center;
-
 }
 
 .message-avatar:hover {
     background-color: #fbfbfb;
-
 }
 
 .message-avatar-link > img {

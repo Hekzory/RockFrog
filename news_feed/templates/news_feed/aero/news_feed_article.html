@@ -9,6 +9,7 @@
 
 {% block css %}
     <link rel="stylesheet" type="text/css" href="/static/aero/posts/css/post.css">
+    <link rel="stylesheet" type="text/css" href="/static/aero/posts/css/comments.css">
 {% endblock %}
 
 {% block title %}Пост{% endblock %}
@@ -98,6 +99,8 @@
                 </div>
             </div>
         </div>
+        {% include 'news_feed/aero/create_comment.html' %}
+        {% include 'news_feed/aero/comments.html' %}        
     </div>
     <div class="content-column center-text">
         <div class="sticky-content">
