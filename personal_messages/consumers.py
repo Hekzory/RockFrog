@@ -15,7 +15,7 @@ class PMConsumer(WebsocketConsumer):
         if self.user.is_authenticated:
             user_talking_with_id = self.scope["url_route"]["kwargs"]["user_id"]
             user_talking_with = User.objects.get(pk=user_talking_with_id)
-            self.dialog_id = self.user.dialog_list.dialogs.get(user=user_talking_with)
+            self.dialog_id = self.user.dialog_list.dialogs.get(user=user_talking_with).id
             self.username = self.user.username
             self.room_group_name = "personal_messages_" + str(self.username) + "_" + str(self.dialog_id)
 
@@ -67,9 +67,10 @@ class PMConsumer(WebsocketConsumer):
                     {
                         'type': 'pm_message',
                         'message': message,
-                        'message_id': new_conversation_message.id,
-                        'username': str(new_conversation_message.user.username),
-                        'datetime': str(new_conversation_message.date_time.strftime('%d.%m.%Y %H:%M'))
+                        'message_id': new_message.id,
+                        'username': str(new_message.user.username),
+                        'datetime': str(new_message.date_time.strftime('%d.%m.%Y %H:%M')),
+                        'avatar_url': new_message.user.profile.get_avatar_url()
                     }
                 )
         elif type == "delete":
@@ -121,12 +122,14 @@ class PMConsumer(WebsocketConsumer):
         username = event['username']
         datetime = event['datetime']
         id = event['message_id']
+        avatar_url = event['avatar_url']
         self.send(text_data=json.dumps({
             'type': type,
             'message': message,
             'username': username,
             'datetime': datetime,
-            'message_id': id
+            'message_id': id,
+            'avatar_url': avatar_url,
         }))
 
     def delete_message(self, event):

@@ -24,9 +24,9 @@
                         <img class="dialog-avatar" src="{{ user_messaging_with.profile.get_avatar_url }}">
                     </div>
                 </div>
-                <div class="pm-dialog-content">
+                <div class="pm-dialog-content" id="msg-list">
                     {% for message in messages %}
-                        <div class="pm-dialog-message">
+                        <div class="pm-dialog-message" id="{{ message.id }}">
                             <div class="pm-dialog-message-avatar">
                                 <img class="pm-dialog-message-avatar-img" src="{{ message.user.profile.get_avatar_url }}">
                             </div>
@@ -43,8 +43,9 @@
                 </div>
                 <div class="pm-dialog-footer">
                     <div class="dialog-send-block">
-                        <input type="text" class="dialog-input" placeholder="Сообщение...">
-                        <ion-icon name="send-sharp" class="dialog-send-message-icon"></ion-icon>
+                        <input id="id_text" type="text" class="dialog-input" placeholder="Сообщение...">
+                        <input id="user_messaging" type="hidden" value={{ user_messaging_with.id }} />
+                        <ion-icon name="send-sharp" class="dialog-send-message-icon" onclick="send_message()"></ion-icon>
                     </div>
                 </div>
             </div>
@@ -67,4 +68,8 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/aero/personal_messages/js/dialog.js"></script>
 {% endblock %}

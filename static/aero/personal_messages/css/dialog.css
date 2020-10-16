@@ -88,17 +88,19 @@
 
 .pm-dialog-content {
     flex-basis: 85%;
-    display: flex;
+    display: block;
     flex-direction: column;
     justify-content: flex-end;
+    overflow-y: auto;
 }
 
 .pm-dialog-message {
-    flex-basis: 5.5vh;
+    height: 5.5vh;
     padding: 5px;
     margin: 5px 5%;
     display: flex;
     align-items: center;
+    white-space: nowrap;
 }
 
 .pm-dialog-message-avatar {
@@ -124,12 +126,12 @@
 
 .pm-dialog-message-info-upper {
     margin-top: 15px;
-    margin-bottom: 15px;
+    margin-bottom: 10px;
     font-size: 18px;
     font-weight: 600;
 }
 .pm-dialog-message-info-text {
-    margin-top: 15px;
+    margin-top: 10px;
     margin-bottom: 25px;
 }
 
