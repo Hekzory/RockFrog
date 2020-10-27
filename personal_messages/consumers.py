@@ -75,12 +75,16 @@ class PMConsumer(WebsocketConsumer):
                 )
         elif type == "delete":
             id = text_data_json['id']
-            user_messaging_with = text_data_json['user_messaging_with']
+            user_messaging_with_id = text_data_json['user_messaging_with_id']
+            try:
+                user_messaging_with = User.objects.get(id=user_messaging_with_id).username
+            except User.DoesNotExist:
+                user_messaging_with = None
             try:
                 message = DialogMessage.objects.get(id=id)
-            except ConversationMessage.DoesNotExist:
+            except DialogMessage.DoesNotExist:
                 message = "ok"
-            if message == "ok":
+            if message == "ok" and user_messaging_with is not None:
                 # Обновляем список диалогов обоим пользователям, создавая событие в WebSocket'ах
                 channel_layer_temp = get_channel_layer()
                 async_to_sync(channel_layer_temp.group_send)("dialog_list_" + self.user.username,

@@ -126,8 +126,8 @@ class DeleteMessage(View):
             return HttpResponseRedirect('/')
         request.user.profile.last_online_update()
         try:
-            message = ConversationMessage.objects.get(id=request.POST["message_id"])
-        except ConversationMessage.DoesNotExist:
+            message = DialogMessage.objects.get(id=request.POST["message_id"])
+        except DialogMessage.DoesNotExist:
             return JsonResponse({"response": "DoesNotExist"})
         except ValueError:
             return JsonResponse({"response": "IdNotADigit"})

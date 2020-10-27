@@ -32,10 +32,17 @@
                             </div>
                             <div class="pm-dialog-message-info">
                                 <div class="pm-dialog-message-info-upper">
-                                    {{ message.user }}
+                                    <div class="info-username">
+                                        {{ message.user }}
+                                    </div>
+                                    {% if message.user.username == user.username and message.is_earlier_24 %}
+                                    <div class="info-settings">
+                                        <ion-icon name="close-sharp" class="info-settings-icon" onclick="delete_message({{ message.id }})"></ion-icon>
+                                    </div>
+                                    {% endif %}
                                 </div>
                                 <div class="pm-dialog-message-info-text">
-                                    {{ message.text }}
+                                    {{ message.text.strip }}
                                 </div>
                             </div>
                         </div>
@@ -45,7 +52,7 @@
                     <div class="dialog-send-block">
                         <input id="id_text" type="text" class="dialog-input" placeholder="Сообщение...">
                         <input id="user_messaging" type="hidden" value={{ user_messaging_with.id }} />
-                        <ion-icon name="send-sharp" class="dialog-send-message-icon" onclick="send_message()"></ion-icon>
+                        <ion-icon id="send" name="send-sharp" class="dialog-send-message-icon" onclick="send_message()"></ion-icon>
                     </div>
                 </div>
             </div>

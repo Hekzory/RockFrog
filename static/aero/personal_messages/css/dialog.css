@@ -95,12 +95,11 @@
 }
 
 .pm-dialog-message {
-    height: 5.5vh;
+    min-height: 6vh;
     padding: 5px;
-    margin: 5px 5%;
+    margin: 10px 5%;
     display: flex;
     align-items: center;
-    white-space: nowrap;
 }
 
 .pm-dialog-message-avatar {
@@ -125,14 +124,36 @@
 }
 
 .pm-dialog-message-info-upper {
-    margin-top: 15px;
-    margin-bottom: 10px;
+    margin-top: 10px;
+    margin-bottom: 5px;
     font-size: 18px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.pm-dialog-message-info-upper > .info-username {
     font-weight: 600;
 }
+
+.pm-dialog-message-info-upper > .info-settings {
+
+}
+
+.info-settings > .info-settings-icon {
+    color: #d0d3d6;
+    font-size: 19px;
+}
+
+.info-settings-icon:hover {
+    color: #00c5e4;
+    cursor: pointer;
+}
+
+
 .pm-dialog-message-info-text {
     margin-top: 10px;
-    margin-bottom: 25px;
+    margin-bottom: 10px;
+    white-space: normal;
 }
 
 .pm-dialog-footer {

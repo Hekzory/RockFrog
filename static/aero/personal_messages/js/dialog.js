@@ -1,4 +1,5 @@
 var id_of_user_messaging_with = $('#user_messaging').val();
+var name_of_user_messaging_with = $('.dialog-name').val();
 
 var PMSocket = new WebSocket(
     'ws://' + window.location.host +
@@ -19,20 +20,43 @@ PMSocket.onmessage = function(e) {
         var datetime = data['datetime'];
         var id = data['message_id'];
         var avatar_url = data['avatar_url'];
-        var res_html = '<div class="pm-dialog-message" id="'+id+'"> \
-                            <div class="pm-dialog-message-avatar"> \
-                                <img class="pm-dialog-message-avatar-img" src="'+avatar_url+'"> \
-                            </div> \
-                            <div class="pm-dialog-message-info"> \
-                                <div class="pm-dialog-message-info-upper"> \
-                                    '+username+' \
+        if (username != name_of_user_messaging_with) {
+            var res_html = '<div class="pm-dialog-message" id="'+id+'"> \
+                                <div class="pm-dialog-message-avatar"> \
+                                    <img class="pm-dialog-message-avatar-img" src="'+avatar_url+'"> \
                                 </div> \
-                                <div class="pm-dialog-message-info-text"> \
-                                    '+message+' \
+                                <div class="pm-dialog-message-info"> \
+                                    <div class="pm-dialog-message-info-upper"> \
+                                        <div class="info-username"> \
+                                            '+username+' \
+                                        </div> \
+                                        <div class="info-settings"> \
+                                            <ion-icon name="close-sharp" class="info-settings-icon" onclick="delete_message('+id+')"></ion-icon> \
+                                        </div> \
+                                    </div> \
+                                    <div class="pm-dialog-message-info-text"> \
+                                        '+message+' \
+                                    </div> \
                                 </div> \
-                            </div> \
-                        </div>';
-
+                            </div>';
+        }
+        else {
+            var res_html = '<div class="pm-dialog-message" id="'+id+'"> \
+                                <div class="pm-dialog-message-avatar"> \
+                                    <img class="pm-dialog-message-avatar-img" src="'+avatar_url+'"> \
+                                </div> \
+                                <div class="pm-dialog-message-info"> \
+                                    <div class="pm-dialog-message-info-upper"> \
+                                        <div class="info-username"> \
+                                            '+username+' \
+                                        </div> \
+                                    </div> \
+                                    <div class="pm-dialog-message-info-text"> \
+                                        '+message+' \
+                                    </div> \
+                                </div> \
+                            </div>';
+        }
         $('#msg-list').append(res_html);
         var chatlist = document.getElementById('msg-list');
         chatlist.scrollTop = chatlist.scrollHeight;
@@ -56,4 +80,38 @@ function send_message(e) {
         'user_messaging_with_id': id_of_user_messaging_with
     }));
     messageInputDom.value = '';
+};
+
+
+function delete_message(message_id) {
+    var csrftoken = $('input[name="csrfmiddlewaretoken"]').val();
+    $.ajax({
+        url : "/conversations/delete_message",
+        type : "POST",
+        data : {
+            'message_id' : message_id,
+        	'csrfmiddlewaretoken': csrftoken,
+        },
+
+        success : function(data) {
+			PMSocket.send(JSON.stringify({
+                'type': 'delete',
+                'id': message_id,
+                'user_messaging_with_id': id_of_user_messaging_with,
+            }));
+        },
+    });
+}
+
+
+document.querySelector('#id_text').focus();
+document.querySelector('#id_text').onkeyup = function(e) {
+    if (e.keyCode === 13) {  // enter, return
+        if ($("#send").is(":visible")) {
+            document.querySelector('#send').click();
+        }
+        else {
+            document.querySelector('#save_message').click();
+        }
+    }
 };
