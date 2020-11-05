@@ -19,6 +19,6 @@
 
 django
 django-model-utils
-channels
+channels 2.4.0
 channels-redis
 pillow
