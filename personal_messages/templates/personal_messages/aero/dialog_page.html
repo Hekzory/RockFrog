@@ -37,6 +37,7 @@
                                     </div>
                                     {% if message.user.username == user.username and message.is_earlier_24 %}
                                     <div class="info-settings">
+                                        <ion-icon name="pencil-sharp" class="info-settings-icon" onclick="edit_message({{ message.id }})"></ion-icon>
                                         <ion-icon name="close-sharp" class="info-settings-icon" onclick="delete_message({{ message.id }})"></ion-icon>
                                     </div>
                                     {% endif %}
@@ -52,7 +53,10 @@
                     <div class="dialog-send-block">
                         <input id="id_text" type="text" class="dialog-input" placeholder="Сообщение...">
                         <input id="user_messaging" type="hidden" value={{ user_messaging_with.id }} />
+                        <input id="current_edit" value="-1" hidden>
                         <ion-icon id="send" name="send-sharp" class="dialog-send-message-icon" onclick="send_message()"></ion-icon>
+                        <ion-icon id="cancel_edit" name="close-sharp" class="dialog-send-message-icon" onclick="cancel_edit()" style="display: none;"></ion-icon>
+                        <ion-icon id="save_message" name="send-sharp" class="dialog-send-message-icon" onclick="save_message()" style="display: none;"></ion-icon>
                     </div>
                 </div>
             </div>

@@ -189,11 +189,11 @@
 }
 
 .dialog-send-message-icon {
-    flex-basis: 10%;
+    flex-basis: 7.5%;
     color: #d0d3d6;
     padding-top: 15px;
     padding-bottom: 15px;
-    margin: 0 15px;
+    margin: 0 5px;
     text-decoration: none;
     vertical-align: middle !important;
     font-size: 36px;

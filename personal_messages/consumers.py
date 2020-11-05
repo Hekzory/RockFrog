@@ -103,7 +103,7 @@ class PMConsumer(WebsocketConsumer):
             user_messaging_with = text_data_json['user_messaging_with']
             try:
                 message = DialogMessage.objects.get(id=id)
-            except ConversationMessage.DoesNotExist:
+            except DialogMessage.DoesNotExist:
                 message = "error"
             if message != "error" and self.user.id == message.user.id and message.is_earlier_24():
                 # Обновляем список диалогов обоим пользователям, создавая событие в WebSocket'ах
@@ -147,7 +147,7 @@ class PMConsumer(WebsocketConsumer):
     def edit_message(self, event):
         type = "edit"
         id = event['message_id']
-        message = ConversationMessage.objects.get(id=id)
+        message = DialogMessage.objects.get(id=id)
         self.send(text_data=json.dumps({
             'type': type,
             'message_id': id,

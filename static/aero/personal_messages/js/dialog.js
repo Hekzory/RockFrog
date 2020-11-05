@@ -31,6 +31,7 @@ PMSocket.onmessage = function(e) {
                                             '+username+' \
                                         </div> \
                                         <div class="info-settings"> \
+                                            <ion-icon name="pencil-sharp" class="info-settings-icon" onclick="edit_message('+id+')"></ion-icon> \
                                             <ion-icon name="close-sharp" class="info-settings-icon" onclick="delete_message('+id+')"></ion-icon> \
                                         </div> \
                                     </div> \
@@ -62,12 +63,12 @@ PMSocket.onmessage = function(e) {
         chatlist.scrollTop = chatlist.scrollHeight;
     }
     if (type == "delete") {
-        var id = parseInt(data['message_id'])
+        var id = parseInt(data['message_id']);
         $("#"+id).remove();
     }
     if (type == "edit") {
-        var id = parseInt(data['message_id'])
-        $("#"+id).children()[1].textContent = data['message'];
+        var id = parseInt(data['message_id']);
+        $("#"+id).children()[1].children[1].textContent = data['message'];
     }
 };
 
@@ -94,6 +95,9 @@ function delete_message(message_id) {
         },
 
         success : function(data) {
+            if ($("#current_edit").val() == message_id) {
+                cancel_edit();
+            }
 			PMSocket.send(JSON.stringify({
                 'type': 'delete',
                 'id': message_id,
@@ -115,3 +119,65 @@ document.querySelector('#id_text').onkeyup = function(e) {
         }
     }
 };
+
+if(typeof(String.prototype.trim) === "undefined")
+{
+    String.prototype.trim = function()
+    {
+        return String(this).replace(/^\s+|\s+$/g, '');
+    };
+}
+
+function edit_message(message_id) {
+    var currentMessage = $("#"+message_id).children()[1].children[1].textContent.trim();
+    console.log(currentMessage);
+    $("#id_text").val(currentMessage);
+    $("#send").hide();
+    $("#save_message").show();
+    $("#cancel_edit").show();
+    $("#current_edit").val(message_id);
+    //document.querySelector('#username').text;
+}
+
+function cancel_edit() {
+    $("#current_edit").val(-1);
+    $("#id_text").val("");
+    $("#send").show();
+    $("#save_message").hide();
+    $("#cancel_edit").hide();
+    //document.querySelector('#username').text;
+}
+
+function save_message() {
+    var message_id = $('#current_edit').val();
+    var csrftoken = $('input[name="csrfmiddlewaretoken"]').val();
+    var currentMessage = $("#id_text").val();
+    if (currentMessage != "") {
+        $.ajax({
+            url : "/conversations/edit_message",
+            type : "POST",
+            data : {
+                'message' : currentMessage,
+                'message_id' : message_id,
+                'csrfmiddlewaretoken': csrftoken,
+            },
+
+            success : function(data) {
+                send_edit_message(message_id);
+            },
+        });
+        $("#id_text").val("");
+        $("#send").show();
+        $("#save_message").hide();
+        $("#cancel_edit").hide();
+        $("#current_edit").val(-1);
+    }
+}
+
+function send_edit_message(id) {
+    PMSocket.send(JSON.stringify({
+        'type': 'edit',
+        'id': id,
+        'user_messaging_with': name_of_user_messaging_with,
+    }));
+}
