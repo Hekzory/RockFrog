@@ -1,0 +1,45 @@
+{% load templatetags %}
+
+<div class="content-box wide">
+    <div class="posts-header">
+        <div class="header">
+            Комментарии
+        </div>
+    </div>
+    {% for comment in post.comments.comments|parent_comments %}
+    <div class="comment-row">
+        <div class="comment-avatar">
+            <img class="avatar-40" src="{{ comment.author.profile.get_avatar_url }}" \>
+        </div>
+        <div class="comment-info">
+            <div class="comment-info-upper">
+                <div class="comment-info-author">{{ comment.author }}</div>
+                <div class="comment-info-date">{{ comment.pubdate }}</div>
+            </div>
+            <div class="comment-info-lower">
+                <div class="comment-info-text">
+                    {{ comment.text|linebreaksbr }}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% for childcomment in comment.childrencomments.all %}
+    <div class="comment-row comment-row-answer">
+        <div class="comment-avatar">
+            <img class="avatar-40" src="{{ comment.author.profile.get_avatar_url }}" \>
+        </div>
+        <div class="comment-info">
+            <div class="comment-info-upper">
+                <div class="comment-info-author">{{ childcomment.author }}</div>
+                <div class="comment-info-date">{{ childcomment.pubdate }}</div>
+            </div>
+            <div class="comment-info-lower">
+                <div class="comment-info-text">
+                    {{ childcomment.text|linebreaksbr }}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+    {% endfor %}
+</div>

@@ -1,5 +1,5 @@
 function get_posts(userid, feed) {
-    var csrftoken = $('input[name="csrfmiddlewaretoken"]').val()
+    var csrftoken = $('input[name="csrfmiddlewaretoken"]').val();
 
     $.ajax({
         url : 'get_posts/',
