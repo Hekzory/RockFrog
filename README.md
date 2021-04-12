@@ -14,12 +14,12 @@
 - Redis
 - Websocket
 - Ajax
-- СУБД MySQL
+- sqlite
 - nginx
 
 Зависимости(pip3):
 
-django
+django 3.1.8
 django-model-utils
 channels 2.4.0
 channels-redis
