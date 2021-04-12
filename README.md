@@ -7,13 +7,15 @@
 - Python
 - Javascript
 
-Используемые технологии при разработке проекта:
+Основные используемые технологии при разработке проекта:
 
 - Django Framework
 - Django channels
 - Redis
 - Websocket
 - Ajax
+- СУБД MySQL
+- nginx
 
 Зависимости(pip3):
 
