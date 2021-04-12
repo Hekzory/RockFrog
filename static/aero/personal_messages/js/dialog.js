@@ -181,3 +181,23 @@ function send_edit_message(id) {
         'user_messaging_with': name_of_user_messaging_with,
     }));
 }
+
+function delete_dialog(dialog_id) {
+    var csrftoken = $('input[name="csrfmiddlewaretoken"]').val();
+    if (Number.isInteger(dialog_id)) {
+        $.ajax({
+            url : "/conversations/delete_dialog",
+            type : "POST",
+            data : {
+                'dialog_id' : dialog_id,
+                'csrfmiddlewaretoken': csrftoken,
+            },
+
+            success : function(data) {
+                console.log("Deleted dialog successfully");
+            },
+        });
+        window.location.replace("/conversations/");
+    }
+
+}

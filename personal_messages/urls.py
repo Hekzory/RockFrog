@@ -7,4 +7,5 @@ urlpatterns = [
     path('user/<int:user_id>', views.DialogPage.as_view(), name='conversation'),
     path('delete_message', views.DeleteMessage.as_view(), name='delete_message'),
     path('edit_message', views.EditMessage.as_view(), name='edit_message'),
+    path('delete_dialog', views.DeleteDialog.as_view(), name='delete_dialog'),
 ]

@@ -20,7 +20,7 @@
                         @{{ user_messaging_with.username }}
                     </a>
                     <div class="dialog-options">
-                        <ion-icon name="ellipsis-horizontal-sharp" class="dialog-settings-icon"></ion-icon>
+                        <ion-icon onclick="delete_dialog({{ dialog_id }})" name="close-sharp" class="dialog-settings-icon"></ion-icon>
                         <img class="dialog-avatar" src="{{ user_messaging_with.profile.get_avatar_url }}">
                     </div>
                 </div>

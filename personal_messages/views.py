@@ -138,6 +138,23 @@ class DeleteMessage(View):
             return JsonResponse({"response": "error"})
 
 
+class DeleteDialog(View):
+    def post(self, request):
+        if not request.user.is_authenticated:
+            return HttpResponseRedirect('/')
+        request.user.profile.last_online_update()
+        try:
+            dialog = Dialog.objects.get(id=request.POST["dialog_id"])
+        except Dialog.DoesNotExist:
+            return JsonResponse({"response": "DoesNotExist"})
+        except ValueError:
+            return JsonResponse({"response": "IdNotADigit"})
+
+        dialog.delete()
+        return JsonResponse({"response": "ok"})
+
+
+
 class EditMessage(View):
     def post(self, request):
         if not request.user.is_authenticated:
