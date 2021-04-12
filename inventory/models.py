@@ -1,7 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
 from model_utils.managers import InheritanceManager
-
+from django.dispatch import receiver
+from django.db.models.signals import post_save
 
 # Create your models here.
 class Inventory(models.Model):
@@ -99,3 +100,12 @@ class AvatarCardItem(CardItem):
                ('Возможность использовать GIF:', gif_enabled)
 
 
+@receiver(post_save, sender=User)
+def create_user_inventory(sender, instance, created=None, **kwargs):
+    if created:
+        Inventory.objects.create(user=instance)
+    else:
+        try:
+            instance.inventory.save()
+        except Inventory.DoesNotExist:
+            Inventory.objects.create(user=instance)

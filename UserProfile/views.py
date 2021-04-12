@@ -78,7 +78,8 @@ class EditProfileView(View):
             context['user_email'] = request.user.profile.email
             context['user_city'] = request.user.profile.city
             context['user_phone'] = request.user.profile.phone
-            context['user_birthday'] = datetime.strftime(request.user.profile.birth_date, '%Y-%m-%d')
+            if request.user.profile.birth_date is not None:
+                context['user_birthday'] = datetime.strftime(request.user.profile.birth_date, '%Y-%m-%d')
             context['current_app_name'] = "profile"
             return HttpResponse(template.render(context, request))
 
