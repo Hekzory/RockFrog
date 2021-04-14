@@ -10,7 +10,7 @@
         <div class="upper-profile-menu">
             Привет, {{ request.user }}!
         </div>
-        <img class="menu-profile-img" src="{{ user.profile.get_avatar_url }}"/>
+        <img class="menu-profile-img" src="{{ request.user.profile.get_avatar_url }}"/>
         {% if request.user.is_staff %}
         <a class="upper-menu-link" href="/admin">Админ-панель</a>
         {% endif %}
