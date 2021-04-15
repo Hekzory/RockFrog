@@ -1,10 +1,60 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% extends "aero/base_page.html" %}
+
+{% load static %}
+
+{% block scripts %}
+    <script src="{% static 'aero/posts/js/functions.js' %}"></script>
+    <script src="{% static 'aero/news_feed/js/posts.js' %}"></script>
+{% endblock %}
+
+{% block title %}Лента{% endblock %}
+
+{% block main_content %}
+<div class="background-content">
+    <img class="background-img" src="/static/aero/profile/img/everest.jpg"/>
+</div>
+<div class="content-columns" id="content-columns">
+    <div class="wide-content-column">
+        <div class="posts-box">
+            <div class="posts-header">
+                <div class="content-feeds">
+                    {% if request.user.is_authenticated %}
+                        <a id="feed_subscriptions" class="content-feed pointer" onclick="switch_feed({{ request.user.id }}, 'subscriptions')">Подписки</a>
+                    {% endif %}
+                    <a id="feed_hot" class="content-feed active pointer" onclick="switch_feed({{ request.user.id }}, 'hot')">Горячее</a>
+                    <a id="feed_best" class="content-feed pointer" onclick="switch_feed({{ request.user.id }}, 'best')">Лучшее</a>
+                    <a id="feed_new" class="content-feed pointer" onclick="switch_feed({{ request.user.id }}, 'new')">Новое</a>
+                    {% if request.user.is_authenticated %}
+                        <a id="feed_reacted" class="content-feed pointer" onclick="switch_feed({{ request.user.id }}, 'reacted')">Реакции</a>
+                        <a id="feed_own" class="content-feed pointer" onclick="switch_feed({{ request.user.id }}, 'own')">Ваше</a>
+                    {% endif %}
+                </div>
+                <div class="feed-parameters">
+                    <ion-icon name="settings-sharp"></ion-icon>
+                </div>
+            </div>
+            <div id="posts_content" class="posts-content">
+                {% for post in posts %}
+                    {% include 'news_feed/aero/news_feed_post.html' %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <div class="content-column center-text">
+        <div class="sticky-content">
+            <div class="content-box">
+                <div class="content-header">
+                    <div class="header">
+                        Настройки
+                    </div>
+                </div>
+                <div class="content">
+                    <div class="text-content">
+                        Недоступно
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -159,7 +159,6 @@ function banuser(userid) {
 function toeditor(userid) {
     userid = parseInt(userid)
     ans = sendajax('toeditor', userid)
-    // console.log(ans)
     document.getElementById('user' + userid).style.display = 'none'
 }
 
@@ -180,13 +179,12 @@ function toadmin(userid) {
             document.location.href = '/groups/' + $('#groupslug').attr('groupslug') + '/'
         },
     });
-    
+
 }
 
 function touser(userid) {
     userid = parseInt(userid)
     ans = sendajax('touser', userid)
-    // console.log(ans)
     document.getElementById('editor' + userid).style.display = 'none'
 }
 
@@ -202,7 +200,7 @@ function deletegroupimage() {
         },
 
         success : function(data) {
-            location.reload(true);        
+            location.reload(true);
         },
     });
 }
@@ -271,7 +269,7 @@ function savevalue(type) {
         if (document.getElementById('nameinput').value.replace(/\s+/g, '') != '')
         {
             ajaxtype = 'editname'
-            data = document.getElementById('nameinput').value            
+            data = document.getElementById('nameinput').value
         }
         else
         {
@@ -283,7 +281,7 @@ function savevalue(type) {
         ajaxtype = 'editdescription'
         data = document.getElementById('descriptioninput').value
     }
-    else if( type == 'slug') {        
+    else if( type == 'slug') {
         data = document.getElementById('sluginput').value
         checkslug(data)
     }
@@ -304,18 +302,17 @@ function savevalue(type) {
                     document.location.href = data
                 }
             },
-        });        
+        });
     }
 }
 
 function readURL(input) {
   if( input.files ) {
-    file = input.files[0]    
-
-    if( file.type != 'image/png' & file.type != 'image/jpeg' ) {        
+    file = input.files[0]
+    if( file.type != 'image/png' & file.type != 'image/jpeg' ) {
         showwarning('Загрузите изображение в формате jpeg или png')
-    } else 
-    if( file.size > 5000000 ) {        
+    } else
+    if( file.size > 5000000 ) {
         showwarning('Файл слишком большой')
     } else
     {
@@ -335,8 +332,37 @@ function readURL(input) {
                 // document.getElementById('cancelupload').style.display = "block"
                 // document.getElementById('saveimage').style.display = "block"
             }
-        }        
-    }    
+        }
+    }
+  }
+}
+
+function readURL2(input) {
+  if( input.files ) {
+    file = input.files[0]
+    if( file.type != 'image/png' & file.type != 'image/jpeg' ) {
+        showwarning('Загрузите изображение в формате jpeg или png')
+    } else
+    if( file.size > 5000000 ) {
+        showwarning('Файл слишком большой')
+    } else
+    {
+        setimage(input, 'testimg')
+        img = document.getElementById('testimg')
+        img.onload = function() {
+            console.log(img.naturalWidth)
+            width = img.naturalWidth
+            height = img.naturalHeight
+            if( width / height >= 2 || height / width >= 1.2 ) {
+                showwarning('Слишком вытянутая картинка')
+            } else {
+                input.form.submit()
+                // document.getElementById('uploadimage').style.display = "none"
+                // document.getElementById('cancelupload').style.display = "block"
+                // document.getElementById('saveimage').style.display = "block"
+            }
+        }
+    }
   }
 }
 
@@ -359,7 +385,6 @@ function uploadfile() {
 
         success : function(data) {
             // location.reload(true)
-            // console.log(data)
         },
     });
 }
@@ -367,11 +392,11 @@ function uploadfile() {
 function setimage(input, imgid) {
   if (input.files && input.files[0]) {
     var reader = new FileReader();
-    
+
     reader.onload = function(e) {
       $('#' + imgid).attr('src', e.target.result);
     }
-    
+
     reader.readAsDataURL(input.files[0]);
   }
 }
@@ -380,13 +405,9 @@ function cancelupload(url) {
     $('#groupimage').attr('src', url);
     $('#stage2').hide()
     $('#stage1').show()
-    // document.getElementById('uploadimage').style.display = "block"
-    // document.getElementById('cancelupload').style.display = "none"
-    // document.getElementById('saveimage').style.display = "none"
 }
 
 function searchlist(id, s) {
-    // console.log(id, s)
     $('#' + id).children().each(function(index, elem) {
         if( !$(elem).attr('name').toLowerCase().includes(s.toLowerCase()) ) {
             $(elem).hide()

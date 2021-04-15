@@ -117,7 +117,7 @@
         {% endif %}   
       </div>
       {% if group.image.url == '/media/False' %}
-        <input id="fileinput" class="hidden-input" form="imageform" type="file" name="groupimage" onchange="document.getElementById('imageform').submit()">
+        <input id="fileinput" class="hidden-input" form="imageform" type="file" name="groupimage" onchange="readURL2(this)">
         <hr>
         <form id="imageform" action="{% url 'communities:moreedit' group.id %}" method="POST" class="inline-wrapper" enctype="multipart/form-data"> 
           {% csrf_token %}     

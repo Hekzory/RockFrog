@@ -6,7 +6,10 @@
             Оставьте комментарий
         </div>
     </div>
-    <div class="settings-row-field">
-        <textarea type="text" class="comment-field" id="" placeholder="Текст комментария"></textarea>
+    <div class="pm-dialog-footer">
+        <div class="dialog-send-block">
+            <input id="comment{{ post.id }}input" answering='' editing='' type="text" class="dialog-input" placeholder="Комментарий...">
+            <ion-icon id="send" name="send-sharp" class="dialog-send-message-icon" onclick="createcomment('{{ post.id }}')"></ion-icon>
+        </div>
     </div>
 </div>
