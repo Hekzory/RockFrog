@@ -11,7 +11,7 @@
     <link rel="stylesheet" type="text/css" href="{% static 'aero/profile/css/userprofile.css' %}">
 {% endblock %}
 
-{% block title %}Ваш профиль{% endblock %}
+{% block title %}Профиль {{user.username}}{% endblock %}
 
 {% block main_content %}
 <div class="background-content">
@@ -20,16 +20,15 @@
 <div class="content-columns" id="content-columns">
     <div class="content-column" id="col-1">
         <div class="sticky-content">
-            {% include 'UserProfile/aero/profile_card.html' %}
-            {% include 'UserProfile/aero/settings_four_boxes.html' with box='view' %}
+            {% include 'UserProfile/aero/profile_card.html' with mode='user_profile'%}
+            {% include 'UserProfile/aero/settings_four_boxes.html' with box='user_profile' %}
         </div>
     </div>
     <div class="content-column wide">
         <div class="posts-box">
             <div class="posts-header">
                 <div class="content-feeds">
-                    <div id="feed_own" class="content-feed active pointer" onclick="switch_feed({{ request.user.id }}, 'own')">Мои посты</div>
-                    <div id="feed_reacted" class="content-feed pointer" onclick="switch_feed({{ request.user.id }}, 'reacted')">Реакции</div>
+                    <div id="feed_own" class="content-feed active pointer" onclick="switch_feed({{ request.user.id }}, 'own')">Посты пользователя</div>
                 </div>
                 <div class="feed-parameters">
                     <ion-icon name="settings-sharp"></ion-icon>
@@ -38,6 +37,10 @@
             <div id="posts_content" class="posts-content">
                 {% for post in posts %}
                     {% include 'UserProfile/aero/profile_post.html' %}
+                {% empty %}
+                <div class="empty-posts">
+                        Посты отсутствуют.
+                    </div>
                 {% endfor %}
             </div>
         </div>

@@ -19,7 +19,7 @@ class UserProfileView(View):
         template = None
         if User.objects.filter(username=username).first() is not None:
             viewed_user = User.objects.get(username=username)
-            context = {'user': viewed_user}
+            context = {'user': viewed_user, 'user_viewer': request.user}
         else:
             context = dict()
             template = loader.get_template('UserProfile/user_not_found.html')
@@ -34,14 +34,13 @@ class UserProfileView(View):
             else:
                 in_list = False
             context['in_list'] = in_list
-
             if viewed_user_blacklist.filter(pk=request.user.pk).exists():
                 template = loader.get_template('UserProfile/blocked_forbidden.html')
             else:
-                template = loader.get_template('UserProfile/userprofile.html')
+                template = loader.get_template('UserProfile/aero/userprofile.html')
         else:
             if viewed_user.profile.privacysettings.allow_to_view_for_unreg:
-                template = loader.get_template('UserProfile/userprofile.html')
+                template = loader.get_template('UserProfile/aero/userprofile.html')
             else:
                 template = loader.get_template('UserProfile/unregistered_forbidden.html')
         return HttpResponse(template.render(context, request))

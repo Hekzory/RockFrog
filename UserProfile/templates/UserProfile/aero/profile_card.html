@@ -1,11 +1,20 @@
 <div class="content-box profile-box">
     <img class="main-avatar" src="{{ user.profile.get_avatar_url }}"/>
     <div class="profile-name">
+        {% if user.profile.verified %}
+        @{{ user.username }} <ion-icon class="verified-mark" name="checkmark-outline"></ion-icon>
+        {% else %}
         @{{ user.username }}
+        {% endif %}
     </div>
     <div class="profile-about">
         {{ user.profile.about }}
     </div>
+    {% if mode == 'user_profile' %}
+    <div class="profile-about">
+        {{user.profile.online_status}}
+    </div>
+    {% endif %}
     <div class="profile-stats">
         <div class="profile-stat">
             <div class="stat-header">
@@ -28,7 +37,7 @@
                 Посты
             </div>
             <div class="stat-counter">
-                {{ request.user.articles.count }}
+                {{ user.articles.count }}
             </div>
         </div>
     </div>

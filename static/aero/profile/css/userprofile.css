@@ -1,0 +1,12 @@
+.empty-posts {
+    padding-top: 20px;
+    padding-bottom: 20px;
+    font-size: 22px;
+    text-align: center;
+}
+
+.verified-mark {
+    color: #00c5e4;
+    margin-top: auto;
+    padding-bottom: 0px;
+}
