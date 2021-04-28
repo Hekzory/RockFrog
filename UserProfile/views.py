@@ -22,7 +22,7 @@ class UserProfileView(View):
             context = {'user': viewed_user, 'user_viewer': request.user}
         else:
             context = dict()
-            template = loader.get_template('UserProfile/user_not_found.html')
+            template = loader.get_template('UserProfile/aero/user_not_found.html')
             return HttpResponse(template.render(context, request), status=404)
         if request.user.is_authenticated:
             if request.user.id == viewed_user.id:
@@ -35,14 +35,14 @@ class UserProfileView(View):
                 in_list = False
             context['in_list'] = in_list
             if viewed_user_blacklist.filter(pk=request.user.pk).exists():
-                template = loader.get_template('UserProfile/blocked_forbidden.html')
+                template = loader.get_template('UserProfile/aero/blocked_forbidden.html')
             else:
                 template = loader.get_template('UserProfile/aero/userprofile.html')
         else:
             if viewed_user.profile.privacysettings.allow_to_view_for_unreg:
                 template = loader.get_template('UserProfile/aero/userprofile.html')
             else:
-                template = loader.get_template('UserProfile/unregistered_forbidden.html')
+                template = loader.get_template('UserProfile/aero/unregistered_forbidden.html')
         return HttpResponse(template.render(context, request))
 
 
@@ -515,6 +515,7 @@ class AboutMeView(View):
         else:
             template = loader.get_template('UserProfile/aero/about_me.html')
             form = ProfileForm()
-            context = {'form': form}
+            context = {}
+            context['form'] = form
             context['current_app_name'] = "profile"
             return HttpResponse(template.render(context, request))

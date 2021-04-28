@@ -1,0 +1,36 @@
+{% extends "aero/base_page.html" %}
+
+{% load static %}
+
+{% block scripts %}
+    <script src="{% static 'aero/posts/js/functions.js' %}"></script>
+    <script src="{% static 'aero/profile/js/posts.js' %}"></script>
+{% endblock %}
+
+{% block css %}
+    <link rel="stylesheet" type="text/css" href="{% static 'aero/profile/css/userprofile.css' %}">
+{% endblock %}
+
+{% block title %}Профиль {{user.username}}{% endblock %}
+
+{% block main_content %}
+<div class="background-content">
+    <img class="background-img" src="/static/aero/profile/img/everest.jpg"/>
+</div>
+<div class="content-columns" id="content-columns">
+    <div class="content-column" id="col-1">
+        <div class="sticky-content">
+            {% include 'UserProfile/aero/profile_card.html' with mode='user_profile'%}
+            {% include 'UserProfile/aero/settings_four_boxes.html' with box='user_profile' %}
+        </div>
+    </div>
+    <div class="content-column wide">
+        <div class="content-box">
+            <div class="content-box-text">
+                Пользователь ограничил доступ к странице незарегистрированным пользователям.
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

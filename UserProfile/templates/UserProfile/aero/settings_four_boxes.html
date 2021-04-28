@@ -7,6 +7,16 @@
             Просмотр
         </div>
     </a>
+    {% if box == 'user_profile' %}
+    <a class="setting-box active" href="/conversations/user/{{user.id}}">
+        <div class="setting-icon">
+            <ion-icon name="chatbubble-sharp"></ion-icon>
+        </div>
+        <div class="setting-header">
+            Написать сообщение
+        </div>
+    </a>
+    {% endif %}
     {% if box != 'user_profile' %}
     <a class="setting-box {% if box == 'edit' %} active {% endif %}" href="/profile/edit_profile">
         <div class="setting-icon grey-icon">
@@ -16,6 +26,7 @@
             Изменить профиль
         </div>
     </a>
+
     <a class="setting-box {% if box == 'settings' %} active {% endif %}" href="/profile/settings">
         <div class="setting-icon grey-icon">
             <ion-icon name="settings-sharp"></ion-icon>
@@ -24,6 +35,7 @@
             Настройки
         </div>
     </a>
+
     <a class="setting-box">
         <div class="setting-icon grey-icon">
             <ion-icon name="star-sharp"></ion-icon>

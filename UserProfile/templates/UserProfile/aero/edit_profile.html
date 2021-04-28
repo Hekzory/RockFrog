@@ -1,4 +1,5 @@
 {% extends "aero/base_page.html" %}
+
 {% block main_content %}
 <div class="background-content">
     <img class="background-img" src="/static/aero/profile/img/everest.jpg"/>
@@ -65,10 +66,10 @@
             <div class="content-box">
                 <div class="category-table">
                     <a href="{% url 'UserProfile:edit_profile' %}" class="category-row active">
-                        Основные данные
+                        Редактировать профиль
                     </a>
                     <a href="{% url 'UserProfile:about_me' %}" class="category-row">
-                        О себе
+                        Дополнительные данные
                     </a>
                 </div>
             </div>
@@ -79,3 +80,8 @@
 {% block scripts %}
 <script src="/static/aero/profile/js/settings.js"></script>
 {% endblock %}
+
+{% block css %}
+    <link rel="stylesheet" type="text/css" href="/static/aero/profile/css/userprofile.css">
+{% endblock %}
+
