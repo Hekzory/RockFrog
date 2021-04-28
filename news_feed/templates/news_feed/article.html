@@ -76,7 +76,7 @@
   {% csrf_token %}
   <div class="inline-wrapper">
     <h1>{% if post.title %}{{ post.title }}{% else %}Запись{% endif %}</h1>
-    <a class="button1" href="/">На главную</a>
+    <a class="button1" href="/" style="width: 110px">На главную</a> <!-- sorry, just didnt have enough time -->
   </div>
   <br>
 
@@ -129,7 +129,7 @@
                 <i class="material-icons icon1 pointer" onclick="showwarning2('Удалить этот пост?', 'deletepost({{ post.id }})')">delete</i>
               {% endif %}
             {% endif %}
-            <div class="inline-wrapper">
+            <!--<div class="inline-wrapper">
               <div id="viewscount{{ post.id }}" class="text3" style="margin-top: 0px;">{{ post.views.count }}</div>
               {% if request.user.is_authenticated %}
                 {% if request.user in post.views.all %}
@@ -140,7 +140,7 @@
               {% else %}
                   <i class="material-icons icon1 pointer" style="margin-right: 5px;">visibility</i>
               {% endif %}
-            </div>
+            </div>-->
           </div>
         </div>
         <hr>

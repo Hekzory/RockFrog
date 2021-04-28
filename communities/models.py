@@ -31,13 +31,12 @@ class Group(models.Model):
 		return self.groupname
 
 	def has_power(self, user):
-		print(user, self.admin, self)
 		return user in self.editors.all() or user == self.admin
 
 	def can_see_group(self, user):
 		if self.public:
 			return True
-		if not user.is_authenticated:
+		if user is not None and not user.is_authenticated:
 			return False
 		if user in self.subscribers.all() or user in self.editors.all() or user == self.admin:
 			return True

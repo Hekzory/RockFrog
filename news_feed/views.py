@@ -74,6 +74,7 @@ def generate_self_articles(user):
 
 class GetPosts(View):
     def post(self, request):
+        userid = int(request.POST.get('userid'))
         get_posts_functions = {
             "own": get_own_posts,
             "hot": get_hot_posts,
@@ -83,11 +84,12 @@ class GetPosts(View):
             "subscriptions": get_subscriptions_posts,
         }
         feed = request.POST.get('feed')
-        user = User.objects.get(id=request.POST.get('userid'))
+        user = User.objects.get(id=userid) if userid != -1 else None
         posts = get_posts_functions.get(feed, lambda x: None)(user)
         if not posts is None:
             data = json.dumps(serialize_posts(posts, request, title_len=100, text_len=400))
-        return JsonResponse(data, safe=False)
+            return JsonResponse(data, safe=False)
+        return JsonResponse(None, safe=False)
 
 
 def serialize_posts(posts, request, title_len=60, text_len=200):
@@ -161,10 +163,11 @@ def view_article(request, articleid):
         article = BasicArticle.objects.get(id=articleid).get_child()
         context = {
             'post': article,
-            'title': 'Пост',
+            'title': article.title if article.title else "Пост",
             'current_app_name': 'news_feed',
         }
-        return render(request, 'news_feed/aero/post_page.html', context)
+        # return render(request, 'news_feed/aero/post_page.html', context)
+        return render(request, 'news_feed/article.html', context)
     else:
         return render(request, 'news_feed/aero/news_feed_article_404.html')
 
